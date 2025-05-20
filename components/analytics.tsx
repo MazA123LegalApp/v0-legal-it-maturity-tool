@@ -1,17 +1,24 @@
 "use client"
 
 import { useEffect } from "react"
-import { usePathname } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
+import Script from "next/script"
 
-// Replace with your actual Measurement ID
-const GA_MEASUREMENT_ID = "G-XXXXXXXXXX"
+// Use the provided Measurement ID
+const GA_MEASUREMENT_ID = "G-3YXE5YRXVW"
 
 export function Analytics() {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
 
   useEffect(() => {
-    // Track page view locally
-    const trackPageView = () => {
+    if (pathname && window.gtag) {
+      // Track page view in Google Analytics
+      window.gtag("config", GA_MEASUREMENT_ID, {
+        page_path: pathname,
+      })
+
+      // Also track page view locally for admin dashboard
       try {
         const pageData = {
           path: pathname,
@@ -28,10 +35,20 @@ export function Analytics() {
         console.error("Error tracking page view:", error)
       }
     }
+  }, [pathname, searchParams])
 
-    trackPageView()
-  }, [pathname])
-
-  // Return empty fragment - we'll add Google Analytics later
-  return null
+  return (
+    <>
+      {/* Google Analytics Script Tags */}
+      <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`} strategy="afterInteractive" />
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '${GA_MEASUREMENT_ID}');
+        `}
+      </Script>
+    </>
+  )
 }
