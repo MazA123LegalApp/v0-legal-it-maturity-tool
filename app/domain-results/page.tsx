@@ -13,6 +13,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts"
+import { redirect } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -36,6 +37,8 @@ import {
 import { BenchmarkComparison } from "@/components/benchmark-comparison"
 
 export default function DomainResultsPage() {
+  redirect("/maturity/domain-results")
+
   const [results, setResults] = useState<AssessmentResult>(getEmptyResults())
   const [organizationName, setOrganizationName] = useState<string>("Your Organization")
   const [overallScore, setOverallScore] = useState<number>(0)

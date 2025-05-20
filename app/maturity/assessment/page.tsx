@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { ArrowLeft, ArrowRight, Home, Save } from "lucide-react"
+import { ArrowLeft, ArrowRight, Home, RefreshCw, Save } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -10,8 +10,6 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-// Remove this line
-// import { useTracking } from "@/hooks/use-tracking"
 import { type AssessmentResult, domains, getEmptyResults } from "@/lib/assessment-data"
 
 export default function AssessmentPage() {
@@ -30,9 +28,6 @@ export default function AssessmentPage() {
     }
     return getEmptyResults()
   })
-
-  // Remove this line
-  // const { trackCompletion } = useTracking()
 
   const handleScoreChange = (domainId: string, dimension: string, value: number) => {
     setResults((prev) => {
@@ -62,6 +57,13 @@ export default function AssessmentPage() {
     setActiveTab(value)
   }
 
+  const handleResetAssessment = () => {
+    const emptyResults = getEmptyResults()
+    setResults(emptyResults)
+    localStorage.setItem("assessmentResults", JSON.stringify(emptyResults))
+    setActiveTab(domains[0].id)
+  }
+
   const getNextTab = () => {
     const currentIndex = domains.findIndex((domain) => domain.id === activeTab)
     if (currentIndex < domains.length - 1) {
@@ -89,6 +91,10 @@ export default function AssessmentPage() {
           <p className="text-muted-foreground">Rate your organization's maturity across key domains and dimensions</p>
         </div>
         <div className="flex gap-2">
+          <Button onClick={handleResetAssessment} variant="outline" className="gap-2">
+            <RefreshCw className="h-4 w-4" />
+            Reset Assessment
+          </Button>
           <Link href="/maturity">
             <Button variant="outline" className="gap-2">
               <ArrowLeft className="h-4 w-4" />

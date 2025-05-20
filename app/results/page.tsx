@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import { redirect } from "next/navigation"
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
@@ -41,6 +42,8 @@ import {
 import { BenchmarkComparison } from "@/components/benchmark-comparison"
 
 export default function ResultsPage() {
+  redirect("/maturity/results")
+
   const [results, setResults] = useState<AssessmentResult>(getEmptyResults())
   const [organizationName, setOrganizationName] = useState<string>("Your Organization")
   const [organizationSize, setOrganizationSize] = useState<string>("mid-size")

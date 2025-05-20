@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { ArrowLeft, ArrowRight, Save, RefreshCw } from "lucide-react"
+import { redirect } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -82,6 +83,10 @@ export default function AssessmentPage() {
 
   const isLastTab = activeTab === domains[domains.length - 1].id
   const isFirstTab = activeTab === domains[0].id
+
+  if (typeof window !== "undefined" && window.location.pathname === "/assessment") {
+    redirect("/maturity/assessment")
+  }
 
   return (
     <div className="container max-w-4xl py-6 md:py-10">
