@@ -11,6 +11,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { type AssessmentResult, domains, getEmptyResults } from "@/lib/assessment-data"
+import { LevelDescriptionDialog } from "@/components/level-description-dialog"
+import { dimensionDetails } from "@/lib/assessment-data"
 
 export default function AssessmentPage() {
   const [activeTab, setActiveTab] = useState(domains[0].id)
@@ -137,7 +139,14 @@ export default function AssessmentPage() {
               </CardHeader>
               <CardContent className="space-y-8">
                 <div>
-                  <h3 className="text-lg font-medium mb-4">People & Organization</h3>
+                  <div className="flex items-center gap-2 mb-4">
+                    <h3 className="text-lg font-medium">People & Organization</h3>
+                    <LevelDescriptionDialog
+                      title={dimensionDetails.people.name}
+                      description={dimensionDetails.people.description}
+                      levels={dimensionDetails.people.levels}
+                    />
+                  </div>
                   <p className="text-sm text-muted-foreground mb-4">
                     Rate the maturity of roles, responsibilities, skills, and organizational structure.
                   </p>
@@ -182,7 +191,14 @@ export default function AssessmentPage() {
                 <Separator />
 
                 <div>
-                  <h3 className="text-lg font-medium mb-4">Process</h3>
+                  <div className="flex items-center gap-2 mb-4">
+                    <h3 className="text-lg font-medium">Process</h3>
+                    <LevelDescriptionDialog
+                      title={dimensionDetails.process.name}
+                      description={dimensionDetails.process.description}
+                      levels={dimensionDetails.process.levels}
+                    />
+                  </div>
                   <p className="text-sm text-muted-foreground mb-4">
                     Rate the maturity of processes, procedures, and workflows.
                   </p>
@@ -227,7 +243,14 @@ export default function AssessmentPage() {
                 <Separator />
 
                 <div>
-                  <h3 className="text-lg font-medium mb-4">Tooling</h3>
+                  <div className="flex items-center gap-2 mb-4">
+                    <h3 className="text-lg font-medium">Tooling</h3>
+                    <LevelDescriptionDialog
+                      title={dimensionDetails.tooling.name}
+                      description={dimensionDetails.tooling.description}
+                      levels={dimensionDetails.tooling.levels}
+                    />
+                  </div>
                   <p className="text-sm text-muted-foreground mb-4">
                     Rate the maturity of tools, systems, and technology used.
                   </p>
@@ -272,7 +295,14 @@ export default function AssessmentPage() {
                 <Separator />
 
                 <div>
-                  <h3 className="text-lg font-medium mb-4">Data</h3>
+                  <div className="flex items-center gap-2 mb-4">
+                    <h3 className="text-lg font-medium">Data</h3>
+                    <LevelDescriptionDialog
+                      title={dimensionDetails.data.name}
+                      description={dimensionDetails.data.description}
+                      levels={dimensionDetails.data.levels}
+                    />
+                  </div>
                   <p className="text-sm text-muted-foreground mb-4">
                     Rate the maturity of data management, quality, and analytics.
                   </p>
@@ -317,7 +347,14 @@ export default function AssessmentPage() {
                 <Separator />
 
                 <div>
-                  <h3 className="text-lg font-medium mb-4">Continual Improvement</h3>
+                  <div className="flex items-center gap-2 mb-4">
+                    <h3 className="text-lg font-medium">Continual Improvement</h3>
+                    <LevelDescriptionDialog
+                      title={dimensionDetails.improvement.name}
+                      description={dimensionDetails.improvement.description}
+                      levels={dimensionDetails.improvement.levels}
+                    />
+                  </div>
                   <p className="text-sm text-muted-foreground mb-4">
                     Rate the maturity of improvement processes, feedback loops, and innovation.
                   </p>
