@@ -2,10 +2,24 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { ArrowLeft, BookOpen, Download, FileText, Home, Lightbulb, Settings } from "lucide-react"
+import {
+  ArrowLeft,
+  ArrowRight,
+  BarChart3,
+  BookOpen,
+  CheckCircle,
+  Download,
+  FileText,
+  Home,
+  Lightbulb,
+  Lock,
+  Settings,
+  Shield,
+  Zap,
+} from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 
 // Define window.dataLayer
 declare global {
@@ -63,278 +77,428 @@ export default function PlaybookLandingPage() {
   }
 
   return (
-    <div className="container max-w-6xl py-6 md:py-10">
-      <div className="flex justify-between items-center mb-8">
-        <Link href="/">
-          <Button variant="ghost" size="sm" className="gap-2">
-            <Home className="h-4 w-4" />
-            Back to Hub
-          </Button>
-        </Link>
-
-        <Button
-          onClick={handleDownload}
-          variant="outline"
-          className="gap-2 border-orange-500 text-orange-500 hover:bg-orange-50"
-          disabled={downloadClicked}
-        >
-          <Download className="h-4 w-4" />
-          {downloadClicked ? "Downloading..." : "Download Full Playbook (PDF)"}
-        </Button>
-      </div>
-
-      <div className="flex flex-col items-center text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4 text-blue-700">Legal Modernization Playbook</h1>
-        <p className="text-xl text-muted-foreground max-w-3xl">
-          A comprehensive guide to modernizing legal operations and technology
-        </p>
-      </div>
-
-      <Card className="mb-12">
-        <CardHeader>
-          <CardTitle>Executive Summary</CardTitle>
-          <CardDescription>Purpose and approach of the Legal Modernization Playbook</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="prose max-w-none">
-            <h3>Purpose</h3>
-            <p>
-              This playbook provides a practical framework for modernizing legacy IT systems within U.S. legal and
-              compliance-driven institutions. Designed to support law firms, regulatory bodies, legal service providers,
-              and governance-aligned organizations, it aims to drive measurable improvements in cybersecurity posture,
-              operational resilience, and regulatory alignment.
-            </p>
-
-            <h3>Context</h3>
-            <p>
-              Many legal institutions continue to operate on fragmented, outdated, or poorly integrated systems—exposing
-              them to cyber risk, productivity loss, and noncompliance with federal security frameworks. In response to
-              Executive Order 14028, OMB M-22-09, and the National Cybersecurity Strategy (2023), there is now both an
-              opportunity and an obligation to modernize.
-            </p>
-
-            <h3>Approach</h3>
-            <p>
-              This playbook, delivered as a web-based application, blends a structured maturity assessment tool with
-              practical modernization guidance. Organizations can:
-            </p>
-            <ul>
-              <li>Evaluate their current state using the Legal IT Maturity Assessment Tool</li>
-              <li>Benchmark against sector peers</li>
-              <li>Receive tailored modernization recommendations by domain</li>
-              <li>Access templates, frameworks, and visual aids for implementation planning</li>
-            </ul>
-
-            <h3>Audience</h3>
-            <ul>
-              <li>Legal CIOs and IT Directors</li>
-              <li>Firm Managing Partners</li>
-              <li>Compliance and Risk Officers</li>
-              <li>Legal Tech Consultants and Transformation Leaders</li>
-            </ul>
-
-            <h3>How to Use This Playbook</h3>
-            <ul>
-              <li>Start with the maturity assessment</li>
-              <li>Review recommended actions by domain (e.g., cybersecurity, knowledge governance)</li>
-              <li>Use the roadmap and templates to structure modernization efforts</li>
-              <li>Return periodically to re-assess and track improvements</li>
-            </ul>
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-center">
-          <Link href="/maturity">
-            <Button className="gap-2">Start Maturity Assessment</Button>
+    <div className="min-h-screen">
+      {/* Navigation Bar */}
+      <div className="container max-w-6xl py-4">
+        <div className="flex justify-between items-center">
+          <Link href="/">
+            <Button variant="ghost" size="sm" className="gap-2">
+              <Home className="h-4 w-4" />
+              <span className="hidden sm:inline">Back to Hub</span>
+              <span className="sm:hidden">Home</span>
+            </Button>
           </Link>
-        </CardFooter>
-      </Card>
 
-      <Card className="mb-12">
-        <CardHeader>
-          <CardTitle>The Modernization Imperative</CardTitle>
-          <CardDescription>Why legal organizations need to modernize their IT systems</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="prose max-w-none">
-            <h3>Why Modernize?</h3>
-            <p>
-              Legal organizations handle highly sensitive data yet often lag behind other sectors in IT modernization.
-              Legacy systems—whether case management tools, document repositories, or security platforms—introduce risk
-              and impede agility.
-            </p>
-
-            <h4>Key drivers:</h4>
-            <ul>
-              <li>Increasing client and insurer demands for stronger cybersecurity controls</li>
-              <li>Rapid emergence of AI, cloud-native, and Zero Trust architectures</li>
-              <li>Heightened federal focus on cybersecurity readiness and public-private collaboration</li>
-            </ul>
-
-            <h3>Federal Alignment</h3>
-            <p>
-              This playbook maps modernization activities to U.S. federal frameworks, ensuring legal institutions meet
-              or exceed:
-            </p>
-            <ul>
-              <li>Executive Order 14028 – Mandating stronger national cybersecurity standards</li>
-              <li>OMB M-22-09 – Requiring adoption of Zero Trust principles</li>
-              <li>National Cybersecurity Strategy (2023) – Emphasizing risk reduction and institutional resilience</li>
-            </ul>
-
-            <h3>What's at Stake</h3>
-            <ul>
-              <li>Exposure to ransomware and data breaches</li>
-              <li>Inability to meet client-imposed security audits</li>
-              <li>Rising cyber insurance premiums due to low maturity</li>
-              <li>Operational fragility during litigation, discovery, or regulatory scrutiny</li>
-            </ul>
-
-            <h3>The Opportunity</h3>
-            <p>With the right tools, governance, and phased approach, legal institutions can:</p>
-            <ul>
-              <li>Replace fragile legacy systems</li>
-              <li>Integrate scalable, secure, and cloud-aligned technologies</li>
-              <li>Improve cross-functional workflows between IT, legal, and compliance</li>
-              <li>Enable data-driven decision-making and reporting</li>
-            </ul>
-
-            <p>
-              This playbook enables legal leaders to act decisively—equipping their institutions to meet the demands of
-              a digital-first legal future, while satisfying the policy imperatives driving U.S. cyber readiness.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      <h2 className="text-3xl font-bold mb-6 text-center">Modernization Domains</h2>
-
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-12">
-        <Link href="/playbook/domains/cybersecurity" className="block">
-          <Card className="h-full transition-all hover:shadow-md">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5 text-blue-600" />
-                Cybersecurity
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>
-                Strengthen your institution's ability to defend against cyber threats, manage vulnerabilities, and align
-                with Zero Trust principles.
-              </p>
-            </CardContent>
-            <CardFooter>
-              <p className="text-sm text-blue-600">View domain details →</p>
-            </CardFooter>
-          </Card>
-        </Link>
-
-        <Link href="/playbook/domains/knowledge-governance" className="block">
-          <Card className="h-full transition-all hover:shadow-md">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-blue-600" />
-                Knowledge Governance
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Modernize document management, knowledge sharing, and information governance practices.</p>
-            </CardContent>
-            <CardFooter>
-              <p className="text-sm text-blue-600">View domain details →</p>
-            </CardFooter>
-          </Card>
-        </Link>
-
-        <Link href="/playbook/domains/cloud-infrastructure" className="block">
-          <Card className="h-full transition-all hover:shadow-md">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Lightbulb className="h-5 w-5 text-blue-600" />
-                Cloud Infrastructure
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Transform legacy infrastructure into scalable, resilient cloud-based environments.</p>
-            </CardContent>
-            <CardFooter>
-              <p className="text-sm text-blue-600">View domain details →</p>
-            </CardFooter>
-          </Card>
-        </Link>
-
-        <Link href="/playbook/domains/data-analytics" className="block">
-          <Card className="h-full transition-all hover:shadow-md">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-blue-600" />
-                Data & Analytics
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Leverage data for insights, reporting, and decision-making across legal operations.</p>
-            </CardContent>
-            <CardFooter>
-              <p className="text-sm text-blue-600">View domain details →</p>
-            </CardFooter>
-          </Card>
-        </Link>
-
-        <Link href="/playbook/domains/client-experience" className="block">
-          <Card className="h-full transition-all hover:shadow-md">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-blue-600" />
-                Client Experience
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>
-                Enhance client interactions through digital portals, collaboration tools, and service delivery
-                platforms.
-              </p>
-            </CardContent>
-            <CardFooter>
-              <p className="text-sm text-blue-600">View domain details →</p>
-            </CardFooter>
-          </Card>
-        </Link>
-
-        <Link href="/playbook/domains/risk-compliance" className="block">
-          <Card className="h-full transition-all hover:shadow-md">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-blue-600" />
-                Risk & Compliance
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Implement modern approaches to risk management, regulatory compliance, and audit readiness.</p>
-            </CardContent>
-            <CardFooter>
-              <p className="text-sm text-blue-600">View domain details →</p>
-            </CardFooter>
-          </Card>
-        </Link>
+          <Button
+            onClick={handleDownload}
+            variant="outline"
+            className="gap-2 border-orange-500 text-orange-500 hover:bg-orange-50"
+            disabled={downloadClicked}
+          >
+            <Download className="h-4 w-4" />
+            {downloadClicked ? "Downloading..." : "Download PDF"}
+          </Button>
+        </div>
       </div>
 
-      <div className="flex justify-between">
-        <Link href="/">
-          <Button variant="outline" className="gap-2">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Hub
-          </Button>
-        </Link>
+      {/* Hero Banner */}
+      <div className="bg-gradient-to-r from-slate-900 to-blue-900 text-white py-16 md:py-24">
+        <div className="container max-w-6xl">
+          <div className="flex flex-col items-center text-center mb-8 md:mb-12">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+              Modernize Legal IT with Confidence
+            </h1>
+            <p className="text-xl md:text-2xl text-slate-200 max-w-3xl mb-8">
+              Use our federal-aligned playbook and self-assessment to benchmark, prioritize, and transform.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link href="/maturity/assessment">
+                <Button size="lg" className="gap-2 bg-orange-500 hover:bg-orange-600 text-white">
+                  <BarChart3 className="h-5 w-5" />
+                  Start Maturity Assessment
+                </Button>
+              </Link>
+              <Button
+                variant="outline"
+                size="lg"
+                className="gap-2 border-white text-white hover:bg-white/10"
+                onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })}
+              >
+                <BookOpen className="h-5 w-5" />
+                Explore Playbook
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <Button
-          onClick={handleDownload}
-          variant="outline"
-          className="gap-2 border-orange-500 text-orange-500 hover:bg-orange-50"
-          disabled={downloadClicked}
-        >
-          <Download className="h-4 w-4" />
-          {downloadClicked ? "Downloading..." : "Download Full Playbook (PDF)"}
-        </Button>
+      {/* Features Highlight */}
+      <div id="features" className="py-16 bg-slate-50">
+        <div className="container max-w-6xl">
+          <h2 className="text-3xl font-bold mb-12 text-center text-slate-800">Comprehensive Modernization Framework</h2>
+
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-12">
+            <Card className="bg-white border-slate-200 transition-all hover:shadow-md">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-blue-700">
+                  <BarChart3 className="h-5 w-5" />
+                  Self-Assessment Tool
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-600">
+                  Evaluate your organization's IT maturity across 8 critical domains with our interactive assessment
+                  tool.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white border-slate-200 transition-all hover:shadow-md">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-blue-700">
+                  <Shield className="h-5 w-5" />
+                  Federal Alignment
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-600">
+                  Align with Executive Order 14028, OMB M-22-09, and the National Cybersecurity Strategy.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white border-slate-200 transition-all hover:shadow-md">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-blue-700">
+                  <FileText className="h-5 w-5" />
+                  Templates & Resources
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-600">
+                  Access ready-to-use templates, frameworks, and implementation guides for each maturity domain.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white border-slate-200 transition-all hover:shadow-md">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-blue-700">
+                  <Zap className="h-5 w-5" />8 Maturity Domains
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-600">
+                  Comprehensive coverage across cybersecurity, knowledge governance, infrastructure, and more.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+
+      {/* Executive Summary */}
+      <div className="py-16 bg-white">
+        <div className="container max-w-6xl">
+          <div className="flex flex-col md:flex-row gap-12">
+            <div className="md:w-1/2">
+              <h2 className="text-3xl font-bold mb-6 text-slate-800">Executive Summary</h2>
+              <div className="prose max-w-none text-slate-600">
+                <p className="text-lg mb-4">
+                  This playbook provides a practical framework for modernizing legacy IT systems within U.S. legal and
+                  compliance-driven institutions. Designed to support law firms, regulatory bodies, legal service
+                  providers, and governance-aligned organizations.
+                </p>
+                <h3 className="text-xl font-semibold text-slate-700 mt-6 mb-3">Purpose</h3>
+                <p>
+                  Drive measurable improvements in cybersecurity posture, operational resilience, and regulatory
+                  alignment through a structured approach to IT modernization.
+                </p>
+                <h3 className="text-xl font-semibold text-slate-700 mt-6 mb-3">Approach</h3>
+                <ul className="space-y-2">
+                  <li className="flex items-start">
+                    <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <span>Evaluate current state using the Legal IT Maturity Assessment Tool</span>
+                  </li>
+                  <li className="flex items-start">
+                    <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <span>Benchmark against sector peers</span>
+                  </li>
+                  <li className="flex items-start">
+                    <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <span>Receive tailored modernization recommendations by domain</span>
+                  </li>
+                  <li className="flex items-start">
+                    <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <span>Access templates, frameworks, and visual aids for implementation</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="mt-8">
+                <Link href="/maturity">
+                  <Button className="gap-2">
+                    Start Maturity Assessment
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            <div className="md:w-1/2 bg-slate-100 rounded-xl p-6">
+              <h3 className="text-xl font-semibold text-slate-700 mb-4">Key Audience</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Card className="bg-white border-slate-200">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-blue-100 p-2 rounded-full">
+                        <Settings className="h-5 w-5 text-blue-700" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium">Legal CIOs</h4>
+                        <p className="text-sm text-slate-500">IT Directors</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-white border-slate-200">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-blue-100 p-2 rounded-full">
+                        <BookOpen className="h-5 w-5 text-blue-700" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium">Managing Partners</h4>
+                        <p className="text-sm text-slate-500">Firm Leadership</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-white border-slate-200">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-blue-100 p-2 rounded-full">
+                        <Lock className="h-5 w-5 text-blue-700" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium">Compliance Officers</h4>
+                        <p className="text-sm text-slate-500">Risk Management</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-white border-slate-200">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-blue-100 p-2 rounded-full">
+                        <Lightbulb className="h-5 w-5 text-blue-700" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium">Tech Consultants</h4>
+                        <p className="text-sm text-slate-500">Transformation Leaders</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Modernization Domains */}
+      <div className="py-16 bg-slate-50">
+        <div className="container max-w-6xl">
+          <h2 className="text-3xl font-bold mb-2 text-center text-slate-800">Modernization Domains</h2>
+          <p className="text-center text-slate-600 mb-12 max-w-3xl mx-auto">
+            Our comprehensive framework covers eight critical domains for legal IT modernization
+          </p>
+
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-12">
+            <Link href="/playbook/domains/cybersecurity" className="block">
+              <Card className="h-full transition-all hover:shadow-md hover:border-blue-200">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Shield className="h-5 w-5 text-blue-600" />
+                    Cybersecurity
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-600">
+                    Strengthen your institution's ability to defend against cyber threats, manage vulnerabilities, and
+                    align with Zero Trust principles.
+                  </p>
+                </CardContent>
+                <CardFooter>
+                  <p className="text-sm text-blue-600 flex items-center gap-1">
+                    View domain details
+                    <ArrowRight className="h-4 w-4" />
+                  </p>
+                </CardFooter>
+              </Card>
+            </Link>
+
+            <Link href="/playbook/domains/knowledge-governance" className="block">
+              <Card className="h-full transition-all hover:shadow-md hover:border-blue-200">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-blue-600" />
+                    Knowledge Governance
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-600">
+                    Modernize document management, knowledge sharing, and information governance practices.
+                  </p>
+                </CardContent>
+                <CardFooter>
+                  <p className="text-sm text-blue-600 flex items-center gap-1">
+                    View domain details
+                    <ArrowRight className="h-4 w-4" />
+                  </p>
+                </CardFooter>
+              </Card>
+            </Link>
+
+            <Link href="/playbook/domains/cloud-infrastructure" className="block">
+              <Card className="h-full transition-all hover:shadow-md hover:border-blue-200">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Lightbulb className="h-5 w-5 text-blue-600" />
+                    Cloud Infrastructure
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-600">
+                    Transform legacy infrastructure into scalable, resilient cloud-based environments.
+                  </p>
+                </CardContent>
+                <CardFooter>
+                  <p className="text-sm text-blue-600 flex items-center gap-1">
+                    View domain details
+                    <ArrowRight className="h-4 w-4" />
+                  </p>
+                </CardFooter>
+              </Card>
+            </Link>
+
+            <Link href="/playbook/domains/data-analytics" className="block">
+              <Card className="h-full transition-all hover:shadow-md hover:border-blue-200">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5 text-blue-600" />
+                    Data & Analytics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-600">
+                    Leverage data for insights, reporting, and decision-making across legal operations.
+                  </p>
+                </CardContent>
+                <CardFooter>
+                  <p className="text-sm text-blue-600 flex items-center gap-1">
+                    View domain details
+                    <ArrowRight className="h-4 w-4" />
+                  </p>
+                </CardFooter>
+              </Card>
+            </Link>
+
+            <Link href="/playbook/domains/client-experience" className="block">
+              <Card className="h-full transition-all hover:shadow-md hover:border-blue-200">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BookOpen className="h-5 w-5 text-blue-600" />
+                    Client Experience
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-600">
+                    Enhance client interactions through digital portals, collaboration tools, and service delivery
+                    platforms.
+                  </p>
+                </CardContent>
+                <CardFooter>
+                  <p className="text-sm text-blue-600 flex items-center gap-1">
+                    View domain details
+                    <ArrowRight className="h-4 w-4" />
+                  </p>
+                </CardFooter>
+              </Card>
+            </Link>
+
+            <Link href="/playbook/domains/risk-compliance" className="block">
+              <Card className="h-full transition-all hover:shadow-md hover:border-blue-200">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Lock className="h-5 w-5 text-blue-600" />
+                    Risk & Compliance
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-600">
+                    Implement modern approaches to risk management, regulatory compliance, and audit readiness.
+                  </p>
+                </CardContent>
+                <CardFooter>
+                  <p className="text-sm text-blue-600 flex items-center gap-1">
+                    View domain details
+                    <ArrowRight className="h-4 w-4" />
+                  </p>
+                </CardFooter>
+              </Card>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* CTA Section */}
+      <div className="py-16 bg-blue-900 text-white">
+        <div className="container max-w-6xl">
+          <div className="flex flex-col items-center text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Modernize Your Legal IT?</h2>
+            <p className="text-xl text-blue-100 max-w-3xl mb-8">
+              Start with our maturity assessment to benchmark your current state and receive tailored recommendations.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link href="/maturity/assessment">
+                <Button size="lg" className="gap-2 bg-orange-500 hover:bg-orange-600 text-white">
+                  <BarChart3 className="h-5 w-5" />
+                  Start Maturity Assessment
+                </Button>
+              </Link>
+              <Button
+                onClick={handleDownload}
+                variant="outline"
+                size="lg"
+                className="gap-2 border-white text-white hover:bg-white/10"
+                disabled={downloadClicked}
+              >
+                <Download className="h-5 w-5" />
+                {downloadClicked ? "Downloading..." : "Download Full Playbook"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer Navigation */}
+      <div className="py-8 bg-slate-100">
+        <div className="container max-w-6xl">
+          <div className="flex justify-between items-center">
+            <Link href="/">
+              <Button variant="ghost" className="gap-2 text-slate-600">
+                <ArrowLeft className="h-4 w-4" />
+                Back to Hub
+              </Button>
+            </Link>
+
+            <Link href="/maturity">
+              <Button variant="ghost" className="gap-2 text-slate-600">
+                Maturity Assessment
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   )
