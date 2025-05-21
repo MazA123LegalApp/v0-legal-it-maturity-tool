@@ -25,6 +25,7 @@ import {
   getMaturityLevel,
 } from "@/lib/assessment-data"
 import { BenchmarkComparison } from "@/components/benchmark-comparison"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 export default function ResultsPage() {
   const [results, setResults] = useState<AssessmentResult>(getEmptyResults())
@@ -159,6 +160,16 @@ export default function ResultsPage() {
               <span className="text-lg">/ 5.0</span>
             </div>
             <p className={`text-lg mt-2 ${getMaturityColor(overallScore)}`}>{getMaturityLevel(overallScore)}</p>
+            <div className="mt-4 text-sm text-muted-foreground">
+              <p className="font-medium">Maturity Level Thresholds:</p>
+              <ul className="list-disc pl-5 mt-1 space-y-1">
+                <li>Level 1 (Initial): &lt; 1.5</li>
+                <li>Level 2 (Managed): 1.5 - 2.49</li>
+                <li>Level 3 (Defined): 2.5 - 3.49</li>
+                <li>Level 4 (Quantitatively Managed): 3.5 - 4.49</li>
+                <li>Level 5 (Optimizing): ≥ 4.5</li>
+              </ul>
+            </div>
           </CardContent>
         </Card>
 
@@ -180,12 +191,28 @@ export default function ResultsPage() {
           <TabsTrigger value="table">Summary Table</TabsTrigger>
         </TabsList>
         <div className="mt-2 flex justify-end">
-          <Link href={`/maturity/domain-results?size=${organizationSize}`}>
-            <Button variant="outline" size="sm" className="gap-2 border-orange-200 hover:bg-orange-100">
-              <BarChart4 className="h-4 w-4" />
-              View Detailed Domain Analysis
-            </Button>
-          </Link>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link href={`/maturity/domain-results?size=${organizationSize}`}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-2 bg-orange-100 border-orange-300 hover:bg-orange-200 text-orange-800"
+                  >
+                    <BarChart4 className="h-4 w-4" />
+                    View Detailed Domain Analysis
+                  </Button>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p>
+                  See in-depth analysis of each domain with spider charts, dimension breakdowns, and specific
+                  recommendations for improvement.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         <TabsContent value="chart" className="mt-6">
           <Card>
