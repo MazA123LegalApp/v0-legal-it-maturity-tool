@@ -152,6 +152,30 @@ export function getTemplatesForDomain(domainId: string, band: MaturityBand): Tem
           fileType: "pptx",
           url: "/templates/cybersecurity/security-awareness-training.pptx",
         },
+        {
+          name: "Basic Incident Response Plan Template",
+          description: "Simple template for documenting incident response procedures",
+          fileType: "docx",
+          url: "/templates/cybersecurity/basic-incident-response.docx",
+        },
+        {
+          name: "MFA Configuration Starter Guide",
+          description: "Guide for implementing basic multi-factor authentication",
+          fileType: "pdf",
+          url: "/templates/cybersecurity/mfa-starter-guide.pdf",
+        },
+        {
+          name: "System Inventory & Access Sheet",
+          description: "Template for documenting systems and access rights",
+          fileType: "xlsx",
+          url: "/templates/cybersecurity/system-inventory.xlsx",
+        },
+        {
+          name: "Security Awareness Email Drafts",
+          description: "Ready-to-use email templates for security awareness",
+          fileType: "docx",
+          url: "/templates/cybersecurity/awareness-emails.docx",
+        },
       ],
       Developing: [
         {
@@ -192,6 +216,30 @@ export function getTemplatesForDomain(domainId: string, band: MaturityBand): Tem
           fileType: "xlsx",
           url: "/templates/cybersecurity/security-controls-matrix.xlsx",
         },
+        {
+          name: "Logging & Monitoring Configuration Workbook",
+          description: "Guide for setting up centralized logging and monitoring",
+          fileType: "xlsx",
+          url: "/templates/cybersecurity/logging-monitoring-config.xlsx",
+        },
+        {
+          name: "Cyber Risk Assessment Template",
+          description: "Template for conducting a comprehensive cybersecurity risk assessment",
+          fileType: "docx",
+          url: "/templates/cybersecurity/risk-assessment.docx",
+        },
+        {
+          name: "Zero Trust Design Checklist",
+          description: "Checklist for implementing Zero Trust architecture principles",
+          fileType: "pdf",
+          url: "/templates/cybersecurity/zero-trust-checklist.pdf",
+        },
+        {
+          name: "Security Policy Framework Template",
+          description: "Template for creating a comprehensive security policy framework",
+          fileType: "docx",
+          url: "/templates/cybersecurity/policy-framework.docx",
+        },
       ],
       Managed: [
         {
@@ -206,6 +254,30 @@ export function getTemplatesForDomain(domainId: string, band: MaturityBand): Tem
           fileType: "xlsx",
           url: "/templates/cybersecurity/security-metrics-dashboard.xlsx",
         },
+        {
+          name: "SOAR Workflow Configuration Guide",
+          description: "Guide for setting up automated security workflows",
+          fileType: "pdf",
+          url: "/templates/cybersecurity/soar-workflow-guide.pdf",
+        },
+        {
+          name: "Zero Trust Segmentation Plan",
+          description: "Template for planning network segmentation based on Zero Trust principles",
+          fileType: "docx",
+          url: "/templates/cybersecurity/zero-trust-segmentation.docx",
+        },
+        {
+          name: "DLP Policy Deployment Framework",
+          description: "Framework for implementing Data Loss Prevention policies",
+          fileType: "docx",
+          url: "/templates/cybersecurity/dlp-framework.docx",
+        },
+        {
+          name: "Third-Party Security Risk Register",
+          description: "Template for tracking and managing vendor security risks",
+          fileType: "xlsx",
+          url: "/templates/cybersecurity/vendor-risk-register.xlsx",
+        },
       ],
       Optimized: [
         {
@@ -219,6 +291,30 @@ export function getTemplatesForDomain(domainId: string, band: MaturityBand): Tem
           description: "Tool for assessing and optimizing security program effectiveness",
           fileType: "xlsx",
           url: "/templates/cybersecurity/advanced-security-assessment.xlsx",
+        },
+        {
+          name: "Red Team Exercise Planning Guide",
+          description: "Guide for planning and executing red team exercises",
+          fileType: "pdf",
+          url: "/templates/cybersecurity/red-team-guide.pdf",
+        },
+        {
+          name: "Threat Sharing & Collaboration Agreement Template",
+          description: "Template for establishing threat intelligence sharing agreements",
+          fileType: "docx",
+          url: "/templates/cybersecurity/threat-sharing-agreement.docx",
+        },
+        {
+          name: "Cybersecurity KPI Benchmark Workbook",
+          description: "Workbook for tracking and benchmarking security metrics",
+          fileType: "xlsx",
+          url: "/templates/cybersecurity/kpi-benchmark.xlsx",
+        },
+        {
+          name: "Cybersecurity Training Kit for Champions",
+          description: "Training materials for cybersecurity champions program",
+          fileType: "zip",
+          url: "/templates/cybersecurity/champions-training-kit.zip",
         },
       ],
     },
