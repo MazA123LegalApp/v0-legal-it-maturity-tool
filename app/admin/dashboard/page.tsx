@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, BarChart3, Download, Users } from "lucide-react"
+import { ArrowLeft, BarChart3, Download, FileText, Settings, Users } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -62,6 +62,74 @@ export default function AdminDashboardPage() {
             Logout
           </Button>
         </div>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+        <Link href="/admin/content" className="block">
+          <Card className="h-full transition-all hover:shadow-md hover:border-blue-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <FileText className="h-5 w-5 text-blue-600" />
+                Content Management
+              </CardTitle>
+              <CardDescription>Edit and manage all content</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Manage domain guides, maturity content, templates, and playbook sections
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/admin/users" className="block">
+          <Card className="h-full transition-all hover:shadow-md hover:border-blue-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Users className="h-5 w-5 text-blue-600" />
+                User Management
+              </CardTitle>
+              <CardDescription>Manage user accounts</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">Add, edit, and remove user accounts and permissions</p>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/admin/analytics" className="block">
+          <Card className="h-full transition-all hover:shadow-md hover:border-blue-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-blue-600" />
+                Analytics
+              </CardTitle>
+              <CardDescription>View usage statistics</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Monitor assessment completions, downloads, and user engagement
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/admin/settings" className="block">
+          <Card className="h-full transition-all hover:shadow-md hover:border-blue-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Settings className="h-5 w-5 text-blue-600" />
+                System Settings
+              </CardTitle>
+              <CardDescription>Configure system settings</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Manage application settings, integrations, and configurations
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       <Tabs defaultValue="overview" className="mb-8">

@@ -56,3 +56,28 @@ export function getRecommendedRoadmapPhase(maturityLevel: string): number {
       return 1
   }
 }
+
+/**
+ * Checks if the user has completed an assessment
+ * @returns boolean indicating if assessment has been completed
+ */
+export function hasCompletedAssessment(): boolean {
+  // Check if we're on the server side
+  if (typeof window === "undefined") return false
+
+  try {
+    // Try to get assessment results from localStorage
+    const storedResults = localStorage.getItem("assessment_results")
+    if (!storedResults) return false
+
+    // Parse the results and check if they're valid
+    const results = JSON.parse(storedResults) as AssessmentResult
+    const domainAverages = calculateDomainAverages(results)
+
+    // Check if at least one domain has been assessed
+    return Object.values(domainAverages).some((score) => score > 0)
+  } catch (error) {
+    console.error("Error checking assessment completion:", error)
+    return false
+  }
+}
