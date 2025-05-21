@@ -12,6 +12,9 @@ declare global {
   interface Window {
     dataLayer: any[]
     gtag: (...args: any[]) => void
+    trackDownload?: (fileType: string, fileName: string, isUSBased: boolean) => void
+    trackAssessmentInteraction?: (action: string, domainId: string, isUSBased: boolean) => void
+    trackEvent?: (eventName: string, eventParams: Record<string, any>) => void
   }
 }
 
@@ -61,7 +64,7 @@ export function Analytics() {
   }, [pathname, searchParams])
 
   // Function to track downloads
-  const trackDownload = (fileType, fileName, isUSBased = false) => {
+  const trackDownload = (fileType: string, fileName: string, isUSBased = false) => {
     // Push download event to dataLayer for GTM
     window.dataLayer.push({
       event: "file_download",
@@ -84,7 +87,7 @@ export function Analytics() {
   }
 
   // Function to track assessment interactions
-  const trackAssessmentInteraction = (action, domainId, isUSBased = false) => {
+  const trackAssessmentInteraction = (action: string, domainId: string, isUSBased = false) => {
     // Push assessment interaction event to dataLayer for GTM
     window.dataLayer.push({
       event: "assessment_interaction",
@@ -106,12 +109,33 @@ export function Analytics() {
     console.log(`Assessment interaction tracked: ${action} for domain ${domainId}`)
   }
 
+  // Generic function to track any event
+  const trackEvent = (eventName: string, eventParams: Record<string, any>) => {
+    // Push event to dataLayer for GTM
+    window.dataLayer.push({
+      event: eventName,
+      ...eventParams,
+    })
+
+    // Also track directly with gtag if available
+    if (window.gtag) {
+      window.gtag("event", eventName, {
+        ...eventParams,
+        send_to: GA_MEASUREMENT_ID,
+      })
+    }
+
+    console.log(`Event tracked: ${eventName}`, eventParams)
+  }
+
   // Attach tracking functions to window for global access
   useEffect(() => {
     // @ts-ignore - Adding custom functions to window
     window.trackDownload = trackDownload
     // @ts-ignore - Adding custom functions to window
     window.trackAssessmentInteraction = trackAssessmentInteraction
+    // @ts-ignore - Adding custom functions to window
+    window.trackEvent = trackEvent
   }, [])
 
   return (
@@ -130,4 +154,29 @@ export function Analytics() {
       </Script>
     </>
   )
+}
+
+// Export the tracking functions for direct import
+export const trackDownload = (fileType: string, fileName: string, isUSBased = false) => {
+  if (typeof window !== "undefined" && window.trackDownload) {
+    window.trackDownload(fileType, fileName, isUSBased)
+  } else {
+    console.log(`Download tracked: ${fileName} (${fileType})`)
+  }
+}
+
+export const trackAssessmentInteraction = (action: string, domainId: string, isUSBased = false) => {
+  if (typeof window !== "undefined" && window.trackAssessmentInteraction) {
+    window.trackAssessmentInteraction(action, domainId, isUSBased)
+  } else {
+    console.log(`Assessment interaction tracked: ${action} for domain ${domainId}`)
+  }
+}
+
+export const trackEvent = (eventName: string, eventParams: Record<string, any>) => {
+  if (typeof window !== "undefined" && window.trackEvent) {
+    window.trackEvent(eventName, eventParams)
+  } else {
+    console.log(`Event tracked: ${eventName}`, eventParams)
+  }
 }
