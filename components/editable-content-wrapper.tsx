@@ -1,29 +1,23 @@
-"use client"
-
-import type React from "react"
-
-import { EditableContent } from "./editable-content"
+import type { ReactNode } from "react"
 
 interface EditableContentWrapperProps {
-  children: React.ReactNode
   type: string
-  domain?: string
-  maturityBand?: string
+  domain: string
+  maturityBand: string
   id?: string
   title?: string
+  children: ReactNode
 }
 
 export function EditableContentWrapper({
-  children,
   type,
   domain,
   maturityBand,
   id,
   title,
+  children,
 }: EditableContentWrapperProps) {
-  return (
-    <EditableContent type={type} domain={domain} maturityBand={maturityBand} id={id} title={title}>
-      {children}
-    </EditableContent>
-  )
+  // This is a server component that just renders the children
+  // In the future, we can enhance this to load content from the database
+  return <>{children}</>
 }
