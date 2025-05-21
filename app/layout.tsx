@@ -8,6 +8,7 @@ import { Suspense } from "react"
 
 import { ThemeProvider } from "@/components/theme-provider"
 import { Analytics } from "@/components/analytics"
+import { GoogleTagManager } from "@/components/gtm"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -20,6 +21,9 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <GoogleTagManager />
+      </head>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <div className="min-h-screen flex flex-col">

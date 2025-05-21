@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, useEffect, useState } from "react"
 import { Download, FileSpreadsheet, FileIcon as FilePdf } from "lucide-react"
 import { jsPDF } from "jspdf"
 import * as XLSX from "xlsx"
@@ -17,34 +17,60 @@ import {
   domains,
   getMaturityLevel,
 } from "@/lib/assessment-data"
+import { getCountryInfo } from "@/lib/geo-utils"
 
 interface ExportUtilsProps {
   results: AssessmentResult
   organizationName?: string
 }
 
+// Define window.trackDownload if it doesn't exist in the type system
+declare global {
+  interface Window {
+    trackDownload?: (fileType: string, fileName: string, isUSBased: boolean) => void
+  }
+}
+
 export function ExportUtils({ results, organizationName = "Your Organization" }: ExportUtilsProps) {
   const tableRef = useRef<HTMLDivElement>(null)
+  const [isUS, setIsUS] = useState<boolean>(false)
+
+  // Check if user is from the US
+  useEffect(() => {
+    const checkLocation = async () => {
+      try {
+        const countryInfo = await getCountryInfo()
+        setIsUS(countryInfo.isUS)
+      } catch (error) {
+        console.error("Error checking location:", error)
+      }
+    }
+
+    checkLocation()
+  }, [])
 
   const trackDownload = async (type: string, organizationName: string) => {
     try {
-      // In a real implementation, this would send data to a server
+      // Track download with GTM/GA if available
+      if (window.trackDownload) {
+        window.trackDownload(type, `${organizationName}_IT_Maturity_Assessment`, isUS)
+      }
+
+      // Also track locally for admin dashboard
       const downloadData = {
         type,
         module: "Maturity Assessment",
         organization: organizationName,
         date: new Date().toISOString(),
+        isUS,
       }
-
-      // For now, just log to console
-      console.log("Download tracked:", downloadData)
 
       // Store in localStorage for admin dashboard to access
       const downloads = JSON.parse(localStorage.getItem("tracked_downloads") || "[]")
       downloads.push(downloadData)
       localStorage.setItem("tracked_downloads", JSON.stringify(downloads))
 
-      // No API call needed
+      console.log("Download tracked:", downloadData)
     } catch (error) {
       console.error("Error tracking download:", error)
     }
@@ -301,7 +327,7 @@ export function ExportUtils({ results, organizationName = "Your Organization" }:
           "Assign clear ownership for key services",
           "Document basic service management processes",
         ],
-        Managed: [
+        Developing: [
           "Formalize service level agreements (SLAs) with business units",
           "Implement regular service reviews with stakeholders",
           "Enhance service catalog with detailed descriptions and request processes",
