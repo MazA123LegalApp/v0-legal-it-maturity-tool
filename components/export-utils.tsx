@@ -269,25 +269,6 @@ export function ExportUtils({ results, organizationName = "Your Organization" }:
     return lines
   }
 
-  // Helper function to get templates for a domain and maturity band
-  function getTemplatesForDomain(domainId: string, maturityBand: string) {
-    // This is a simplified version - in a real implementation, you would fetch this from your data source
-    return [
-      {
-        name: `${maturityBand} Maturity Guide for ${domainId}`,
-        description: `Comprehensive guide for implementing ${maturityBand} level practices`,
-        fileType: "pdf",
-        url: `/templates/${domainId}/${maturityBand.toLowerCase()}-guide.pdf`,
-      },
-      {
-        name: `${domainId} Implementation Checklist`,
-        description: "Step-by-step checklist for implementation",
-        fileType: "xlsx",
-        url: `/templates/${domainId}/implementation-checklist.xlsx`,
-      },
-    ]
-  }
-
   const exportToExcel = () => {
     const domainAverages = calculateDomainAverages(results)
     const dimensionAverages = calculateDimensionAverages(results)
@@ -640,6 +621,11 @@ export function ExportUtils({ results, organizationName = "Your Organization" }:
 
     // Fall back to default recommendations
     return defaultRecs
+  }
+
+  const getTemplatesForDomain = (domainId: string, maturityBand: string): any[] => {
+    // Placeholder for template data retrieval logic
+    return []
   }
 
   return (

@@ -116,9 +116,9 @@ export function MaturityRecommendations({
 function getDomainUrlId(domainId: string): string {
   // Map internal domain IDs to URL-friendly IDs
   const domainUrlMap: Record<string, string> = {
-    "incident-problem": "incident-management",
-    "continuity-resilience": "service-continuity",
-    "knowledge-data": "knowledge-governance",
+    "incident-problem": "incident-problem",
+    "continuity-resilience": "continuity-resilience",
+    "knowledge-data": "knowledge-data",
     // Add other mappings as needed
   }
 
@@ -357,43 +357,6 @@ function RecommendationsByBand({ domain, band }: RecommendationsByBandProps) {
         "Lead sector education and thought leadership",
       ],
     },
-    "infrastructure-tooling": {
-      Initial: [
-        "Create a basic infrastructure inventory",
-        "Identify end-of-life (EOL) and high-risk systems",
-        "Begin a tool rationalization list",
-        "Assign accountability for infrastructure oversight",
-        "Establish a review cycle for technology decisions",
-      ],
-      Developing: [
-        "Standardize technology stack documentation",
-        "Implement a basic technology lifecycle policy",
-        "Begin tooling consolidation planning",
-        "Include legal operations in tooling decisions",
-        "Track technical debt and prioritize reductions",
-      ],
-      Established: [
-        "Introduce infrastructure KPIs and reporting dashboards",
-        "Implement environment monitoring and alerting",
-        "Review and optimize cloud usage",
-        "Conduct annual infrastructure health reviews",
-        "Align tooling strategy with legal service value",
-      ],
-      Managed: [
-        "Automate infrastructure provisioning and maintenance",
-        "Embed tooling governance into budget and portfolio planning",
-        "Run cross-system dependency simulations",
-        "Conduct cost-to-value tooling analysis",
-        "Launch continuous improvement for infrastructure teams",
-      ],
-      Optimized: [
-        "Adopt predictive and self-healing infrastructure",
-        "Benchmark infrastructure maturity against peer firms",
-        "Embed tooling strategy in client experience metrics",
-        "Create a strategic technology innovation portfolio",
-        "Showcase infrastructure leadership across the sector",
-      ],
-    },
     "service-management": {
       Initial: [
         "Define your core IT services",
@@ -472,4 +435,36 @@ function TemplateDownloadCard({ template }: TemplateDownloadCardProps) {
       </Button>
     </div>
   )
+}
+
+function getImplementationGuideUrl(domain: string, maturityBand: string): string {
+  // Normalize domain ID for URL construction
+  const domainId = domain.toLowerCase().replace(/\s+/g, "-").replace(/&/g, "and")
+
+  // Map domain display names to their URL-friendly versions
+  const domainUrlMap: Record<string, string> = {
+    cybersecurity: "cybersecurity",
+    "risk & compliance": "risk-compliance",
+    "service management": "service-management",
+    "incident & problem management": "incident-problem",
+    "knowledge & data management": "knowledge-data",
+    "change & deployment management": "change-deployment",
+    "infrastructure & tooling": "infrastructure-tooling",
+    "business continuity & resilience": "continuity-resilience",
+  }
+
+  // Map maturity band display names to their URL-friendly versions
+  const maturityUrlMap: Record<string, string> = {
+    initial: "initial",
+    developing: "developing",
+    established: "established",
+    managed: "managed",
+    optimized: "optimized",
+  }
+
+  // Use the mapped values or fallback to normalized versions
+  const urlDomain = domainUrlMap[domain.toLowerCase()] || domainId
+  const urlMaturity = maturityUrlMap[maturityBand.toLowerCase()] || maturityBand.toLowerCase()
+
+  return `/playbook/domains/${urlDomain}/${urlMaturity}`
 }

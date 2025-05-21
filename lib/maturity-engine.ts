@@ -89,6 +89,26 @@ export function classifyMaturity(results: AssessmentResult): MaturityClassificat
   }
 }
 
+// Domain URL mapping for consistent URL construction
+export const domainUrlMapping: Record<string, string> = {
+  cybersecurity: "cybersecurity",
+  "risk-compliance": "risk-compliance",
+  "service-management": "service-management",
+  "incident-problem": "incident-problem",
+  "knowledge-data": "knowledge-data",
+  "change-deployment": "change-deployment",
+  "infrastructure-tooling": "infrastructure-tooling",
+  "continuity-resilience": "continuity-resilience",
+}
+
+export const maturityBandUrlMapping: Record<MaturityBand, string> = {
+  Initial: "initial",
+  Developing: "developing",
+  Established: "established",
+  Managed: "managed",
+  Optimized: "optimized",
+}
+
 /**
  * Maps domain IDs to playbook URLs
  */
@@ -120,7 +140,8 @@ export function getImplementationGuideUrl(domainId: string, band: MaturityBand):
   const baseUrl = domainPlaybookUrls[domainId]
   if (!baseUrl) return "/playbook"
 
-  return `${baseUrl}/${band.toLowerCase()}`
+  const bandLower = maturityBandUrlMapping[band] || band.toLowerCase()
+  return `${baseUrl}/${bandLower}`
 }
 
 /**
