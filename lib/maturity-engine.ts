@@ -161,10 +161,22 @@ export function getTemplatesForDomain(domainId: string, band: MaturityBand): Tem
           url: "/templates/cybersecurity/mfa-rollout-checklist.xlsx",
         },
         {
-          name: "Incident Response Policy Starter",
+          name: "Incident Response Plan Starter",
           description: "Template for creating a basic incident response policy",
           fileType: "docx",
           url: "/templates/cybersecurity/incident-response-policy.docx",
+        },
+        {
+          name: "Logging Coverage Worksheet",
+          description: "Template for documenting logging requirements across systems",
+          fileType: "xlsx",
+          url: "/templates/cybersecurity/logging-coverage-worksheet.xlsx",
+        },
+        {
+          name: "User Access Review Tracker",
+          description: "Spreadsheet for tracking and reviewing user access rights",
+          fileType: "xlsx",
+          url: "/templates/cybersecurity/user-access-review.xlsx",
         },
       ],
       Established: [

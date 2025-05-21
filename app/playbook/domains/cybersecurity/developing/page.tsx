@@ -50,20 +50,9 @@ export default function CybersecurityDevelopingPage() {
             </CardHeader>
             <CardContent className="prose max-w-none">
               <p>
-                At the <strong>Developing</strong> maturity level, your organization has started adopting security
-                controls, but enforcement is inconsistent. You likely have:
-              </p>
-              <ul>
-                <li>Basic security tools in place, but with gaps in coverage</li>
-                <li>Some security policies, but they may be outdated or not fully implemented</li>
-                <li>Limited monitoring capabilities and reactive incident response</li>
-                <li>Inconsistent identity and access management practices</li>
-                <li>Minimal security awareness training for staff</li>
-              </ul>
-              <p>
-                Organizations at this level are vulnerable to common attacks and may struggle to detect or respond to
-                security incidents effectively. The good news is that with focused effort on a few key areas, you can
-                significantly improve your security posture.
+                You've begun addressing cybersecurity, but key controls are inconsistent or partially implemented. Roles
+                may not be clearly defined, awareness is limited, and incident response is reactive rather than
+                proactive. This puts sensitive legal data at ongoing risk.
               </p>
             </CardContent>
           </Card>
@@ -83,16 +72,16 @@ export default function CybersecurityDevelopingPage() {
                         <span className="text-blue-700 font-bold text-sm">1</span>
                       </div>
                       <div>
-                        <h4 className="font-medium">Deploy Multi-Factor Authentication (MFA)</h4>
+                        <h4 className="font-medium">Deploy MFA Firm-wide</h4>
                         <p className="text-sm text-slate-600 mt-1">
-                          Implement MFA for all privileged accounts and critical systems. Start with admin accounts,
-                          email, and financial systems.
+                          Implement multi-factor authentication across your organization to protect sensitive systems
+                          and data.
                         </p>
                         <div className="mt-3 bg-blue-50 p-3 rounded-md border border-blue-100">
                           <h5 className="text-sm font-medium text-blue-800 mb-2">Implementation Steps:</h5>
                           <ol className="text-sm text-slate-700 space-y-1 ml-4 list-decimal">
-                            <li>Inventory all systems that support MFA</li>
-                            <li>Prioritize critical systems (email, financial, admin portals)</li>
+                            <li>Prioritize administrative, financial, and DMS systems</li>
+                            <li>Ensure at least two authentication factors: password + authenticator app or SMS</li>
                             <li>Select an MFA solution (Microsoft Authenticator, Duo, Yubikey)</li>
                             <li>Create a phased rollout plan starting with IT and leadership</li>
                             <li>Document exceptions and compensating controls</li>
@@ -106,18 +95,15 @@ export default function CybersecurityDevelopingPage() {
                         <span className="text-blue-700 font-bold text-sm">2</span>
                       </div>
                       <div>
-                        <h4 className="font-medium">Implement Endpoint Protection</h4>
+                        <h4 className="font-medium">Establish Endpoint Protection</h4>
                         <p className="text-sm text-slate-600 mt-1">
-                          Deploy modern endpoint protection with automated remediation capabilities on all devices.
-                          Ensure central management and visibility.
+                          Deploy comprehensive protection for all devices accessing your firm's data and systems.
                         </p>
                         <div className="mt-3 bg-blue-50 p-3 rounded-md border border-blue-100">
                           <h5 className="text-sm font-medium text-blue-800 mb-2">Implementation Steps:</h5>
                           <ol className="text-sm text-slate-700 space-y-1 ml-4 list-decimal">
-                            <li>
-                              Evaluate endpoint protection solutions (Microsoft Defender, CrowdStrike, SentinelOne)
-                            </li>
-                            <li>Deploy to a pilot group (IT team) for testing</li>
+                            <li>Deploy antivirus and EDR (Endpoint Detection and Response)</li>
+                            <li>Standardize device hardening policies across laptops, servers, and mobile</li>
                             <li>Configure automated remediation for common threats</li>
                             <li>Establish a deployment schedule for all endpoints</li>
                             <li>Create a process for monitoring and responding to alerts</li>
@@ -131,21 +117,18 @@ export default function CybersecurityDevelopingPage() {
                         <span className="text-blue-700 font-bold text-sm">3</span>
                       </div>
                       <div>
-                        <h4 className="font-medium">Establish Security Policies and Training</h4>
+                        <h4 className="font-medium">Define Security Ownership</h4>
                         <p className="text-sm text-slate-600 mt-1">
-                          Assign clear ownership of security policies and conduct baseline security awareness training
-                          for all staff.
+                          Establish clear responsibility for security policies and incident response.
                         </p>
                         <div className="mt-3 bg-blue-50 p-3 rounded-md border border-blue-100">
                           <h5 className="text-sm font-medium text-blue-800 mb-2">Implementation Steps:</h5>
                           <ol className="text-sm text-slate-700 space-y-1 ml-4 list-decimal">
-                            <li>Designate a security policy owner (CISO, IT Director, or Security Lead)</li>
-                            <li>
-                              Develop or update core security policies (Acceptable Use, Password, Data Classification)
-                            </li>
-                            <li>Create a security awareness training program (phishing, social engineering, etc.)</li>
-                            <li>Schedule quarterly training sessions for all staff</li>
-                            <li>Track completion and test effectiveness through simulated phishing</li>
+                            <li>Appoint a named cybersecurity lead or committee</li>
+                            <li>Clarify escalation routes for suspicious activity or system breaches</li>
+                            <li>Develop or update core security policies</li>
+                            <li>Create a security awareness training program</li>
+                            <li>Track completion and test effectiveness</li>
                           </ol>
                         </div>
                       </div>
@@ -156,19 +139,18 @@ export default function CybersecurityDevelopingPage() {
                         <span className="text-blue-700 font-bold text-sm">4</span>
                       </div>
                       <div>
-                        <h4 className="font-medium">Configure Audit Logging</h4>
+                        <h4 className="font-medium">Develop a Basic Incident Response Plan</h4>
                         <p className="text-sm text-slate-600 mt-1">
-                          Enable and configure audit logging in core applications and systems to detect suspicious
-                          activity.
+                          Create a structured approach to handling security incidents when they occur.
                         </p>
                         <div className="mt-3 bg-blue-50 p-3 rounded-md border border-blue-100">
                           <h5 className="text-sm font-medium text-blue-800 mb-2">Implementation Steps:</h5>
                           <ol className="text-sm text-slate-700 space-y-1 ml-4 list-decimal">
-                            <li>Identify critical systems requiring logging (email, DMS, billing, VPN)</li>
-                            <li>Configure logging for authentication events, admin actions, and data access</li>
-                            <li>Establish log retention periods (minimum 90 days)</li>
-                            <li>Implement a process for regular log review</li>
-                            <li>Document logging gaps and create a plan to address them</li>
+                            <li>Define roles, communications flow, and containment actions</li>
+                            <li>Conduct a tabletop simulation with legal and IT leadership</li>
+                            <li>Document contact information for key stakeholders</li>
+                            <li>Establish criteria for escalation and external notification</li>
+                            <li>Create templates for internal and client communications</li>
                           </ol>
                         </div>
                       </div>
@@ -179,21 +161,18 @@ export default function CybersecurityDevelopingPage() {
                         <span className="text-blue-700 font-bold text-sm">5</span>
                       </div>
                       <div>
-                        <h4 className="font-medium">Develop a Basic Threat Model</h4>
+                        <h4 className="font-medium">Configure Logging and Access Control</h4>
                         <p className="text-sm text-slate-600 mt-1">
-                          Create a simple threat model identifying your top 3-5 business-impacting scenarios and
-                          mitigation strategies.
+                          Implement basic monitoring and access management to detect and prevent unauthorized activity.
                         </p>
                         <div className="mt-3 bg-blue-50 p-3 rounded-md border border-blue-100">
                           <h5 className="text-sm font-medium text-blue-800 mb-2">Implementation Steps:</h5>
                           <ol className="text-sm text-slate-700 space-y-1 ml-4 list-decimal">
-                            <li>Identify critical assets (client data, financial systems, intellectual property)</li>
-                            <li>
-                              Document top threats (ransomware, data breach, business email compromise, insider threat)
-                            </li>
-                            <li>Assess potential business impact of each threat</li>
-                            <li>Develop basic mitigation strategies for each threat</li>
-                            <li>Review and update quarterly with leadership</li>
+                            <li>Enable audit logging in email, file systems, and remote access tools</li>
+                            <li>Define access roles and apply least privilege principles</li>
+                            <li>Establish log retention periods (minimum 90 days)</li>
+                            <li>Implement a process for regular log review</li>
+                            <li>Document logging gaps and create a plan to address them</li>
                           </ol>
                         </div>
                       </div>
@@ -206,28 +185,19 @@ export default function CybersecurityDevelopingPage() {
                   <ul className="space-y-2">
                     <li className="flex items-start">
                       <CheckCircle2 className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span>
-                        <strong>Week 1:</strong> Enable MFA for admin accounts and Microsoft 365/Google Workspace
-                      </span>
+                      <span>Enforce password complexity and rotation policy</span>
                     </li>
                     <li className="flex items-start">
                       <CheckCircle2 className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span>
-                        <strong>Week 2:</strong> Deploy endpoint protection to IT team and leadership devices
-                      </span>
+                      <span>Set up basic security awareness training (phishing, social engineering)</span>
                     </li>
                     <li className="flex items-start">
                       <CheckCircle2 className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span>
-                        <strong>Week 3:</strong> Conduct initial security awareness training for all staff
-                      </span>
+                      <span>Create a shared mailbox for reporting security concerns</span>
                     </li>
                     <li className="flex items-start">
                       <CheckCircle2 className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span>
-                        <strong>Week 4:</strong> Enable audit logging in Microsoft 365/Google Workspace and document
-                        management system
-                      </span>
+                      <span>Run a vulnerability scan using a free or low-cost tool (e.g. OpenVAS)</span>
                     </li>
                   </ul>
                 </div>
@@ -298,7 +268,7 @@ export default function CybersecurityDevelopingPage() {
 
                 <div className="flex items-center justify-between p-3 bg-slate-50 rounded-md">
                   <div>
-                    <h4 className="font-medium text-sm">MFA Deployment Plan</h4>
+                    <h4 className="font-medium text-sm">MFA Rollout Checklist</h4>
                     <p className="text-xs text-muted-foreground">
                       Step-by-step guide for rolling out MFA across your organization
                     </p>
@@ -311,7 +281,20 @@ export default function CybersecurityDevelopingPage() {
 
                 <div className="flex items-center justify-between p-3 bg-slate-50 rounded-md">
                   <div>
-                    <h4 className="font-medium text-sm">Audit Log Coverage Matrix</h4>
+                    <h4 className="font-medium text-sm">Incident Response Plan Starter Template</h4>
+                    <p className="text-xs text-muted-foreground">
+                      Basic template for creating an incident response plan
+                    </p>
+                  </div>
+                  <Button variant="outline" size="sm" className="gap-1 whitespace-nowrap">
+                    <Download className="h-3 w-3" />
+                    DOCX
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-md">
+                  <div>
+                    <h4 className="font-medium text-sm">Logging Coverage Worksheet</h4>
                     <p className="text-xs text-muted-foreground">
                       Template for documenting logging requirements across systems
                     </p>
@@ -324,14 +307,14 @@ export default function CybersecurityDevelopingPage() {
 
                 <div className="flex items-center justify-between p-3 bg-slate-50 rounded-md">
                   <div>
-                    <h4 className="font-medium text-sm">Security Awareness Training Slides</h4>
+                    <h4 className="font-medium text-sm">User Access Review Tracker</h4>
                     <p className="text-xs text-muted-foreground">
-                      Ready-to-use training materials for staff security awareness
+                      Spreadsheet for tracking and reviewing user access rights
                     </p>
                   </div>
                   <Button variant="outline" size="sm" className="gap-1 whitespace-nowrap">
                     <Download className="h-3 w-3" />
-                    PPTX
+                    XLSX
                   </Button>
                 </div>
               </div>
@@ -357,18 +340,6 @@ export default function CybersecurityDevelopingPage() {
                   </div>
                 </Link>
 
-                <Link href="/playbook/roadmap?phase=2" className="block">
-                  <div className="p-3 bg-slate-50 rounded-md hover:bg-slate-100 transition-colors">
-                    <h4 className="font-medium text-sm flex items-center">
-                      <FileText className="h-4 w-4 mr-2 text-blue-600" />
-                      Phase 2: Planning & Governance
-                    </h4>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Establishing governance structures for modernization
-                    </p>
-                  </div>
-                </Link>
-
                 <Link href="/playbook/roadmap?phase=3" className="block">
                   <div className="p-3 bg-slate-50 rounded-md hover:bg-slate-100 transition-colors">
                     <h4 className="font-medium text-sm flex items-center">
@@ -376,6 +347,18 @@ export default function CybersecurityDevelopingPage() {
                       Phase 3: Foundations & Quick Wins
                     </h4>
                     <p className="text-xs text-muted-foreground mt-1">Implementing high-impact security improvements</p>
+                  </div>
+                </Link>
+
+                <Link href="/templates/cybersecurity" className="block">
+                  <div className="p-3 bg-slate-50 rounded-md hover:bg-slate-100 transition-colors">
+                    <h4 className="font-medium text-sm flex items-center">
+                      <FileText className="h-4 w-4 mr-2 text-blue-600" />
+                      Download All Starter Templates
+                    </h4>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Access all cybersecurity templates for the Developing maturity level
+                    </p>
                   </div>
                 </Link>
               </div>
