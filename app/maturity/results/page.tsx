@@ -1,10 +1,10 @@
 "use client"
 
 import { CardFooter } from "@/components/ui/card"
-
+import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { ArrowLeft, FileText } from "lucide-react"
+import { ArrowLeft, Download, FileText } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -14,15 +14,16 @@ import { MaturityRadarChart } from "@/components/radar-chart"
 import { SummaryTable } from "@/components/summary-table"
 import { MaturitySummary } from "@/components/maturity-summary"
 import { MaturityRecommendations } from "@/components/maturity-recommendations"
-import { ExportUtils } from "@/components/export-utils"
-import { type AssessmentResult, getEmptyResults } from "@/lib/assessment-data"
+import { getEmptyResults, type AssessmentResult } from "@/lib/assessment-data"
 import { classifyMaturity, type MaturityClassification } from "@/lib/maturity-engine"
 
-export default function ResultsPage() {
+export default function MaturityResultsPage() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [results, setResults] = useState<AssessmentResult>(getEmptyResults())
+  const [classification, setClassification] = useState<MaturityClassification | null>(null)
   const [organizationName, setOrganizationName] = useState<string>("Your Organization")
   const [organizationSize, setOrganizationSize] = useState<string>("mid-size")
-  const [classification, setClassification] = useState<MaturityClassification | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -34,9 +35,17 @@ export default function ResultsPage() {
           const parsedResults = JSON.parse(savedResults)
           setResults(parsedResults)
 
-          // Classify the results using our maturity engine
+          // Classify the results
           const maturityClassification = classifyMaturity(parsedResults)
           setClassification(maturityClassification)
+
+          // Set a cookie to indicate assessment completion
+          // This cookie will be used by the middleware to allow access to band-specific pages
+          document.cookie = "assessment_completed=true; path=/; max-age=86400" // 24 hours
+        } else {
+          // No saved results, redirect to assessment
+          router.push("/maturity/assessment")
+          return
         }
 
         const savedOrgName = localStorage.getItem("organizationName")
@@ -53,7 +62,7 @@ export default function ResultsPage() {
       console.error("Error loading saved data:", loadError)
       setError("There was an error loading your saved assessment data.")
     }
-  }, [])
+  }, [router])
 
   return (
     <div className="container max-w-6xl py-6 md:py-10">
@@ -77,7 +86,12 @@ export default function ResultsPage() {
               Edit Responses
             </Button>
           </Link>
-          <ExportUtils results={results} organizationName={organizationName} />
+          <Link href="/maturity/export">
+            <Button variant="outline" className="gap-2">
+              <Download className="h-4 w-4" />
+              Export Results
+            </Button>
+          </Link>
         </div>
       </div>
 

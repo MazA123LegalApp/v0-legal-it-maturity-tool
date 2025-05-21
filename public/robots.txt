@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /playbook/domains/*/initial
+Disallow: /playbook/domains/*/developing
+Disallow: /playbook/domains/*/established
+Disallow: /playbook/domains/*/managed
+Disallow: /playbook/domains/*/optimized
+
+# Allow all other pages
+Allow: /

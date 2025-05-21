@@ -1,3 +1,7 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, ArrowRight, CheckCircle2, Download, FileText, Shield } from "lucide-react"
 
@@ -7,8 +11,31 @@ import { Separator } from "@/components/ui/separator"
 import { getTemplatesForDomain } from "@/lib/maturity-engine"
 
 export default function CybersecurityDevelopingPage() {
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    // Check if the user has completed an assessment
+    const hasCompletedAssessment = document.cookie.includes("assessment_completed=true")
+
+    if (!hasCompletedAssessment) {
+      // Redirect to assessment page if no assessment has been completed
+      router.push("/maturity/assessment")
+    } else {
+      setIsLoading(false)
+    }
+  }, [router])
+
   // Get templates for this domain and maturity level
   const templates = getTemplatesForDomain("cybersecurity", "Developing")
+
+  if (isLoading) {
+    return (
+      <div className="container max-w-6xl py-6 md:py-10 flex justify-center items-center">
+        <p>Loading...</p>
+      </div>
+    )
+  }
 
   return (
     <div className="container max-w-6xl py-6 md:py-10">
