@@ -24,6 +24,7 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
+import { getDomainPageUrl } from "@/lib/url-utils"
 
 // Define window.dataLayer
 declare global {
@@ -400,7 +401,7 @@ export default function PlaybookLandingPage() {
           </p>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-12">
-            <Link href="/playbook/domains/cybersecurity" className="block">
+            <Link href={getDomainPageUrl("cybersecurity")} className="block">
               <Card className="h-full transition-all hover:shadow-md hover:border-blue-200">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -427,7 +428,7 @@ export default function PlaybookLandingPage() {
               </Card>
             </Link>
 
-            <Link href="/playbook/domains/risk-compliance" className="block">
+            <Link href={getDomainPageUrl("risk-compliance")} className="block">
               <Card className="h-full transition-all hover:shadow-md hover:border-blue-200">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -453,7 +454,7 @@ export default function PlaybookLandingPage() {
               </Card>
             </Link>
 
-            <Link href="/playbook/domains/incident-management" className="block">
+            <Link href={getDomainPageUrl("incident-problem")} className="block">
               <Card className="h-full transition-all hover:shadow-md hover:border-blue-200">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -479,7 +480,7 @@ export default function PlaybookLandingPage() {
               </Card>
             </Link>
 
-            <Link href="/playbook/domains/service-continuity" className="block">
+            <Link href={getDomainPageUrl("continuity-resilience")} className="block">
               <Card className="h-full transition-all hover:shadow-md hover:border-blue-200">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -505,7 +506,7 @@ export default function PlaybookLandingPage() {
               </Card>
             </Link>
 
-            <Link href="/playbook/domains/knowledge-governance" className="block">
+            <Link href={getDomainPageUrl("knowledge-data")} className="block">
               <Card className="h-full transition-all hover:shadow-md hover:border-blue-200">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -531,7 +532,7 @@ export default function PlaybookLandingPage() {
               </Card>
             </Link>
 
-            <Link href="/playbook/domains/change-deployment" className="block">
+            <Link href={getDomainPageUrl("change-deployment")} className="block">
               <Card className="h-full transition-all hover:shadow-md hover:border-blue-200">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -558,7 +559,7 @@ export default function PlaybookLandingPage() {
               </Card>
             </Link>
 
-            <Link href="/playbook/domains/infrastructure-tooling" className="block">
+            <Link href={getDomainPageUrl("infrastructure-tooling")} className="block">
               <Card className="h-full transition-all hover:shadow-md hover:border-blue-200">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -584,7 +585,7 @@ export default function PlaybookLandingPage() {
               </Card>
             </Link>
 
-            <Link href="/playbook/domains/service-management" className="block">
+            <Link href={getDomainPageUrl("service-management")} className="block">
               <Card className="h-full transition-all hover:shadow-md hover:border-blue-200">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">

@@ -1,5 +1,6 @@
 import Link from "next/link"
-import { ArrowRight, CheckCircle2, FileText, ShieldAlert, AlertTriangle } from "lucide-react"
+import { ArrowRight, CheckCircle2, FileText, AlertTriangle } from "lucide-react"
+import { getImplementationGuideUrl } from "@/lib/url-utils"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -125,7 +126,7 @@ export default function ContinuityResiliencePage() {
                   <span className="text-sm">Begin drafting a basic business continuity plan</span>
                 </li>
               </ul>
-              <Link href="/playbook/domains/continuity-resilience/initial">
+              <Link href={getImplementationGuideUrl("continuity-resilience", "Initial")}>
                 <Button variant="outline" className="w-full gap-2">
                   View Initial Guide
                   <ArrowRight className="h-4 w-4" />
@@ -162,7 +163,7 @@ export default function ContinuityResiliencePage() {
                   <span className="text-sm">Begin periodic testing of recovery procedures</span>
                 </li>
               </ul>
-              <Link href="/playbook/domains/continuity-resilience/developing">
+              <Link href={getImplementationGuideUrl("continuity-resilience", "Developing")}>
                 <Button variant="outline" className="w-full gap-2">
                   View Developing Guide
                   <ArrowRight className="h-4 w-4" />
@@ -199,7 +200,7 @@ export default function ContinuityResiliencePage() {
                   <span className="text-sm">Link continuity readiness to matter delivery</span>
                 </li>
               </ul>
-              <Link href="/playbook/domains/continuity-resilience/established">
+              <Link href={getImplementationGuideUrl("continuity-resilience", "Established")}>
                 <Button variant="outline" className="w-full gap-2">
                   View Established Guide
                   <ArrowRight className="h-4 w-4" />
@@ -236,7 +237,7 @@ export default function ContinuityResiliencePage() {
                   <span className="text-sm">Develop a business service continuity map</span>
                 </li>
               </ul>
-              <Link href="/playbook/domains/continuity-resilience/managed">
+              <Link href={getImplementationGuideUrl("continuity-resilience", "Managed")}>
                 <Button variant="outline" className="w-full gap-2">
                   View Managed Guide
                   <ArrowRight className="h-4 w-4" />
@@ -273,7 +274,7 @@ export default function ContinuityResiliencePage() {
                   <span className="text-sm">Embed resilience into strategic growth planning</span>
                 </li>
               </ul>
-              <Link href="/playbook/domains/continuity-resilience/optimized">
+              <Link href={getImplementationGuideUrl("continuity-resilience", "Optimized")}>
                 <Button variant="outline" className="w-full gap-2">
                   View Optimized Guide
                   <ArrowRight className="h-4 w-4" />
@@ -325,21 +326,21 @@ export default function ContinuityResiliencePage() {
             <CardContent>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <ShieldAlert className="h-5 w-5 text-amber-600" />
+                  <AlertTriangle className="h-5 w-5 text-amber-600" />
                   <div>
                     <h3 className="font-medium">ABA Cybersecurity Legal Task Force</h3>
                     <p className="text-sm text-muted-foreground">Resources for legal continuity planning</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <ShieldAlert className="h-5 w-5 text-amber-600" />
+                  <AlertTriangle className="h-5 w-5 text-amber-600" />
                   <div>
                     <h3 className="font-medium">ILTA Disaster Recovery Resources</h3>
                     <p className="text-sm text-muted-foreground">Legal technology continuity guidance</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <ShieldAlert className="h-5 w-5 text-amber-600" />
+                  <AlertTriangle className="h-5 w-5 text-amber-600" />
                   <div>
                     <h3 className="font-medium">ISO 22301 Business Continuity Standard</h3>
                     <p className="text-sm text-muted-foreground">International standard for continuity management</p>
@@ -359,7 +360,7 @@ export default function ContinuityResiliencePage() {
             Back to Playbook
           </Button>
         </Link>
-        <Link href="/playbook/domains/continuity-resilience/initial">
+        <Link href={getImplementationGuideUrl("continuity-resilience", "Initial")}>
           <Button className="gap-2">
             Start with Initial Maturity
             <ArrowRight className="h-4 w-4" />
