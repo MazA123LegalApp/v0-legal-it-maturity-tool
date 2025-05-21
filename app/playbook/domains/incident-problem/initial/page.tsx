@@ -261,12 +261,14 @@ export default function IncidentProblemInitialPage() {
                     </div>
                   </Link>
 
-                  <div className="p-3 bg-slate-50 rounded-md hover:bg-slate-100 transition-colors">
-                    <h4 className="font-medium text-sm flex items-center">
-                      <Download className="h-4 w-4 mr-2 text-amber-600" />
-                      Download Incident Management Starter Toolkit
-                    </h4>
-                  </div>
+                  <Link href="/playbook/domains/incident-problem/initial" className="block">
+                    <div className="p-3 bg-slate-50 rounded-md hover:bg-slate-100 transition-colors">
+                      <h4 className="font-medium text-sm flex items-center">
+                        <Download className="h-4 w-4 mr-2 text-amber-600" />
+                        Download Incident Management Starter Toolkit
+                      </h4>
+                    </div>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
