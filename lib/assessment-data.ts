@@ -77,6 +77,329 @@ export const dimensions = {
   },
 }
 
+// Add back the dimensionDetails export
+export interface LevelDescription {
+  level: number
+  title: string
+  description: string
+  examples: string[]
+}
+
+export interface DimensionDetails {
+  name: string
+  description: string
+  levels: LevelDescription[]
+}
+
+// Export the dimensionDetails object
+export const dimensionDetails: Record<Dimension, DimensionDetails> = {
+  people: {
+    name: "People & Organization",
+    description: "Maturity of roles, responsibilities, skills, and organizational structure.",
+    levels: [
+      {
+        level: 1,
+        title: "Initial",
+        description: "Ad-hoc, undefined roles and responsibilities",
+        examples: [
+          "No defined IT roles or responsibilities",
+          "Skills are not documented or managed",
+          "No training or development plans",
+          "Reactive staffing with no planning",
+        ],
+      },
+      {
+        level: 2,
+        title: "Developing",
+        description: "Basic roles defined but inconsistent",
+        examples: [
+          "Basic roles and responsibilities documented",
+          "Some skills tracking but not comprehensive",
+          "Occasional training but not structured",
+          "Basic staffing plans exist",
+        ],
+      },
+      {
+        level: 3,
+        title: "Established",
+        description: "Clear roles and responsibilities documented",
+        examples: [
+          "Formal organizational structure with clear reporting lines",
+          "Comprehensive skills matrix maintained",
+          "Regular training and development programs",
+          "Succession planning for key roles",
+        ],
+      },
+      {
+        level: 4,
+        title: "Managed",
+        description: "Roles optimized with performance metrics",
+        examples: [
+          "Performance metrics for all roles",
+          "Skills gaps actively managed with data",
+          "Training effectiveness measured",
+          "Resource allocation optimized based on metrics",
+        ],
+      },
+      {
+        level: 5,
+        title: "Optimized",
+        description: "Continuous improvement of organizational structure",
+        examples: [
+          "Organizational structure regularly reviewed and optimized",
+          "Proactive skills development aligned with future needs",
+          "Culture of continuous learning and improvement",
+          "Innovative approaches to talent management",
+        ],
+      },
+    ],
+  },
+  process: {
+    name: "Process",
+    description: "Maturity of processes, procedures, and workflows.",
+    levels: [
+      {
+        level: 1,
+        title: "Initial",
+        description: "Ad-hoc, undocumented processes",
+        examples: [
+          "Processes are not documented",
+          "Different approaches used each time",
+          "No standardization across teams",
+          "Reactive process execution",
+        ],
+      },
+      {
+        level: 2,
+        title: "Developing",
+        description: "Basic processes defined but inconsistent",
+        examples: [
+          "Some processes documented",
+          "Basic workflows established",
+          "Inconsistent adherence to processes",
+          "Limited process ownership",
+        ],
+      },
+      {
+        level: 3,
+        title: "Established",
+        description: "Standardized processes documented and followed",
+        examples: [
+          "Comprehensive process documentation",
+          "Consistent implementation across teams",
+          "Clear process ownership and governance",
+          "Regular process reviews",
+        ],
+      },
+      {
+        level: 4,
+        title: "Managed",
+        description: "Processes measured and controlled",
+        examples: [
+          "Process performance metrics defined and tracked",
+          "Statistical analysis of process effectiveness",
+          "Proactive process controls",
+          "Data-driven process improvements",
+        ],
+      },
+      {
+        level: 5,
+        title: "Optimized",
+        description: "Continuous process improvement",
+        examples: [
+          "Systematic approach to process innovation",
+          "Automated process improvement identification",
+          "Benchmarking against industry best practices",
+          "Processes continuously adapted to changing needs",
+        ],
+      },
+    ],
+  },
+  tooling: {
+    name: "Tooling",
+    description: "Maturity of tools, systems, and technology used.",
+    levels: [
+      {
+        level: 1,
+        title: "Initial",
+        description: "Basic or manual tools with limited functionality",
+        examples: [
+          "Manual processes with minimal tooling",
+          "Spreadsheets and basic applications",
+          "No integration between tools",
+          "Ad-hoc tool selection",
+        ],
+      },
+      {
+        level: 2,
+        title: "Developing",
+        description: "Tools in place but not integrated",
+        examples: [
+          "Dedicated tools for key functions",
+          "Limited automation of routine tasks",
+          "Tools selected based on requirements",
+          "Basic tool documentation",
+        ],
+      },
+      {
+        level: 3,
+        title: "Established",
+        description: "Standardized tools with some integration",
+        examples: [
+          "Standardized toolset across the organization",
+          "Some integration between systems",
+          "Formal tool selection process",
+          "Regular tool updates and maintenance",
+        ],
+      },
+      {
+        level: 4,
+        title: "Managed",
+        description: "Integrated tools with analytics",
+        examples: [
+          "Comprehensive tool integration",
+          "Advanced automation of processes",
+          "Tool usage metrics and optimization",
+          "Predictive analytics capabilities",
+        ],
+      },
+      {
+        level: 5,
+        title: "Optimized",
+        description: "Advanced tools with automation and continuous improvement",
+        examples: [
+          "AI-enhanced tooling and automation",
+          "Continuous tool evaluation and improvement",
+          "Proactive adoption of emerging technologies",
+          "Tools that adapt to changing business needs",
+        ],
+      },
+    ],
+  },
+  data: {
+    name: "Data",
+    description: "Maturity of data management, quality, and analytics.",
+    levels: [
+      {
+        level: 1,
+        title: "Initial",
+        description: "Ad-hoc data collection with no formal management",
+        examples: [
+          "No data governance or standards",
+          "Data stored in silos",
+          "Inconsistent data formats",
+          "Manual data collection and reporting",
+        ],
+      },
+      {
+        level: 2,
+        title: "Developing",
+        description: "Basic data management but inconsistent quality",
+        examples: [
+          "Basic data standards defined",
+          "Some data quality checks",
+          "Manual reporting with some automation",
+          "Limited data sharing between teams",
+        ],
+      },
+      {
+        level: 3,
+        title: "Established",
+        description: "Standardized data management practices",
+        examples: [
+          "Formal data governance framework",
+          "Consistent data quality standards",
+          "Centralized data repositories",
+          "Regular data quality reviews",
+        ],
+      },
+      {
+        level: 4,
+        title: "Managed",
+        description: "Data-driven decision making with analytics",
+        examples: [
+          "Advanced analytics capabilities",
+          "Automated data quality monitoring",
+          "Data-driven decision making",
+          "Predictive data modeling",
+        ],
+      },
+      {
+        level: 5,
+        title: "Optimized",
+        description: "Advanced analytics with continuous data quality improvement",
+        examples: [
+          "AI/ML-powered data analytics",
+          "Real-time data processing and insights",
+          "Continuous data quality improvement",
+          "Data as a strategic asset",
+        ],
+      },
+    ],
+  },
+  improvement: {
+    name: "Continual Improvement",
+    description: "Maturity of improvement processes, feedback loops, and innovation.",
+    levels: [
+      {
+        level: 1,
+        title: "Initial",
+        description: "Reactive improvements with no formal process",
+        examples: [
+          "Improvements only after failures",
+          "No systematic approach to improvement",
+          "Limited feedback collection",
+          "No innovation program",
+        ],
+      },
+      {
+        level: 2,
+        title: "Developing",
+        description: "Basic improvement processes but inconsistent",
+        examples: [
+          "Some improvement initiatives",
+          "Basic feedback mechanisms",
+          "Occasional innovation activities",
+          "Limited measurement of improvements",
+        ],
+      },
+      {
+        level: 3,
+        title: "Established",
+        description: "Standardized improvement processes with feedback loops",
+        examples: [
+          "Formal improvement methodology",
+          "Regular feedback collection and analysis",
+          "Structured innovation program",
+          "Improvement metrics defined",
+        ],
+      },
+      {
+        level: 4,
+        title: "Managed",
+        description: "Measured improvement with metrics",
+        examples: [
+          "Comprehensive improvement metrics",
+          "Data-driven improvement prioritization",
+          "Innovation performance tracking",
+          "Systematic approach to experiments",
+        ],
+      },
+      {
+        level: 5,
+        title: "Optimized",
+        description: "Culture of continuous improvement and innovation",
+        examples: [
+          "Improvement embedded in organizational culture",
+          "Proactive identification of improvement opportunities",
+          "Innovation as a core competency",
+          "Continuous adaptation to changing environment",
+        ],
+      },
+    ],
+  },
+}
+
 // Updated maturity level descriptions
 export interface MaturityLevelInfo {
   name: string
