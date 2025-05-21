@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { ArrowLeft, Download, FileText, Lock, Shield } from "lucide-react"
+import { ArrowLeft, Download, FileText, Shield } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Separator } from "@/components/ui/separator"
 import { MaturityBanner } from "@/components/maturity-banner"
 import { type DomainMaturityInfo, getDomainMaturityInfo } from "@/lib/assessment-utils"
 
@@ -104,299 +106,417 @@ export default function CybersecurityDomainPage() {
       {/* Maturity Banner - Shows personalized recommendations based on assessment */}
       <MaturityBanner domainId="cybersecurity" domainName="Cybersecurity" maturityInfo={maturityInfo} />
 
-      <Card className="mb-12">
-        <CardHeader>
-          <CardTitle>Domain Overview</CardTitle>
-          <CardDescription>Key components of legal cybersecurity modernization</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="prose max-w-none">
-            <h3>Context</h3>
-            <p>
-              Legal organizations face unique cybersecurity challenges due to the sensitive nature of client data,
-              attorney-client privilege concerns, and regulatory requirements. The cybersecurity domain focuses on
-              protecting these critical assets while enabling secure, efficient operations.
-            </p>
+      <Tabs defaultValue="overview" className="mb-12">
+        <TabsList className="grid w-full md:w-auto grid-cols-5">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="maturity">Maturity Model</TabsTrigger>
+          <TabsTrigger value="federal">Federal Alignment</TabsTrigger>
+          <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
+          <TabsTrigger value="tools">Tools & Templates</TabsTrigger>
+        </TabsList>
 
-            <h3>Key Components</h3>
-            <ul>
-              <li>
-                <strong>Zero Trust Architecture</strong> - Implementing "never trust, always verify" principles across
-                all systems and access points
-              </li>
-              <li>
-                <strong>Identity and Access Management</strong> - Ensuring appropriate access controls and
-                authentication mechanisms
-              </li>
-              <li>
-                <strong>Data Protection</strong> - Safeguarding sensitive client and case information through encryption
-                and data loss prevention
-              </li>
-              <li>
-                <strong>Threat Detection and Response</strong> - Monitoring for and responding to security incidents
-                effectively
-              </li>
-              <li>
-                <strong>Security Governance</strong> - Establishing policies, procedures, and oversight mechanisms
-              </li>
-            </ul>
-
-            <h3>Federal Alignment</h3>
-            <p>
-              This domain aligns with Executive Order 14028 (Improving the Nation's Cybersecurity), NIST Cybersecurity
-              Framework, and ABA Formal Opinion 483 on lawyers' obligations after a data breach.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Maturity-specific recommendations */}
-      <div className="mb-12">
-        <h2 className="text-2xl font-bold mb-6">Maturity-Based Recommendations</h2>
-
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card className={maturityInfo.level === "Initial" ? "border-blue-500 shadow-md" : ""}>
+        <TabsContent value="overview" className="mt-6">
+          <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <span className="bg-red-100 text-red-700 text-xs font-medium px-2.5 py-0.5 rounded">
-                  Initial (1.0-1.9)
-                </span>
-              </CardTitle>
-              <CardDescription>Focus on establishing foundational security controls</CardDescription>
+              <CardTitle>Domain Overview</CardTitle>
+              <CardDescription>
+                Cybersecurity is foundational to trust and regulatory compliance in the legal sector
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2">
-                <li className="flex items-start">
-                  <div className="mr-2 mt-0.5">•</div>
-                  <span>Implement basic endpoint protection across all devices</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="mr-2 mt-0.5">•</div>
-                  <span>Establish password policies and basic access controls</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="mr-2 mt-0.5">•</div>
-                  <span>Conduct security awareness training for all staff</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="mr-2 mt-0.5">•</div>
-                  <span>Document basic security incident response procedures</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="mr-2 mt-0.5">•</div>
-                  <span>Implement network firewall protection</span>
-                </li>
-              </ul>
-              {maturityInfo.level === "Initial" && (
-                <div className="mt-4">
-                  <Link href="/playbook/domains/cybersecurity/roadmap#phase-1">
-                    <Button className="w-full">Start with these recommendations</Button>
-                  </Link>
+              <div className="prose max-w-none">
+                <p>
+                  Cybersecurity is foundational to trust and regulatory compliance in the legal sector. Legal
+                  institutions manage sensitive client data, protected health information (PHI), and privileged
+                  communications, making them prime targets for cyberattacks. This domain helps organizations secure
+                  their systems by adopting Zero Trust principles and aligning with NIST and federal cybersecurity
+                  mandates.
+                </p>
+
+                <h3>Maturity Subdomains</h3>
+                <ul>
+                  <li>
+                    <strong>People & Organization</strong>: Security awareness, training, roles, and responsibilities
+                  </li>
+                  <li>
+                    <strong>Process</strong>: Security policies, incident response, vulnerability management
+                  </li>
+                  <li>
+                    <strong>Tooling</strong>: Security technologies, monitoring, detection, and response capabilities
+                  </li>
+                  <li>
+                    <strong>Data</strong>: Data classification, protection, encryption, and access controls
+                  </li>
+                  <li>
+                    <strong>Continual Improvement</strong>: Security metrics, testing, and program enhancement
+                  </li>
+                </ul>
+
+                <div className="bg-gray-50 p-4 rounded-md border border-gray-200 my-6">
+                  <h4 className="text-blue-700 mb-2">Why This Domain Matters</h4>
+                  <p className="mb-0">
+                    Legal organizations are prime targets for cyber attacks due to the sensitive nature of their data.
+                    Modernizing cybersecurity capabilities is essential for protecting client information, maintaining
+                    regulatory compliance, and preserving the firm's reputation and trust.
+                  </p>
                 </div>
-              )}
+              </div>
             </CardContent>
           </Card>
+        </TabsContent>
 
-          <Card className={maturityInfo.level === "Developing" ? "border-blue-500 shadow-md" : ""}>
+        <TabsContent value="maturity" className="mt-6">
+          <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <span className="bg-orange-100 text-orange-700 text-xs font-medium px-2.5 py-0.5 rounded">
-                  Developing (2.0-2.9)
-                </span>
-              </CardTitle>
-              <CardDescription>Formalize security policies and implement basic monitoring</CardDescription>
+              <CardTitle>Maturity Model</CardTitle>
+              <CardDescription>
+                Five-level maturity model for cybersecurity capabilities in legal organizations
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2">
-                <li className="flex items-start">
-                  <div className="mr-2 mt-0.5">•</div>
-                  <span>Establish formal security policies and standards</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="mr-2 mt-0.5">•</div>
-                  <span>Implement multi-factor authentication for critical systems</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="mr-2 mt-0.5">•</div>
-                  <span>Conduct regular vulnerability assessments</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="mr-2 mt-0.5">•</div>
-                  <span>Establish security incident management process</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="mr-2 mt-0.5">•</div>
-                  <span>Implement log management and basic monitoring</span>
-                </li>
-              </ul>
-              {maturityInfo.level === "Developing" && (
-                <div className="mt-4">
-                  <Link href="/playbook/domains/cybersecurity/roadmap#phase-2">
-                    <Button className="w-full">Start with these recommendations</Button>
-                  </Link>
-                </div>
-              )}
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="bg-gray-100">
+                      <th className="border p-2 text-left">Score</th>
+                      <th className="border p-2 text-left">Maturity Level</th>
+                      <th className="border p-2 text-left">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="border p-2">1.0–1.9</td>
+                      <td className="border p-2 font-medium">Initial</td>
+                      <td className="border p-2">
+                        Security practices are informal, ad hoc, or nonexistent. No dedicated ownership.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border p-2">2.0–2.9</td>
+                      <td className="border p-2 font-medium">Developing</td>
+                      <td className="border p-2">
+                        Basic controls exist but are inconsistently applied. Partial awareness of threats.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border p-2">3.0–3.9</td>
+                      <td className="border p-2 font-medium">Established</td>
+                      <td className="border p-2">
+                        Roles, policies, and tooling are in place. Security is documented and reviewed.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border p-2">4.0–4.4</td>
+                      <td className="border p-2 font-medium">Managed</td>
+                      <td className="border p-2">
+                        Threat intelligence, advanced monitoring, and governance practices are embedded.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border p-2">4.5–5.0</td>
+                      <td className="border p-2 font-medium">Optimized</td>
+                      <td className="border p-2">
+                        Zero Trust architecture is fully implemented. Security is automated, proactive, and benchmarked.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="mt-6">
+                <h3 className="text-lg font-semibold mb-3">Sample KPIs</h3>
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <li className="flex items-start">
+                    <div className="mr-2 mt-0.5">•</div>
+                    <span>% endpoints with updated AV/MFA</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="mr-2 mt-0.5">•</div>
+                    <span># of detected vs. resolved incidents per quarter</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="mr-2 mt-0.5">•</div>
+                    <span>% of systems covered by Zero Trust controls</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="mr-2 mt-0.5">•</div>
+                    <span>Time-to-remediate (TTR) vs. industry benchmark</span>
+                  </li>
+                </ul>
+              </div>
             </CardContent>
           </Card>
+        </TabsContent>
 
-          <Card className={maturityInfo.level === "Established" ? "border-blue-500 shadow-md" : ""}>
+        <TabsContent value="federal" className="mt-6">
+          <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <span className="bg-amber-100 text-amber-700 text-xs font-medium px-2.5 py-0.5 rounded">
-                  Established (3.0-3.9)
-                </span>
-              </CardTitle>
-              <CardDescription>Implement comprehensive security architecture and testing</CardDescription>
+              <CardTitle>Federal Alignment</CardTitle>
+              <CardDescription>
+                How cybersecurity modernization aligns with federal frameworks and mandates
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2">
-                <li className="flex items-start">
-                  <div className="mr-2 mt-0.5">•</div>
-                  <span>Implement comprehensive security architecture</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="mr-2 mt-0.5">•</div>
-                  <span>Establish security operations center (SOC) capabilities</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="mr-2 mt-0.5">•</div>
-                  <span>Conduct regular penetration testing</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="mr-2 mt-0.5">•</div>
-                  <span>Implement data classification and protection controls</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="mr-2 mt-0.5">•</div>
-                  <span>Establish security metrics and reporting</span>
-                </li>
-              </ul>
-              {maturityInfo.level === "Established" && (
-                <div className="mt-4">
-                  <Link href="/playbook/domains/cybersecurity/roadmap#phase-3">
-                    <Button className="w-full">Start with these recommendations</Button>
-                  </Link>
+              <div className="prose max-w-none">
+                <h3>Executive Order 14028</h3>
+                <p>This domain aligns with the following EO 14028 mandates:</p>
+                <ul>
+                  <li>Mandates endpoint detection, logging, and coordinated incident response</li>
+                  <li>Requires improved supply chain security and software assurance</li>
+                  <li>Emphasizes the need for enhanced detection capabilities</li>
+                  <li>Promotes information sharing and collaboration</li>
+                </ul>
+
+                <h3>OMB M-22-09</h3>
+                <p>This domain supports the following Zero Trust pillars:</p>
+                <ul>
+                  <li>Requires Zero Trust architecture adoption across five pillars</li>
+                  <li>Emphasizes strong identity verification and authentication</li>
+                  <li>Promotes device security and continuous validation</li>
+                  <li>Encourages network segmentation and encryption</li>
+                </ul>
+
+                <h3>National Cybersecurity Strategy (2023)</h3>
+                <p>This domain supports the following strategy elements:</p>
+                <ul>
+                  <li>Prioritizes risk reduction, sector resilience, and vendor accountability</li>
+                  <li>Emphasizes public-private collaboration on cybersecurity</li>
+                  <li>Promotes secure-by-design software development</li>
+                  <li>Encourages proactive defense against cyber threats</li>
+                </ul>
+
+                <div className="bg-blue-50 p-4 rounded-md border border-blue-200 my-6">
+                  <h4 className="text-blue-700 mb-2">Compliance Benefit</h4>
+                  <p className="mb-0">
+                    By modernizing cybersecurity capabilities in alignment with these federal frameworks, legal
+                    institutions can demonstrate compliance with emerging regulatory requirements and security standards
+                    expected by clients and insurers.
+                  </p>
                 </div>
-              )}
+              </div>
             </CardContent>
           </Card>
+        </TabsContent>
 
-          <Card className={maturityInfo.level === "Managed" ? "border-blue-500 shadow-md" : ""}>
+        <TabsContent value="recommendations" className="mt-6">
+          <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <span className="bg-blue-100 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded">
-                  Managed (4.0-4.4)
-                </span>
-              </CardTitle>
-              <CardDescription>Implement advanced threat detection and quantitative risk modeling</CardDescription>
+              <CardTitle>Recommendations by Maturity Level</CardTitle>
+              <CardDescription>Tailored recommendations based on your current cybersecurity maturity</CardDescription>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2">
-                <li className="flex items-start">
-                  <div className="mr-2 mt-0.5">•</div>
-                  <span>Implement advanced threat detection and response</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="mr-2 mt-0.5">•</div>
-                  <span>Establish quantitative security risk modeling</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="mr-2 mt-0.5">•</div>
-                  <span>Implement automated security compliance monitoring</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="mr-2 mt-0.5">•</div>
-                  <span>Develop advanced security analytics capabilities</span>
-                </li>
-                <li className="flex items-start">
-                  <div className="mr-2 mt-0.5">•</div>
-                  <span>Establish comprehensive third-party security program</span>
-                </li>
-              </ul>
-              {maturityInfo.level === "Managed" && (
-                <div className="mt-4">
-                  <Link href="/playbook/domains/cybersecurity/roadmap#phase-4">
-                    <Button className="w-full">Start with these recommendations</Button>
-                  </Link>
+              <div className="space-y-6">
+                <div className={maturityInfo.level === "Initial" ? "bg-blue-50 p-4 rounded-md" : ""}>
+                  <h3 className="text-lg font-semibold mb-2">Initial (1.0-1.9)</h3>
+                  <ul className="space-y-2">
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Appoint a security lead. Document a minimum incident response plan.</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Conduct basic phishing awareness training for all staff.</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Implement password management and basic access controls.</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Deploy endpoint protection across all devices.</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Establish basic network security controls.</span>
+                    </li>
+                  </ul>
                 </div>
-              )}
+
+                <div className={maturityInfo.level === "Developing" ? "bg-blue-50 p-4 rounded-md" : ""}>
+                  <h3 className="text-lg font-semibold mb-2">Developing (2.0-2.9)</h3>
+                  <ul className="space-y-2">
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Deploy MFA, endpoint protection, and encryption.</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Establish access management policies and procedures.</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Develop formal security policies and standards.</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Implement basic vulnerability scanning and patch management.</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Establish security awareness training program.</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className={maturityInfo.level === "Established" ? "bg-blue-50 p-4 rounded-md" : ""}>
+                  <h3 className="text-lg font-semibold mb-2">Established (3.0-3.9)</h3>
+                  <ul className="space-y-2">
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Implement vulnerability scanning, centralized logging, and SIEM tools.</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Begin Zero Trust architecture design and implementation.</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Conduct regular security assessments and penetration testing.</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Develop incident response playbooks and conduct tabletop exercises.</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Implement data classification and protection controls.</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className={maturityInfo.level === "Managed" ? "bg-blue-50 p-4 rounded-md" : ""}>
+                  <h3 className="text-lg font-semibold mb-2">Managed (4.0-4.4)</h3>
+                  <ul className="space-y-2">
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Formalize threat detection playbooks and response procedures.</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Integrate security telemetry across all systems.</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Automate compliance checks and security controls.</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Implement advanced endpoint detection and response.</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Develop security metrics and dashboards.</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className={maturityInfo.level === "Optimized" ? "bg-blue-50 p-4 rounded-md" : ""}>
+                  <h3 className="text-lg font-semibold mb-2">Optimized (4.5-5.0)</h3>
+                  <ul className="space-y-2">
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Conduct red teaming exercises and advanced security simulations.</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Participate in legal sector threat-sharing programs.</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Leverage AI-enhanced defense and analytics.</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Implement fully automated security orchestration and response.</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="mr-2 mt-0.5">•</div>
+                      <span>Benchmark security capabilities against industry leaders.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </CardContent>
           </Card>
-        </div>
-      </div>
+        </TabsContent>
 
-      <Card className="mb-12">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-blue-600" />
-            Implementation Resources
-          </CardTitle>
-          <CardDescription>Templates and tools to accelerate your cybersecurity modernization</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card className="bg-slate-50">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-medium">Security Policy Template</h4>
-                    <p className="text-sm text-slate-500">Comprehensive policy framework</p>
-                  </div>
-                  <Button variant="outline" size="sm" className="gap-1">
-                    <Download className="h-3 w-3" />
-                    DOCX
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+        <TabsContent value="tools" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Key Tools & Templates</CardTitle>
+              <CardDescription>Resources to accelerate your cybersecurity modernization journey</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-6 md:grid-cols-2">
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg">Incident Response Plan Template</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      A customizable template for creating a comprehensive incident response plan tailored to legal
+                      organizations.
+                    </p>
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Download className="h-4 w-4" />
+                      Download Template
+                    </Button>
+                  </CardContent>
+                </Card>
 
-            <Card className="bg-slate-50">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-medium">Risk Assessment Worksheet</h4>
-                    <p className="text-sm text-slate-500">Identify and prioritize risks</p>
-                  </div>
-                  <Button variant="outline" size="sm" className="gap-1">
-                    <Download className="h-3 w-3" />
-                    XLSX
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg">Cybersecurity Policy Framework</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Comprehensive policy framework aligned to NIST 800-53 controls, customized for legal
+                      organizations.
+                    </p>
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Download className="h-4 w-4" />
+                      Download Framework
+                    </Button>
+                  </CardContent>
+                </Card>
 
-            <Card className="bg-slate-50">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-medium">Incident Response Playbook</h4>
-                    <p className="text-sm text-slate-500">Step-by-step response guide</p>
-                  </div>
-                  <Button variant="outline" size="sm" className="gap-1">
-                    <Download className="h-3 w-3" />
-                    PDF
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg">Zero Trust Adoption Checklist</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Step-by-step checklist for implementing Zero Trust architecture in legal environments.
+                    </p>
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Download className="h-4 w-4" />
+                      Download Checklist
+                    </Button>
+                  </CardContent>
+                </Card>
 
-            <Card className="bg-slate-50">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-medium">Security Training Materials</h4>
-                    <p className="text-sm text-slate-500">Staff awareness resources</p>
-                  </div>
-                  <Button variant="outline" size="sm" className="gap-1">
-                    <Download className="h-3 w-3" />
-                    ZIP
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </CardContent>
-      </Card>
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg">Legal Sector Security Tool Evaluation Matrix</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Evaluation criteria for selecting security tools that meet the unique needs of legal
+                      organizations.
+                    </p>
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Download className="h-4 w-4" />
+                      Download Matrix
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+
+      <Separator className="my-8" />
 
       <div className="flex justify-between">
         <Link href="/playbook">
@@ -406,10 +526,10 @@ export default function CybersecurityDomainPage() {
           </Button>
         </Link>
 
-        <Link href="/playbook/domains/cybersecurity/roadmap">
+        <Link href="/maturity/assessment">
           <Button className="gap-2">
-            View Implementation Roadmap
-            <Lock className="h-4 w-4" />
+            Start Cybersecurity Assessment
+            <FileText className="h-4 w-4" />
           </Button>
         </Link>
       </div>
