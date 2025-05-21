@@ -1,6 +1,7 @@
 import Link from "next/link"
-import { ArrowRight, FileText, AlertTriangle } from "lucide-react"
+import { ArrowRight, FileText } from "lucide-react"
 import { Suspense } from "react"
+import { DomainOverviewTemplate } from "@/components/domain-overview-template"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,18 +9,53 @@ import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { EditableContentWrapper } from "@/components/editable-content-wrapper"
 
-export default function IncidentProblemDomainPage() {
+export const metadata = {
+  title: "Incident & Problem Management | Legal IT Maturity",
+  description: "Incident & Problem Management domain overview and implementation guides",
+}
+
+export default function IncidentProblemPage() {
   return (
     <div className="container max-w-6xl py-6 md:py-10">
-      <div className="flex flex-col items-center text-center mb-10">
-        <div className="bg-amber-100 p-3 rounded-full mb-4">
-          <AlertTriangle className="h-8 w-8 text-amber-700" />
-        </div>
-        <h1 className="text-4xl md:text-5xl font-bold text-amber-700 mb-2">Incident & Problem Management</h1>
-        <p className="text-xl text-muted-foreground max-w-3xl">
-          Effectively managing IT incidents and systematically addressing underlying problems
-        </p>
-      </div>
+      <DomainOverviewTemplate
+        domainId="incident-problem"
+        title="Incident & Problem Management"
+        description="Focuses on how effectively you detect, respond to, and learn from operational issues."
+        keyAreas={[
+          "Incident Detection & Logging: Identifying and recording service disruptions",
+          "Incident Response & Resolution: Restoring normal service operations",
+          "Problem Identification: Finding underlying causes of recurring incidents",
+          "Root Cause Analysis: Investigating and addressing systemic issues",
+          "Knowledge Management: Learning from incidents to prevent recurrence",
+        ]}
+        maturityJourney={[
+          {
+            band: "Initial (1.0–1.9)",
+            description: "Ad-hoc incident response with minimal documentation and no formal problem management.",
+            link: "/playbook/domains/incident-problem/initial",
+          },
+          {
+            band: "Developing (2.0–2.9)",
+            description: "Basic incident tracking with some categorization and reactive problem management.",
+            link: "/playbook/domains/incident-problem/developing",
+          },
+          {
+            band: "Established (3.0–3.9)",
+            description: "Defined incident processes with consistent resolution and regular problem analysis.",
+            link: "/playbook/domains/incident-problem/established",
+          },
+          {
+            band: "Managed (4.0–4.4)",
+            description: "Measured incident performance with proactive problem management and trend analysis.",
+            link: "/playbook/domains/incident-problem/managed",
+          },
+          {
+            band: "Optimized (4.5–5.0)",
+            description: "Strategic incident prevention with predictive analytics and continuous improvement.",
+            link: "/playbook/domains/incident-problem/optimized",
+          },
+        ]}
+      />
 
       <Tabs defaultValue="overview" className="mb-12">
         <TabsList className="w-full justify-start border-b pb-0 mb-6">
