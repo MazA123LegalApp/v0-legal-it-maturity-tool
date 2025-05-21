@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, ArrowRight, Home, RefreshCw, Save } from "lucide-react"
 
@@ -13,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { type AssessmentResult, domains, getEmptyResults, dimensionDetails } from "@/lib/assessment-data"
 
 export default function AssessmentPage() {
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState(domains[0].id)
   const [activeLevels, setActiveLevels] = useState<Record<string, number | null>>({
     people: null,
@@ -35,6 +37,7 @@ export default function AssessmentPage() {
     }
     return getEmptyResults()
   })
+  const [isSaving, setIsSaving] = useState(false)
 
   const handleScoreChange = (domainId: string, dimension: string, value: number) => {
     setResults((prev) => {
@@ -56,8 +59,25 @@ export default function AssessmentPage() {
   }
 
   const handleSaveAndContinue = async () => {
-    // Navigate to results page
-    window.location.href = "/maturity/results"
+    try {
+      setIsSaving(true)
+
+      // Ensure results are saved to localStorage
+      localStorage.setItem("assessmentResults", JSON.stringify(results))
+
+      // Set a cookie to indicate assessment completion
+      document.cookie = "assessment_completed=true; path=/; max-age=86400" // 24 hours
+
+      // Wait a moment to ensure data is saved
+      await new Promise((resolve) => setTimeout(resolve, 500))
+
+      // Navigate to results page
+      router.push("/maturity/results")
+    } catch (error) {
+      console.error("Error saving assessment:", error)
+      alert("There was an error saving your assessment. Please try again.")
+      setIsSaving(false)
+    }
   }
 
   const handleTabChange = (value: string) => {
@@ -65,10 +85,12 @@ export default function AssessmentPage() {
   }
 
   const handleResetAssessment = () => {
-    const emptyResults = getEmptyResults()
-    setResults(emptyResults)
-    localStorage.setItem("assessmentResults", JSON.stringify(emptyResults))
-    setActiveTab(domains[0].id)
+    if (confirm("Are you sure you want to reset your assessment? All your responses will be cleared.")) {
+      const emptyResults = getEmptyResults()
+      setResults(emptyResults)
+      localStorage.setItem("assessmentResults", JSON.stringify(emptyResults))
+      setActiveTab(domains[0].id)
+    }
   }
 
   const toggleLevelDetails = (dimension: string, level: number | null) => {
@@ -132,9 +154,9 @@ export default function AssessmentPage() {
               Hub
             </Button>
           </Link>
-          <Button onClick={handleSaveAndContinue} className="gap-2">
+          <Button onClick={handleSaveAndContinue} className="gap-2" disabled={isSaving}>
             <Save className="h-4 w-4" />
-            Save & View Results
+            {isSaving ? "Saving..." : "Save & View Results"}
           </Button>
         </div>
       </div>
@@ -615,9 +637,9 @@ export default function AssessmentPage() {
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               ) : (
-                <Button onClick={handleSaveAndContinue} className="gap-2">
+                <Button onClick={handleSaveAndContinue} className="gap-2" disabled={isSaving}>
                   <Save className="h-4 w-4" />
-                  Complete & View Results
+                  {isSaving ? "Saving..." : "Complete & View Results"}
                 </Button>
               )}
             </div>
