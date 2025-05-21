@@ -50,12 +50,17 @@ export function MaturityRecommendations({
       {domainsToShow.map((domainScore) => {
         const domainInfo = domains.find((d) => d.id === domainScore.domain)
         const domainName = domainInfo?.name || domainScore.domain
-        const playbookUrl = `/playbook/domains/${domainScore.domain}`
+
+        // Ensure we're using the correct domain ID for URLs
+        const domainUrlId = getDomainUrlId(domainScore.domain)
+
+        // Create URLs for domain overview and implementation guide
+        const playbookUrl = `/playbook/domains/${domainUrlId}`
         const templates = getTemplatesForDomain(domainScore.domain, domainScore.band)
 
         // Create a URL to the band-specific implementation guide
         const bandLowercase = domainScore.band.toLowerCase()
-        const implementationGuideUrl = `/playbook/domains/${domainScore.domain}/${bandLowercase}`
+        const implementationGuideUrl = `/playbook/domains/${domainUrlId}/${bandLowercase}`
 
         return (
           <Card key={domainScore.domain} className="overflow-hidden">
@@ -105,6 +110,19 @@ export function MaturityRecommendations({
       })}
     </div>
   )
+}
+
+// Helper function to ensure consistent domain IDs in URLs
+function getDomainUrlId(domainId: string): string {
+  // Map internal domain IDs to URL-friendly IDs
+  const domainUrlMap: Record<string, string> = {
+    "incident-problem": "incident-management",
+    "continuity-resilience": "service-continuity",
+    "knowledge-data": "knowledge-governance",
+    // Add other mappings as needed
+  }
+
+  return domainUrlMap[domainId] || domainId
 }
 
 interface RecommendationsByBandProps {

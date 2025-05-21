@@ -245,13 +245,24 @@ export default function PlaybookLandingPage() {
             </Card>
           </div>
 
-          <div className="text-center">
-            <Link href="/playbook/case-study">
-              <Button variant="outline" size="lg" className="gap-2">
-                <FileText className="h-5 w-5" />
-                Read Case Study: Strengthening IT Continuity
-              </Button>
-            </Link>
+          <div className="bg-orange-50 border border-orange-200 rounded-lg p-6 mt-8 mb-4">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div>
+                <h3 className="text-xl font-bold text-orange-800 mb-2">Real-World Success Story</h3>
+                <p className="text-orange-700 mb-0">
+                  See how a mid-sized law firm improved their IT governance and reduced critical system downtime by 83%
+                </p>
+              </div>
+              <Link href="/playbook/case-study">
+                <Button
+                  size="lg"
+                  className="whitespace-nowrap bg-orange-500 hover:bg-orange-600 text-white gap-2 min-w-[200px]"
+                >
+                  <FileText className="h-5 w-5" />
+                  Read Case Study
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </div>

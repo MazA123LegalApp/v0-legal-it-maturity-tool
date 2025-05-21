@@ -18,6 +18,7 @@ import {
   getMaturityLevel,
 } from "@/lib/assessment-data"
 import { getCountryInfo } from "@/lib/geo-utils"
+import { getDomainUrlId } from "@/lib/url-utils"
 
 interface ExportUtilsProps {
   results: AssessmentResult
@@ -131,13 +132,11 @@ export function ExportUtils({ results, organizationName = "Your Organization" }:
     })
 
     // Add domain-specific sections with recommendations
-    let currentPage = 1
     domains.forEach((domain: Domain) => {
       const domainScore = domainAverages[domain.id] || 0
       if (domainScore > 0) {
         // Add a new page for each domain
         doc.addPage()
-        currentPage++
 
         // Domain header
         doc.setFontSize(16)
@@ -168,10 +167,68 @@ export function ExportUtils({ results, organizationName = "Your Organization" }:
         let recYPos = dimYPos + 20
 
         recommendations.forEach((rec, index) => {
+          // Check if we need to add a new page for recommendations
+          if (recYPos > 270) {
+            doc.addPage()
+            recYPos = 20
+            doc.setFontSize(14)
+            doc.text(`${domain.name} Recommendations (continued)`, 15, recYPos)
+            recYPos += 10
+          }
+
           doc.setFontSize(10)
-          doc.text(`${index + 1}. ${rec}`, 20, recYPos)
-          recYPos += 8
+
+          // Split long recommendations into multiple lines
+          const lines = splitTextToFit(rec, 170, doc)
+          lines.forEach((line, lineIndex) => {
+            const prefix = lineIndex === 0 ? `${index + 1}. ` : "   "
+            doc.text(`${prefix}${line}`, 20, recYPos)
+            recYPos += 6
+          })
         })
+
+        // Add implementation guide information
+        doc.setFontSize(14)
+        doc.text("Implementation Guide:", 15, recYPos + 10)
+        recYPos += 20
+
+        const maturityBand = getMaturityLevel(domainScore)
+        const domainUrlId = getDomainUrlId(domain.id)
+        const guideUrl = `https://yourdomain.com/playbook/domains/${domainUrlId}/${maturityBand.toLowerCase()}`
+
+        doc.setFontSize(10)
+        doc.text(`Access your detailed implementation guide for ${domain.name} at:`, 20, recYPos)
+        recYPos += 6
+        doc.setTextColor(0, 0, 255)
+        doc.text(guideUrl, 20, recYPos)
+        doc.setTextColor(0, 0, 0)
+
+        // Add templates section if available
+        const templates = getTemplatesForDomain(domain.id, maturityBand)
+        if (templates.length > 0) {
+          recYPos += 15
+          doc.setFontSize(14)
+          doc.text("Recommended Templates:", 15, recYPos)
+          recYPos += 10
+
+          templates.forEach((template, index) => {
+            if (recYPos > 270) {
+              doc.addPage()
+              recYPos = 20
+              doc.setFontSize(14)
+              doc.text(`${domain.name} Templates (continued)`, 15, recYPos)
+              recYPos += 10
+            }
+
+            doc.setFontSize(10)
+            doc.text(`${index + 1}. ${template.name}`, 20, recYPos)
+            recYPos += 5
+            doc.text(`   ${template.description}`, 20, recYPos)
+            recYPos += 5
+            doc.text(`   Format: ${template.fileType.toUpperCase()}`, 20, recYPos)
+            recYPos += 8
+          })
+        }
       }
     })
 
@@ -185,6 +242,50 @@ export function ExportUtils({ results, organizationName = "Your Organization" }:
 
     // Save the PDF
     doc.save(`${organizationName.replace(/\s+/g, "_")}_IT_Maturity_Assessment.pdf`)
+  }
+
+  // Helper function to split text to fit within a width
+  function splitTextToFit(text: string, maxWidth: number, doc: jsPDF): string[] {
+    const words = text.split(" ")
+    const lines: string[] = []
+    let currentLine = ""
+
+    words.forEach((word) => {
+      const testLine = currentLine ? `${currentLine} ${word}` : word
+      const testWidth = doc.getTextWidth(testLine)
+
+      if (testWidth > maxWidth) {
+        lines.push(currentLine)
+        currentLine = word
+      } else {
+        currentLine = testLine
+      }
+    })
+
+    if (currentLine) {
+      lines.push(currentLine)
+    }
+
+    return lines
+  }
+
+  // Helper function to get templates for a domain and maturity band
+  function getTemplatesForDomain(domainId: string, maturityBand: string) {
+    // This is a simplified version - in a real implementation, you would fetch this from your data source
+    return [
+      {
+        name: `${maturityBand} Maturity Guide for ${domainId}`,
+        description: `Comprehensive guide for implementing ${maturityBand} level practices`,
+        fileType: "pdf",
+        url: `/templates/${domainId}/${maturityBand.toLowerCase()}-guide.pdf`,
+      },
+      {
+        name: `${domainId} Implementation Checklist`,
+        description: "Step-by-step checklist for implementation",
+        fileType: "xlsx",
+        url: `/templates/${domainId}/implementation-checklist.xlsx`,
+      },
+    ]
   }
 
   const exportToExcel = () => {
@@ -276,6 +377,29 @@ export function ExportUtils({ results, organizationName = "Your Organization" }:
           sheetData.push([`${index + 1}. ${rec}`])
         })
 
+        // Add implementation guide information
+        const maturityBand = getMaturityLevel(domainScore)
+        const domainUrlId = getDomainUrlId(domain.id)
+        const guideUrl = `https://yourdomain.com/playbook/domains/${domainUrlId}/${maturityBand.toLowerCase()}`
+
+        sheetData.push([])
+        sheetData.push(["Implementation Guide"])
+        sheetData.push([`Access your detailed implementation guide at: ${guideUrl}`])
+
+        // Add templates
+        const templates = getTemplatesForDomain(domain.id, maturityBand)
+        if (templates.length > 0) {
+          sheetData.push([])
+          sheetData.push(["Recommended Templates"])
+
+          templates.forEach((template, index) => {
+            sheetData.push([`${index + 1}. ${template.name}`])
+            sheetData.push([`   ${template.description}`])
+            sheetData.push([`   Format: ${template.fileType.toUpperCase()}`])
+            sheetData.push([])
+          })
+        }
+
         return {
           name: domain.name.replace(/\s+/g, "_"),
           data: sheetData,
@@ -334,9 +458,176 @@ export function ExportUtils({ results, organizationName = "Your Organization" }:
           "Develop service performance metrics and reporting",
           "Establish a service management framework based on ITIL principles",
         ],
-        // Add more maturity levels as needed
+        Established: [
+          "Integrate service management with other IT processes",
+          "Implement service portfolio management",
+          "Develop comprehensive service reporting dashboards",
+          "Establish service improvement programs",
+          "Align service metrics with business outcomes",
+        ],
+        Managed: [
+          "Automate service request fulfillment for common tasks",
+          "Implement predictive service analytics",
+          "Establish service value streams",
+          "Develop service-oriented architecture governance",
+          "Implement continuous service improvement framework",
+        ],
+        Optimized: [
+          "Implement AI-driven service optimization",
+          "Establish service innovation program",
+          "Develop outcome-based service models",
+          "Implement service value co-creation with business",
+          "Establish service excellence benchmarking",
+        ],
       },
-      // Add more domains as needed
+      cybersecurity: {
+        Initial: [
+          "Implement basic password policies and account management",
+          "Deploy endpoint protection on all devices",
+          "Establish basic security awareness training",
+          "Document incident response procedures",
+          "Implement regular security patching",
+        ],
+        Developing: [
+          "Deploy multi-factor authentication for critical systems",
+          "Implement network segmentation",
+          "Establish vulnerability management program",
+          "Develop comprehensive security policies",
+          "Implement security monitoring capabilities",
+        ],
+        Established: [
+          "Implement Zero Trust architecture principles",
+          "Establish security operations center capabilities",
+          "Implement data loss prevention controls",
+          "Conduct regular penetration testing",
+          "Develop security metrics and reporting",
+        ],
+        Managed: [
+          "Implement advanced threat detection capabilities",
+          "Establish threat hunting program",
+          "Implement automated security controls",
+          "Develop security risk quantification",
+          "Establish security governance framework",
+        ],
+        Optimized: [
+          "Implement AI-driven security analytics",
+          "Establish security innovation program",
+          "Develop predictive security capabilities",
+          "Implement continuous security validation",
+          "Establish security leadership in legal sector",
+        ],
+      },
+      "risk-compliance": {
+        Initial: [
+          "Establish basic risk register",
+          "Document compliance requirements",
+          "Assign compliance responsibilities",
+          "Implement basic policy management",
+          "Conduct compliance awareness training",
+        ],
+        Developing: [
+          "Implement risk assessment methodology",
+          "Establish compliance monitoring program",
+          "Develop policy management framework",
+          "Implement compliance reporting",
+          "Establish regulatory change management",
+        ],
+        Established: [
+          "Integrate risk and compliance management",
+          "Implement compliance automation",
+          "Develop risk quantification methodology",
+          "Establish compliance testing program",
+          "Implement third-party risk management",
+        ],
+        Managed: [
+          "Implement predictive risk analytics",
+          "Establish integrated GRC platform",
+          "Develop risk-based decision making framework",
+          "Implement continuous compliance monitoring",
+          "Establish compliance by design principles",
+        ],
+        Optimized: [
+          "Implement AI-driven risk prediction",
+          "Establish risk innovation program",
+          "Develop adaptive compliance framework",
+          "Implement automated regulatory intelligence",
+          "Establish risk and compliance leadership",
+        ],
+      },
+      "incident-problem": {
+        Initial: [
+          "Establish incident classification system",
+          "Document incident response procedures",
+          "Implement basic incident tracking",
+          "Assign incident response roles",
+          "Conduct basic incident response training",
+        ],
+        Developing: [
+          "Implement incident management system",
+          "Establish problem management process",
+          "Develop incident metrics and reporting",
+          "Implement post-incident reviews",
+          "Establish incident escalation procedures",
+        ],
+        Established: [
+          "Integrate incident and problem management",
+          "Implement root cause analysis methodology",
+          "Develop incident prediction capabilities",
+          "Establish incident response playbooks",
+          "Implement known error database",
+        ],
+        Managed: [
+          "Implement automated incident detection",
+          "Establish incident analytics program",
+          "Develop proactive problem management",
+          "Implement incident simulation exercises",
+          "Establish incident management governance",
+        ],
+        Optimized: [
+          "Implement AI-driven incident resolution",
+          "Establish incident prevention program",
+          "Develop predictive problem management",
+          "Implement continuous incident improvement",
+          "Establish incident management leadership",
+        ],
+      },
+      "continuity-resilience": {
+        Initial: [
+          "Identify critical business functions",
+          "Document basic recovery procedures",
+          "Assign business continuity roles",
+          "Implement basic backup procedures",
+          "Conduct basic continuity awareness",
+        ],
+        Developing: [
+          "Implement business impact analysis",
+          "Establish recovery time objectives",
+          "Develop continuity plans for critical systems",
+          "Implement regular backup testing",
+          "Establish incident response integration",
+        ],
+        Established: [
+          "Integrate continuity with risk management",
+          "Implement regular continuity testing",
+          "Develop resilience metrics and reporting",
+          "Establish crisis management procedures",
+          "Implement vendor continuity management",
+        ],
+        Managed: [
+          "Implement automated failover capabilities",
+          "Establish resilience analytics program",
+          "Develop proactive resilience engineering",
+          "Implement continuity simulation exercises",
+          "Establish resilience governance framework",
+        ],
+        Optimized: [
+          "Implement AI-driven resilience optimization",
+          "Establish resilience innovation program",
+          "Develop predictive resilience capabilities",
+          "Implement continuous resilience improvement",
+          "Establish resilience leadership in legal sector",
+        ],
+      },
     }
 
     // Get the maturity level
