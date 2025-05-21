@@ -7,10 +7,11 @@ import { ArrowLeft, BookOpen, Download, FileText, Home, Lightbulb, Settings } fr
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 
-// Define window.trackDownload if it doesn't exist in the type system
+// Define window.dataLayer
 declare global {
   interface Window {
-    trackDownload?: (fileType: string, fileName: string, isUSBased: boolean) => void
+    dataLayer: any[]
+    gtag: (...args: any[]) => void
   }
 }
 
@@ -18,12 +19,38 @@ export default function PlaybookLandingPage() {
   const [downloadClicked, setDownloadClicked] = useState(false)
 
   const handleDownload = () => {
-    // Track the download event using the global function if available
-    if (window.trackDownload) {
-      window.trackDownload("pdf", "legal-modernization-playbook.pdf", false)
-    } else {
-      // Fallback tracking if the global function isn't available
-      console.log("Download tracked: legal-modernization-playbook.pdf (pdf)")
+    // Track the download event using dataLayer directly
+    if (typeof window !== "undefined") {
+      // Push to dataLayer for GTM
+      window.dataLayer = window.dataLayer || []
+      window.dataLayer.push({
+        event: "file_download",
+        file_name: "legal-modernization-playbook.pdf",
+        file_type: "pdf",
+        content_type: "playbook",
+      })
+
+      // Also track with gtag if available
+      if (window.gtag) {
+        window.gtag("event", "file_download", {
+          file_type: "pdf",
+          file_name: "legal-modernization-playbook.pdf",
+          content_type: "playbook",
+        })
+      }
+
+      // Store in localStorage for admin dashboard to access
+      try {
+        const downloads = JSON.parse(localStorage.getItem("tracked_downloads") || "[]")
+        downloads.push({
+          type: "pdf",
+          module: "Legal Modernization Playbook",
+          date: new Date().toISOString(),
+        })
+        localStorage.setItem("tracked_downloads", JSON.stringify(downloads))
+      } catch (error) {
+        console.error("Error tracking download:", error)
+      }
     }
 
     setDownloadClicked(true)
