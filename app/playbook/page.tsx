@@ -6,18 +6,52 @@ import { ArrowLeft, BookOpen, Download, FileText, Home, Lightbulb, Settings } fr
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { trackEvent } from "@/components/analytics"
+
+// Define window.dataLayer
+declare global {
+  interface Window {
+    dataLayer: any[]
+    gtag: (...args: any[]) => void
+  }
+}
 
 export default function PlaybookLandingPage() {
   const [downloadClicked, setDownloadClicked] = useState(false)
 
   const handleDownload = () => {
-    // Track the download event
-    trackEvent("file_download", {
-      file_name: "legal-modernization-playbook.pdf",
-      file_type: "pdf",
-      content_type: "playbook",
-    })
+    // Track the download event using dataLayer directly
+    if (typeof window !== "undefined") {
+      // Push to dataLayer for GTM
+      window.dataLayer = window.dataLayer || []
+      window.dataLayer.push({
+        event: "file_download",
+        file_name: "legal-modernization-playbook.pdf",
+        file_type: "pdf",
+        content_type: "playbook",
+      })
+
+      // Also track with gtag if available
+      if (window.gtag) {
+        window.gtag("event", "file_download", {
+          file_type: "pdf",
+          file_name: "legal-modernization-playbook.pdf",
+          content_type: "playbook",
+        })
+      }
+
+      // Store in localStorage for admin dashboard to access
+      try {
+        const downloads = JSON.parse(localStorage.getItem("tracked_downloads") || "[]")
+        downloads.push({
+          type: "pdf",
+          module: "Legal Modernization Playbook",
+          date: new Date().toISOString(),
+        })
+        localStorage.setItem("tracked_downloads", JSON.stringify(downloads))
+      } catch (error) {
+        console.error("Error tracking download:", error)
+      }
+    }
 
     setDownloadClicked(true)
 
