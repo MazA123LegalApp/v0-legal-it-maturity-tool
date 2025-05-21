@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { ArrowLeft, Edit3, BarChart4, Home } from "lucide-react"
+import { ArrowLeft, Edit3, BarChart4, Home, Info } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -23,6 +23,8 @@ import {
   getMaturityBgColor,
   getMaturityColor,
   getMaturityLevel,
+  getMaturityLevelDescription,
+  maturityLevels,
 } from "@/lib/assessment-data"
 import { BenchmarkComparison } from "@/components/benchmark-comparison"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -160,16 +162,7 @@ export default function ResultsPage() {
               <span className="text-lg">/ 5.0</span>
             </div>
             <p className={`text-lg mt-2 ${getMaturityColor(overallScore)}`}>{getMaturityLevel(overallScore)}</p>
-            <div className="mt-4 text-sm text-muted-foreground">
-              <p className="font-medium">Maturity Level Thresholds:</p>
-              <ul className="list-disc pl-5 mt-1 space-y-1">
-                <li>Level 1 (Initial): &lt; 1.5</li>
-                <li>Level 2 (Managed): 1.5 - 2.49</li>
-                <li>Level 3 (Defined): 2.5 - 3.49</li>
-                <li>Level 4 (Quantitatively Managed): 3.5 - 4.49</li>
-                <li>Level 5 (Optimizing): ≥ 4.5</li>
-              </ul>
-            </div>
+            <p className="mt-2 text-sm">{getMaturityLevelDescription(overallScore)}</p>
           </CardContent>
         </Card>
 
@@ -181,6 +174,52 @@ export default function ResultsPage() {
           <CardContent>
             <p className="text-lg">{new Date().toLocaleDateString()}</p>
             <p className="text-sm text-muted-foreground mt-2">Results are stored locally in your browser</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="mb-8">
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle>Maturity Level Framework</CardTitle>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <Info className="h-4 w-4" />
+                      <span className="sr-only">Maturity level information</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <p>These maturity levels are based on industry standard frameworks like CMMI and COBIT.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            <CardDescription>Understanding your maturity score</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+              {maturityLevels.map((level, index) => (
+                <div
+                  key={index}
+                  className={`p-4 rounded-lg border ${
+                    getMaturityLevel(overallScore) === level.name
+                      ? "border-2 border-blue-500 shadow-md"
+                      : "border-gray-200"
+                  }`}
+                >
+                  <h3
+                    className={`font-bold ${getMaturityLevel(overallScore) === level.name ? getMaturityColor(overallScore) : ""}`}
+                  >
+                    {level.name}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-2">{level.range}</p>
+                  <p className="text-sm">{level.description}</p>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
       </div>
