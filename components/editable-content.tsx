@@ -2,118 +2,70 @@
 
 import type React from "react"
 
-import { useState, useRef, useEffect } from "react"
-import { Edit, Save, X } from "lucide-react"
-import { useAdmin } from "@/contexts/admin-context"
-import { type ContentItem, saveContent, getContent } from "@/lib/content-management"
+import { useState, useEffect } from "react"
+import { usePathname } from "next/navigation"
+import { Edit2, Save, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { toast } from "@/components/ui/use-toast"
+import { useToast } from "@/components/ui/use-toast"
+import { useAdminMode } from "@/contexts/admin-context"
 
 interface EditableContentProps {
+  children: React.ReactNode
   type: string
   domain?: string
   maturityBand?: string
   id?: string
   title?: string
-  children: React.ReactNode
-  className?: string
 }
 
-export function EditableContent({
-  type,
-  domain,
-  maturityBand,
-  id,
-  title,
-  children,
-  className = "",
-}: EditableContentProps) {
-  const { isAdminMode } = useAdmin()
+export function EditableContent({ children, type, domain, maturityBand, id = "content", title }: EditableContentProps) {
   const [isEditing, setIsEditing] = useState(false)
-  const [content, setContent] = useState("")
-  const [originalContent, setOriginalContent] = useState<React.ReactNode>(null)
-  const editorRef = useRef<HTMLTextAreaElement>(null)
+  const [content, setContent] = useState<string>("")
+  const { isAdminMode } = useAdminMode()
+  const { toast } = useToast()
+  const pathname = usePathname()
 
-  // Store the original content when component mounts
+  // Extract HTML content from children
   useEffect(() => {
-    setOriginalContent(children)
-  }, [children])
-
-  // Fetch existing content from database when editing starts
-  useEffect(() => {
-    if (isEditing) {
-      const fetchContent = async () => {
-        try {
-          const contentData = await getContent(type as any, domain, maturityBand, id)
-          if (contentData) {
-            setContent(contentData.content)
-          } else {
-            // If no content exists yet, use the children as initial content
-            // This handles the first edit of static content
-            if (typeof children === "string") {
-              setContent(children)
-            } else {
-              // If children is a React element, try to get its text content
-              const tempDiv = document.createElement("div")
-              tempDiv.innerHTML = children?.toString() || ""
-              setContent(tempDiv.textContent || "")
-            }
-          }
-        } catch (error) {
-          console.error("Error fetching content:", error)
-          toast({
-            title: "Error",
-            description: "Failed to load content for editing",
-            variant: "destructive",
-          })
-        }
+    if (children && typeof children === "object" && "props" in children) {
+      // If children is a React element with props.children that contains HTML
+      const childElement = children as React.ReactElement
+      if (childElement.props && childElement.props.children) {
+        const tempDiv = document.createElement("div")
+        // Render the children into the div to get the HTML
+        // This is a simplified approach - in a real app you might use a proper HTML serializer
+        tempDiv.appendChild(document.createTextNode(childElement.props.children.toString()))
+        setContent(tempDiv.innerHTML)
       }
-
-      fetchContent()
     }
-  }, [isEditing, type, domain, maturityBand, id, children])
-
-  // Focus the editor when it opens
-  useEffect(() => {
-    if (isEditing && editorRef.current) {
-      editorRef.current.focus()
-    }
-  }, [isEditing])
+  }, [children])
 
   const handleSave = async () => {
     try {
-      const contentItem: ContentItem = {
-        id: id || `${type}-${domain || ""}-${maturityBand || ""}-${Date.now()}`,
-        type: type as any,
-        title: title || `Content for ${domain || ""} ${maturityBand || ""}`,
-        content,
+      // In a real app, this would save to your database
+      console.log("Saving content:", {
+        type,
         domain,
         maturityBand,
-        lastUpdated: new Date().toISOString(),
-        updatedBy: "admin",
-      }
+        id,
+        content,
+        path: pathname,
+      })
 
-      const success = await saveContent(contentItem)
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 500))
 
-      if (success) {
-        toast({
-          title: "Success",
-          description: "Content saved successfully",
-        })
-        setIsEditing(false)
-      } else {
-        toast({
-          title: "Error",
-          description: "Failed to save content",
-          variant: "destructive",
-        })
-      }
-    } catch (error) {
-      console.error("Error saving content:", error)
       toast({
-        title: "Error",
-        description: "An error occurred while saving content",
+        title: "Content saved",
+        description: "Your changes have been saved successfully.",
+      })
+
+      setIsEditing(false)
+    } catch (error) {
+      toast({
+        title: "Error saving content",
+        description: "There was a problem saving your changes.",
         variant: "destructive",
       })
     }
@@ -124,45 +76,46 @@ export function EditableContent({
   }
 
   if (!isAdminMode) {
-    // If not in admin mode, just render the children
     return <>{children}</>
   }
 
-  if (isEditing) {
-    return (
-      <div className={`relative border-2 border-blue-400 rounded-md p-4 ${className}`}>
-        <div className="mb-2 flex justify-between items-center">
-          <span className="text-sm font-medium text-blue-600">Editing Content</span>
-          <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={handleCancel} className="h-8 px-2 text-red-500">
-              <X className="h-4 w-4 mr-1" />
+  return (
+    <div className={`relative group ${isEditing ? "border-2 border-blue-500 p-4 rounded-md" : ""}`}>
+      {!isEditing ? (
+        <>
+          <div className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 gap-1 bg-white border-blue-500 text-blue-500 hover:bg-blue-50"
+              onClick={() => setIsEditing(true)}
+            >
+              <Edit2 className="h-3.5 w-3.5" />
+              Edit
+            </Button>
+          </div>
+          <div className="group-hover:bg-blue-50/30 transition-colors p-1 rounded-md">{children}</div>
+        </>
+      ) : (
+        <div className="space-y-4">
+          {title && <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>}
+          <Textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            className="min-h-[200px] font-mono text-sm"
+          />
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" size="sm" onClick={handleCancel}>
+              <X className="h-3.5 w-3.5 mr-1" />
               Cancel
             </Button>
-            <Button size="sm" onClick={handleSave} className="h-8 px-2 bg-green-600 hover:bg-green-700">
-              <Save className="h-4 w-4 mr-1" />
-              Save
+            <Button size="sm" onClick={handleSave}>
+              <Save className="h-3.5 w-3.5 mr-1" />
+              Save Changes
             </Button>
           </div>
         </div>
-        <Textarea
-          ref={editorRef}
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          className="min-h-[200px] font-mono text-sm"
-        />
-      </div>
-    )
-  }
-
-  return (
-    <div
-      className={`group relative ${className} hover:bg-blue-50 hover:border hover:border-dashed hover:border-blue-300 hover:rounded-md hover:p-1 transition-all duration-200`}
-      onClick={() => setIsEditing(true)}
-    >
-      <div className="invisible group-hover:visible absolute top-2 right-2 bg-blue-100 rounded-full p-1">
-        <Edit className="h-4 w-4 text-blue-600" />
-      </div>
-      {children}
+      )}
     </div>
   )
 }

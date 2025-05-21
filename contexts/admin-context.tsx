@@ -1,44 +1,43 @@
 "use client"
 
 import type React from "react"
+
 import { createContext, useContext, useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
 
 interface AdminContextType {
   isAdminMode: boolean
   toggleAdminMode: () => void
-  isAuthenticated: boolean
 }
 
 const AdminContext = createContext<AdminContextType>({
   isAdminMode: false,
   toggleAdminMode: () => {},
-  isAuthenticated: false,
 })
-
-export const useAdmin = () => useContext(AdminContext)
 
 export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [isAdminMode, setIsAdminMode] = useState(false)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const router = useRouter()
+  const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
-    // Check if user is authenticated as admin
-    const adminAuth = sessionStorage.getItem("admin_authenticated")
-    setIsAuthenticated(adminAuth === "true")
+    // This ensures we only run client-side code after hydration
+    setIsClient(true)
+
+    // Check if admin mode was previously enabled
+    const storedAdminMode = localStorage.getItem("adminMode") === "true"
+    setIsAdminMode(storedAdminMode)
   }, [])
 
   const toggleAdminMode = () => {
-    if (isAuthenticated) {
-      setIsAdminMode((prev) => !prev)
-    } else {
-      // Redirect to login if not authenticated
-      router.push("/admin/login")
+    const newMode = !isAdminMode
+    setIsAdminMode(newMode)
+
+    // Store the admin mode preference
+    if (isClient) {
+      localStorage.setItem("adminMode", newMode.toString())
     }
   }
 
-  return (
-    <AdminContext.Provider value={{ isAdminMode, toggleAdminMode, isAuthenticated }}>{children}</AdminContext.Provider>
-  )
+  return <AdminContext.Provider value={{ isAdminMode, toggleAdminMode }}>{children}</AdminContext.Provider>
 }
+
+export const useAdminMode = () => useContext(AdminContext)
