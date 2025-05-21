@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { MaturityBanner } from "@/components/maturity-banner"
+import { MaturityContentSection } from "@/components/maturity-content-section"
 import { type DomainMaturityInfo, getDomainMaturityInfo } from "@/lib/assessment-utils"
 
 // Define window.dataLayer
@@ -299,145 +300,157 @@ export default function CybersecurityDomainPage() {
         </TabsContent>
 
         <TabsContent value="recommendations" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Recommendations by Maturity Level</CardTitle>
-              <CardDescription>Tailored recommendations based on your current cybersecurity maturity</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                <div className={maturityInfo.level === "Initial" ? "bg-blue-50 p-4 rounded-md" : ""}>
-                  <h3 className="text-lg font-semibold mb-2">Initial (1.0-1.9)</h3>
-                  <ul className="space-y-2">
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Appoint a security lead. Document a minimum incident response plan.</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Conduct basic phishing awareness training for all staff.</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Implement password management and basic access controls.</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Deploy endpoint protection across all devices.</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Establish basic network security controls.</span>
-                    </li>
-                  </ul>
-                </div>
+          <div id="recommendations" className="space-y-6">
+            <MaturityContentSection
+              domainId="cybersecurity"
+              band="Initial"
+              title="Initial (1.0-1.9)"
+              description="Focus on establishing foundational security controls"
+            >
+              <ul className="space-y-2">
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Appoint a security lead. Document a minimum incident response plan.</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Conduct basic phishing awareness training for all staff.</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Implement password management and basic access controls.</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Deploy endpoint protection across all devices.</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Establish basic network security controls.</span>
+                </li>
+              </ul>
+            </MaturityContentSection>
 
-                <div className={maturityInfo.level === "Developing" ? "bg-blue-50 p-4 rounded-md" : ""}>
-                  <h3 className="text-lg font-semibold mb-2">Developing (2.0-2.9)</h3>
-                  <ul className="space-y-2">
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Deploy MFA, endpoint protection, and encryption.</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Establish access management policies and procedures.</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Develop formal security policies and standards.</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Implement basic vulnerability scanning and patch management.</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Establish security awareness training program.</span>
-                    </li>
-                  </ul>
-                </div>
+            <MaturityContentSection
+              domainId="cybersecurity"
+              band="Developing"
+              title="Developing (2.0-2.9)"
+              description="Formalize security policies and implement basic monitoring"
+            >
+              <ul className="space-y-2">
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Deploy MFA, endpoint protection, and encryption.</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Establish access management policies and procedures.</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Develop formal security policies and standards.</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Implement basic vulnerability scanning and patch management.</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Establish security awareness training program.</span>
+                </li>
+              </ul>
+            </MaturityContentSection>
 
-                <div className={maturityInfo.level === "Established" ? "bg-blue-50 p-4 rounded-md" : ""}>
-                  <h3 className="text-lg font-semibold mb-2">Established (3.0-3.9)</h3>
-                  <ul className="space-y-2">
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Implement vulnerability scanning, centralized logging, and SIEM tools.</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Begin Zero Trust architecture design and implementation.</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Conduct regular security assessments and penetration testing.</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Develop incident response playbooks and conduct tabletop exercises.</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Implement data classification and protection controls.</span>
-                    </li>
-                  </ul>
-                </div>
+            <MaturityContentSection
+              domainId="cybersecurity"
+              band="Established"
+              title="Established (3.0-3.9)"
+              description="Implement comprehensive security architecture and testing"
+            >
+              <ul className="space-y-2">
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Implement vulnerability scanning, centralized logging, and SIEM tools.</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Begin Zero Trust architecture design and implementation.</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Conduct regular security assessments and penetration testing.</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Develop incident response playbooks and conduct tabletop exercises.</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Implement data classification and protection controls.</span>
+                </li>
+              </ul>
+            </MaturityContentSection>
 
-                <div className={maturityInfo.level === "Managed" ? "bg-blue-50 p-4 rounded-md" : ""}>
-                  <h3 className="text-lg font-semibold mb-2">Managed (4.0-4.4)</h3>
-                  <ul className="space-y-2">
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Formalize threat detection playbooks and response procedures.</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Integrate security telemetry across all systems.</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Automate compliance checks and security controls.</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Implement advanced endpoint detection and response.</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Develop security metrics and dashboards.</span>
-                    </li>
-                  </ul>
-                </div>
+            <MaturityContentSection
+              domainId="cybersecurity"
+              band="Managed"
+              title="Managed (4.0-4.4)"
+              description="Implement advanced threat detection and quantitative risk modeling"
+            >
+              <ul className="space-y-2">
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Formalize threat detection playbooks and response procedures.</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Integrate security telemetry across all systems.</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Automate compliance checks and security controls.</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Implement advanced endpoint detection and response.</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Develop security metrics and dashboards.</span>
+                </li>
+              </ul>
+            </MaturityContentSection>
 
-                <div className={maturityInfo.level === "Optimized" ? "bg-blue-50 p-4 rounded-md" : ""}>
-                  <h3 className="text-lg font-semibold mb-2">Optimized (4.5-5.0)</h3>
-                  <ul className="space-y-2">
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Conduct red teaming exercises and advanced security simulations.</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Participate in legal sector threat-sharing programs.</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Leverage AI-enhanced defense and analytics.</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Implement fully automated security orchestration and response.</span>
-                    </li>
-                    <li className="flex items-start">
-                      <div className="mr-2 mt-0.5">•</div>
-                      <span>Benchmark security capabilities against industry leaders.</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+            <MaturityContentSection
+              domainId="cybersecurity"
+              band="Optimized"
+              title="Optimized (4.5-5.0)"
+              description="Continuous improvement with advanced analytics and automation"
+            >
+              <ul className="space-y-2">
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Conduct red teaming exercises and advanced security simulations.</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Participate in legal sector threat-sharing programs.</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Leverage AI-enhanced defense and analytics.</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Implement fully automated security orchestration and response.</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="mr-2 mt-0.5">•</div>
+                  <span>Benchmark security capabilities against industry leaders.</span>
+                </li>
+              </ul>
+            </MaturityContentSection>
+          </div>
         </TabsContent>
 
         <TabsContent value="tools" className="mt-6">

@@ -1,39 +1,28 @@
 "use client"
 
-import type React from "react"
+import { CardFooter } from "@/components/ui/card"
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { ArrowLeft, Edit3, BarChart4, Home, Info } from "lucide-react"
+import { ArrowLeft, FileText } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ExportUtils } from "@/components/export-utils"
+import { Separator } from "@/components/ui/separator"
 import { MaturityRadarChart } from "@/components/radar-chart"
 import { SummaryTable } from "@/components/summary-table"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import {
-  type AssessmentResult,
-  calculateOverallAverage,
-  getEmptyResults,
-  getMaturityBgColor,
-  getMaturityColor,
-  getMaturityLevel,
-  getMaturityLevelDescription,
-  maturityLevels,
-} from "@/lib/assessment-data"
-import { BenchmarkComparison } from "@/components/benchmark-comparison"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { MaturitySummary } from "@/components/maturity-summary"
+import { MaturityRecommendations } from "@/components/maturity-recommendations"
+import { ExportUtils } from "@/components/export-utils"
+import { type AssessmentResult, getEmptyResults } from "@/lib/assessment-data"
+import { classifyMaturity, type MaturityClassification } from "@/lib/maturity-engine"
 
 export default function ResultsPage() {
   const [results, setResults] = useState<AssessmentResult>(getEmptyResults())
   const [organizationName, setOrganizationName] = useState<string>("Your Organization")
   const [organizationSize, setOrganizationSize] = useState<string>("mid-size")
-  const [overallScore, setOverallScore] = useState<number>(0)
+  const [classification, setClassification] = useState<MaturityClassification | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -44,7 +33,10 @@ export default function ResultsPage() {
         if (savedResults) {
           const parsedResults = JSON.parse(savedResults)
           setResults(parsedResults)
-          setOverallScore(calculateOverallAverage(parsedResults))
+
+          // Classify the results using our maturity engine
+          const maturityClassification = classifyMaturity(parsedResults)
+          setClassification(maturityClassification)
         }
 
         const savedOrgName = localStorage.getItem("organizationName")
@@ -63,18 +55,6 @@ export default function ResultsPage() {
     }
   }, [])
 
-  const handleOrganizationNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    try {
-      const newName = e.target.value
-      setOrganizationName(newName)
-      if (typeof window !== "undefined") {
-        localStorage.setItem("organizationName", newName)
-      }
-    } catch (error) {
-      console.error("Error saving organization name:", error)
-    }
-  }
-
   return (
     <div className="container max-w-6xl py-6 md:py-10">
       {error && (
@@ -87,19 +67,13 @@ export default function ResultsPage() {
         <div>
           <h1 className="text-3xl font-bold mb-2">Assessment Results</h1>
           <p className="text-muted-foreground">
-            Review your IT maturity assessment results and export them for further analysis
+            Review your IT maturity assessment results and get personalized recommendations
           </p>
         </div>
         <div className="flex gap-2">
-          <Link href="/maturity">
-            <Button variant="ghost" size="sm" className="gap-2">
-              <Home className="h-4 w-4" />
-              Maturity Home
-            </Button>
-          </Link>
           <Link href="/maturity/assessment">
             <Button variant="outline" className="gap-2">
-              <Edit3 className="h-4 w-4" />
+              <FileText className="h-4 w-4" />
               Edit Responses
             </Button>
           </Link>
@@ -107,210 +81,180 @@ export default function ResultsPage() {
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3 mb-8">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Organization</CardTitle>
-            <CardDescription>Enter your organization name and size for reports</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid w-full items-center gap-4">
-              <div className="grid w-full items-center gap-1.5">
-                <Label htmlFor="organization">Organization Name</Label>
-                <Input
-                  id="organization"
-                  value={organizationName}
-                  onChange={handleOrganizationNameChange}
-                  placeholder="Enter organization name"
-                />
-              </div>
-              <div className="grid w-full items-center gap-1.5">
-                <Label htmlFor="organizationSize">Organization Size</Label>
-                <Select
-                  value={organizationSize}
-                  onValueChange={(value) => {
-                    try {
-                      setOrganizationSize(value)
-                      localStorage.setItem("organizationSize", value)
-                    } catch (error) {
-                      console.error("Error saving organization size:", error)
-                    }
-                  }}
-                >
-                  <SelectTrigger id="organizationSize">
-                    <SelectValue placeholder="Select size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="small">Small (1-50 employees)</SelectItem>
-                    <SelectItem value="mid-size">Mid-size (51-500 employees)</SelectItem>
-                    <SelectItem value="large">Large (500+ employees)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4 mb-8">
+        <div className="md:col-span-2 lg:col-span-3">
+          <Tabs defaultValue="summary" className="w-full">
+            <TabsList className="grid w-full md:w-auto grid-cols-3">
+              <TabsTrigger value="summary">Summary</TabsTrigger>
+              <TabsTrigger value="chart">Radar Chart</TabsTrigger>
+              <TabsTrigger value="table">Detailed Scores</TabsTrigger>
+            </TabsList>
 
-        <Card className={getMaturityBgColor(overallScore)}>
-          <CardHeader>
-            <CardTitle className="text-lg">Overall Maturity Score</CardTitle>
-            <CardDescription>Average score across all domains and dimensions</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-baseline gap-2">
-              <span className={`text-4xl font-bold ${getMaturityColor(overallScore)}`}>{overallScore.toFixed(1)}</span>
-              <span className="text-lg">/ 5.0</span>
-            </div>
-            <p className={`text-lg mt-2 ${getMaturityColor(overallScore)}`}>{getMaturityLevel(overallScore)}</p>
-            <p className="mt-2 text-sm">{getMaturityLevelDescription(overallScore)}</p>
-          </CardContent>
-        </Card>
+            <TabsContent value="summary" className="mt-6">
+              {classification ? (
+                <MaturitySummary classification={classification} />
+              ) : (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>No Results Available</CardTitle>
+                    <CardDescription>Complete the maturity assessment to view your results.</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground">
+                      The maturity assessment will help identify areas for improvement and provide targeted
+                      recommendations based on your organization's current maturity level.
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Assessment Date</CardTitle>
-            <CardDescription>When this assessment was completed</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-lg">{new Date().toLocaleDateString()}</p>
-            <p className="text-sm text-muted-foreground mt-2">Results are stored locally in your browser</p>
-          </CardContent>
-        </Card>
-      </div>
+            <TabsContent value="chart" className="mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Maturity Radar Chart</CardTitle>
+                  <CardDescription>Visualize your maturity levels across all domains</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <MaturityRadarChart results={results} />
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-      <div className="mb-8">
-        <Card>
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle>Maturity Level Framework</CardTitle>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <Info className="h-4 w-4" />
-                      <span className="sr-only">Maturity level information</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-xs">
-                    <p>These maturity levels are based on industry standard frameworks like CMMI and COBIT.</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            <CardDescription>Understanding your maturity score</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-              {maturityLevels.map((level, index) => (
-                <div
-                  key={index}
-                  className={`p-4 rounded-lg border ${
-                    getMaturityLevel(overallScore) === level.name
-                      ? "border-2 border-blue-500 shadow-md"
-                      : "border-gray-200"
-                  }`}
-                >
-                  <h3
-                    className={`font-bold ${getMaturityLevel(overallScore) === level.name ? getMaturityColor(overallScore) : ""}`}
-                  >
-                    {level.name}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-2">{level.range}</p>
-                  <p className="text-sm">{level.description}</p>
+            <TabsContent value="table" className="mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Maturity Summary Table</CardTitle>
+                  <CardDescription>Detailed view of scores across all domains and dimensions</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <SummaryTable results={results} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        <div className="md:col-span-1">
+          <Card>
+            <CardHeader>
+              <CardTitle>Organization</CardTitle>
+              <CardDescription>{organizationName}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm font-medium">Organization Size</p>
+                  <p className="text-sm text-muted-foreground">
+                    {organizationSize === "small" && "Small (1-50 employees)"}
+                    {organizationSize === "mid-size" && "Mid-size (51-500 employees)"}
+                    {organizationSize === "large" && "Large (500+ employees)"}
+                  </p>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Tabs defaultValue="chart" className="mb-8">
-        <TabsList className="grid w-full md:w-auto grid-cols-2">
-          <TabsTrigger value="chart">Radar Chart</TabsTrigger>
-          <TabsTrigger value="table">Summary Table</TabsTrigger>
-        </TabsList>
-        <div className="mt-2 flex justify-end">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link href={`/maturity/domain-results?size=${organizationSize}`}>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-2 bg-orange-100 border-orange-300 hover:bg-orange-200 text-orange-800"
-                  >
-                    <BarChart4 className="h-4 w-4" />
-                    View Detailed Domain Analysis
-                  </Button>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs">
-                <p>
-                  See in-depth analysis of each domain with spider charts, dimension breakdowns, and specific
-                  recommendations for improvement.
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-        <TabsContent value="chart" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Maturity Radar Chart</CardTitle>
-              <CardDescription>Visualize your maturity levels across all domains</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <MaturityRadarChart results={results} />
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="table" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Maturity Summary Table</CardTitle>
-              <CardDescription>Detailed view of scores across all domains and dimensions</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <SummaryTable results={results} />
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-
-      {/* Benchmark Comparison */}
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">Sector Benchmarking</h2>
-        <BenchmarkComparison results={results} organizationSize={organizationSize} />
-      </div>
-
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">Next Steps</h2>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <CardTitle>Identify Improvement Areas</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Focus on domains and dimensions with the lowest scores to create targeted improvement plans.</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Share Results</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Export and share these results with stakeholders to align on improvement priorities.</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Reassess Regularly</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Plan to reassess in 6-12 months to track progress and identify new improvement opportunities.</p>
+                <div>
+                  <p className="text-sm font-medium">Assessment Date</p>
+                  <p className="text-sm text-muted-foreground">{new Date().toLocaleDateString()}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Overall Maturity</p>
+                  <p className="text-sm text-muted-foreground">
+                    {classification ? (
+                      <>
+                        {classification.overallBand} ({classification.overallScore.toFixed(1)}/5.0)
+                      </>
+                    ) : (
+                      "Not available"
+                    )}
+                  </p>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
+      </div>
+
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold mb-6">Priority Recommendations</h2>
+        {classification ? (
+          <MaturityRecommendations domainScores={classification.weakestDomains} />
+        ) : (
+          <Card>
+            <CardHeader>
+              <CardTitle>No Recommendations Available</CardTitle>
+              <CardDescription>
+                Complete the maturity assessment to receive personalized recommendations.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                The maturity assessment will help identify areas for improvement and provide targeted recommendations
+                based on your organization's current maturity level.
+              </p>
+            </CardContent>
+            <CardFooter>
+              <Link href="/maturity/assessment">
+                <Button>Start Assessment</Button>
+              </Link>
+            </CardFooter>
+          </Card>
+        )}
+      </div>
+
+      <div className="mb-8">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">All Domain Recommendations</h2>
+          <Link href="/playbook">
+            <Button variant="outline" className="gap-2">
+              <FileText className="h-4 w-4" />
+              View Full Playbook
+            </Button>
+          </Link>
+        </div>
+
+        {classification ? (
+          <Tabs defaultValue="weakest" className="w-full">
+            <TabsList className="grid w-full md:w-auto grid-cols-3">
+              <TabsTrigger value="weakest">Weakest Domains</TabsTrigger>
+              <TabsTrigger value="strongest">Strongest Domains</TabsTrigger>
+              <TabsTrigger value="all">All Domains</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="weakest" className="mt-6">
+              <MaturityRecommendations domainScores={classification.weakestDomains} />
+            </TabsContent>
+
+            <TabsContent value="strongest" className="mt-6">
+              <MaturityRecommendations domainScores={classification.strongestDomains} />
+            </TabsContent>
+
+            <TabsContent value="all" className="mt-6">
+              <MaturityRecommendations
+                domainScores={Object.values(classification.domainScores)}
+                showAllDomains={true}
+              />
+            </TabsContent>
+          </Tabs>
+        ) : (
+          <Card>
+            <CardHeader>
+              <CardTitle>No Recommendations Available</CardTitle>
+              <CardDescription>
+                Complete the maturity assessment to receive personalized recommendations.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                The maturity assessment will help identify areas for improvement and provide targeted recommendations
+                based on your organization's current maturity level.
+              </p>
+            </CardContent>
+            <CardFooter>
+              <Link href="/maturity/assessment">
+                <Button>Start Assessment</Button>
+              </Link>
+            </CardFooter>
+          </Card>
+        )}
       </div>
 
       <Separator className="my-8" />
@@ -319,7 +263,14 @@ export default function ResultsPage() {
         <Link href="/maturity">
           <Button variant="outline" className="gap-2">
             <ArrowLeft className="h-4 w-4" />
-            Back to Maturity Home
+            Back to Maturity Hub
+          </Button>
+        </Link>
+
+        <Link href="/playbook">
+          <Button className="gap-2">
+            View Legal Modernization Playbook
+            <FileText className="h-4 w-4" />
           </Button>
         </Link>
       </div>
