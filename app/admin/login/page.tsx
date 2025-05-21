@@ -31,6 +31,9 @@ export default function AdminLoginPage() {
         // Set a session cookie or token
         sessionStorage.setItem("admin_authenticated", "true")
 
+        // Set a cookie for server-side authentication
+        document.cookie = "admin_authenticated=true; path=/; max-age=86400"
+
         // Redirect to admin dashboard
         router.push("/admin/dashboard")
       } else {

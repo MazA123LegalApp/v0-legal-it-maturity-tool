@@ -1,420 +1,445 @@
 import Link from "next/link"
-import { ArrowLeft, ArrowRight, CheckCircle2, Download, FileText, Shield } from "lucide-react"
+import { ArrowLeft, ArrowRight, Download, Shield } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { getTemplatesForDomain } from "@/lib/maturity-engine"
+import { MaturityBanner } from "@/components/maturity-banner"
+import { MaturityContentSection } from "@/components/maturity-content-section"
+import { EditableContent } from "@/components/editable-content"
 
 export default function CybersecurityInitialPage() {
-  // Get templates for this domain and maturity level
-  const templates = getTemplatesForDomain("cybersecurity", "Initial")
-
   return (
-    <div className="container max-w-6xl py-6 md:py-10">
-      <div className="flex justify-between items-center mb-8">
+    <div className="container py-10">
+      <div className="mb-8">
         <Link href="/playbook/domains/cybersecurity">
           <Button variant="ghost" size="sm" className="gap-2">
             <ArrowLeft className="h-4 w-4" />
             Back to Cybersecurity Domain
           </Button>
         </Link>
-
-        <Link href="/playbook/roadmap?phase=1">
-          <Button variant="outline" size="sm" className="gap-2">
-            <FileText className="h-4 w-4" />
-            View Implementation Roadmap
-          </Button>
-        </Link>
       </div>
 
-      <div className="flex flex-col items-center text-center mb-8">
-        <div className="bg-blue-100 p-3 rounded-full mb-4">
-          <Shield className="h-8 w-8 text-blue-700" />
-        </div>
-        <div className="inline-flex items-center gap-2 mb-2">
-          <h1 className="text-4xl md:text-5xl font-bold text-blue-700">Cybersecurity</h1>
-          <span className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded">Initial</span>
-        </div>
-        <p className="text-xl text-muted-foreground max-w-3xl">
-          Tactical implementation guide for organizations at the Initial (1.0-1.9) maturity level
-        </p>
-      </div>
+      <div className="flex flex-col md:flex-row gap-8 mb-10">
+        <div className="flex-1">
+          <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
+            <Shield className="h-6 w-6 text-blue-600" />
+            Cybersecurity: Initial Maturity
+          </h1>
+          <p className="text-muted-foreground mb-6">
+            Implementation guide for organizations at the Initial maturity level (Level 1)
+          </p>
 
-      <div className="grid gap-8 md:grid-cols-3 mb-12">
-        <div className="md:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>What This Means</CardTitle>
-              <CardDescription>Understanding your current maturity level</CardDescription>
-            </CardHeader>
-            <CardContent className="prose max-w-none">
-              <p>
-                At the <strong>Initial</strong> maturity level, your organization has minimal or ad hoc security
-                practices in place. You likely have:
-              </p>
-              <ul>
-                <li>Limited or no formal security policies</li>
-                <li>Basic antivirus but few other security controls</li>
-                <li>No dedicated security personnel or clear ownership</li>
-                <li>Minimal visibility into threats or vulnerabilities</li>
-                <li>Reactive approach to security incidents</li>
-              </ul>
-              <p>
-                Organizations at this level are highly vulnerable to common cyber threats and may have already
-                experienced security incidents. The good news is that even small, focused improvements can significantly
-                reduce your risk profile.
-              </p>
-            </CardContent>
-          </Card>
+          <MaturityBanner level={1} />
 
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle>Implementation Guide</CardTitle>
-              <CardDescription>Step-by-step tactical guidance for improving cybersecurity</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-semibold mb-3">Top 5 Priorities</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-md">
-                      <div className="bg-blue-100 p-1 rounded-full h-6 w-6 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <span className="text-blue-700 font-bold text-sm">1</span>
-                      </div>
-                      <div>
-                        <h4 className="font-medium">Appoint a Security Lead</h4>
-                        <p className="text-sm text-slate-600 mt-1">
-                          Designate someone to be responsible for security, even if it's a part-time role within IT.
-                        </p>
-                        <div className="mt-3 bg-blue-50 p-3 rounded-md border border-blue-100">
-                          <h5 className="text-sm font-medium text-blue-800 mb-2">Implementation Steps:</h5>
-                          <ol className="text-sm text-slate-700 space-y-1 ml-4 list-decimal">
-                            <li>Identify a suitable candidate (IT Manager, Systems Administrator)</li>
-                            <li>Update their job description to include security responsibilities</li>
-                            <li>Allocate dedicated time for security tasks (minimum 4-8 hours per week)</li>
-                            <li>Provide basic security training (SANS Securing The Human, CompTIA Security+)</li>
-                            <li>Establish reporting structure to leadership for security matters</li>
-                          </ol>
-                        </div>
-                      </div>
-                    </div>
+          <div className="mt-8 space-y-8">
+            <Card>
+              <CardHeader>
+                <CardTitle>Maturity Level Overview</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <EditableContent
+                  type="maturity-guide"
+                  domain="cybersecurity"
+                  maturityBand="initial"
+                  id="overview"
+                  title="Cybersecurity Initial Maturity Overview"
+                >
+                  <div className="prose max-w-none">
+                    <p>
+                      At the <strong>Initial</strong> maturity level, legal organizations typically have minimal
+                      cybersecurity measures in place. Security practices are largely reactive, ad-hoc, and lack formal
+                      documentation or consistent implementation. This level is characterized by:
+                    </p>
 
-                    <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-md">
-                      <div className="bg-blue-100 p-1 rounded-full h-6 w-6 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <span className="text-blue-700 font-bold text-sm">2</span>
-                      </div>
-                      <div>
-                        <h4 className="font-medium">Implement Password Management</h4>
-                        <p className="text-sm text-slate-600 mt-1">
-                          Establish strong password policies and deploy a password manager for the organization.
-                        </p>
-                        <div className="mt-3 bg-blue-50 p-3 rounded-md border border-blue-100">
-                          <h5 className="text-sm font-medium text-blue-800 mb-2">Implementation Steps:</h5>
-                          <ol className="text-sm text-slate-700 space-y-1 ml-4 list-decimal">
-                            <li>Create a basic password policy (minimum length, complexity, change frequency)</li>
-                            <li>Select a password manager (LastPass, 1Password, Bitwarden)</li>
-                            <li>Deploy to IT team first as a pilot</li>
-                            <li>Create a rollout plan for the rest of the organization</li>
-                            <li>Provide training on using the password manager</li>
-                          </ol>
-                        </div>
-                      </div>
-                    </div>
+                    <ul>
+                      <li>Basic security controls with limited coverage</li>
+                      <li>Minimal security awareness among staff</li>
+                      <li>Absence of formal security policies and procedures</li>
+                      <li>Reactive approach to security incidents</li>
+                      <li>Limited visibility into security risks and threats</li>
+                    </ul>
 
-                    <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-md">
-                      <div className="bg-blue-100 p-1 rounded-full h-6 w-6 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <span className="text-blue-700 font-bold text-sm">3</span>
-                      </div>
-                      <div>
-                        <h4 className="font-medium">Deploy Basic Endpoint Protection</h4>
-                        <p className="text-sm text-slate-600 mt-1">
-                          Ensure all devices have modern antivirus/anti-malware protection with central management.
-                        </p>
-                        <div className="mt-3 bg-blue-50 p-3 rounded-md border border-blue-100">
-                          <h5 className="text-sm font-medium text-blue-800 mb-2">Implementation Steps:</h5>
-                          <ol className="text-sm text-slate-700 space-y-1 ml-4 list-decimal">
-                            <li>Inventory all endpoints (computers, laptops, servers)</li>
-                            <li>Select an endpoint protection solution (Microsoft Defender, Sophos, Bitdefender)</li>
-                            <li>Deploy to all devices with standard configuration</li>
-                            <li>Verify installation and proper functioning</li>
-                            <li>Establish a process for monitoring alerts</li>
-                          </ol>
-                        </div>
-                      </div>
-                    </div>
+                    <p>
+                      Organizations at this level are often vulnerable to common security threats and may struggle to
+                      protect sensitive client information effectively. Security measures are typically implemented in
+                      response to specific incidents rather than as part of a proactive strategy.
+                    </p>
 
-                    <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-md">
-                      <div className="bg-blue-100 p-1 rounded-full h-6 w-6 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <span className="text-blue-700 font-bold text-sm">4</span>
-                      </div>
-                      <div>
-                        <h4 className="font-medium">Conduct Basic Security Awareness Training</h4>
-                        <p className="text-sm text-slate-600 mt-1">
-                          Provide fundamental security training to all staff, focusing on common threats.
-                        </p>
-                        <div className="mt-3 bg-blue-50 p-3 rounded-md border border-blue-100">
-                          <h5 className="text-sm font-medium text-blue-800 mb-2">Implementation Steps:</h5>
-                          <ol className="text-sm text-slate-700 space-y-1 ml-4 list-decimal">
-                            <li>Develop or acquire basic security awareness training materials</li>
-                            <li>Focus on phishing, password security, and physical security</li>
-                            <li>Schedule training sessions for all staff</li>
-                            <li>Make training mandatory for new hires</li>
-                            <li>Send regular security reminders via email</li>
-                          </ol>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-md">
-                      <div className="bg-blue-100 p-1 rounded-full h-6 w-6 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <span className="text-blue-700 font-bold text-sm">5</span>
-                      </div>
-                      <div>
-                        <h4 className="font-medium">Document a Minimum Incident Response Plan</h4>
-                        <p className="text-sm text-slate-600 mt-1">
-                          Create a basic plan for responding to security incidents.
-                        </p>
-                        <div className="mt-3 bg-blue-50 p-3 rounded-md border border-blue-100">
-                          <h5 className="text-sm font-medium text-blue-800 mb-2">Implementation Steps:</h5>
-                          <ol className="text-sm text-slate-700 space-y-1 ml-4 list-decimal">
-                            <li>Define what constitutes a security incident</li>
-                            <li>Establish a simple incident reporting process</li>
-                            <li>Create a contact list for incident response team</li>
-                            <li>Document basic containment and recovery procedures</li>
-                            <li>Define communication protocols during an incident</li>
-                          </ol>
-                        </div>
-                      </div>
-                    </div>
+                    <p>
+                      The primary goal for organizations at the Initial level should be to establish basic security
+                      foundations and begin developing a more structured approach to cybersecurity.
+                    </p>
                   </div>
-                </div>
+                </EditableContent>
+              </CardContent>
+            </Card>
 
-                <div>
-                  <h3 className="text-lg font-semibold mb-3">Quick Wins (30-Day Plan)</h3>
-                  <ul className="space-y-2">
-                    <li className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span>
-                        <strong>Week 1:</strong> Appoint security lead and inventory all devices
-                      </span>
+            <MaturityContentSection
+              title="Key Implementation Steps"
+              icon={<Shield className="h-5 w-5 text-blue-600" />}
+            >
+              <EditableContent
+                type="maturity-guide"
+                domain="cybersecurity"
+                maturityBand="initial"
+                id="implementation-steps"
+                title="Cybersecurity Initial Implementation Steps"
+              >
+                <div className="prose max-w-none">
+                  <p>
+                    To establish a basic cybersecurity foundation, legal organizations at the Initial maturity level
+                    should focus on these essential implementation steps:
+                  </p>
+
+                  <h3>1. Establish Basic Security Controls</h3>
+                  <ul>
+                    <li>
+                      <strong>Deploy fundamental security technologies:</strong> Implement basic antivirus software,
+                      firewalls, and password management across all systems.
                     </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span>
-                        <strong>Week 2:</strong> Deploy endpoint protection to critical systems
-                      </span>
+                    <li>
+                      <strong>Enable automatic updates:</strong> Configure systems to automatically install security
+                      patches and updates for operating systems and applications.
                     </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span>
-                        <strong>Week 3:</strong> Create and distribute password policy
-                      </span>
+                    <li>
+                      <strong>Implement basic backup solutions:</strong> Establish regular backups of critical data with
+                      at least one copy stored securely off-site or in the cloud.
                     </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span>
-                        <strong>Week 4:</strong> Conduct initial security awareness session for all staff
-                      </span>
+                  </ul>
+
+                  <h3>2. Develop Essential Security Policies</h3>
+                  <ul>
+                    <li>
+                      <strong>Create a basic acceptable use policy:</strong> Define appropriate use of organization
+                      systems, devices, and data.
+                    </li>
+                    <li>
+                      <strong>Establish password requirements:</strong> Implement minimum password complexity standards
+                      and regular password changes.
+                    </li>
+                    <li>
+                      <strong>Document basic incident response procedures:</strong> Create simple guidelines for
+                      reporting and responding to security incidents.
+                    </li>
+                  </ul>
+
+                  <h3>3. Implement Basic Access Controls</h3>
+                  <ul>
+                    <li>
+                      <strong>Establish user account management:</strong> Create a process for provisioning and
+                      deprovisioning user accounts when employees join or leave.
+                    </li>
+                    <li>
+                      <strong>Limit administrative privileges:</strong> Restrict administrative access to only those who
+                      require it for their job functions.
+                    </li>
+                    <li>
+                      <strong>Implement basic network segmentation:</strong> Separate guest networks from internal
+                      networks containing sensitive information.
+                    </li>
+                  </ul>
+
+                  <h3>4. Conduct Basic Security Awareness Training</h3>
+                  <ul>
+                    <li>
+                      <strong>Provide introductory security training:</strong> Educate all staff on basic security
+                      practices, including password security and phishing awareness.
+                    </li>
+                    <li>
+                      <strong>Establish a security communication channel:</strong> Create a simple method for staff to
+                      report suspicious activities or potential security incidents.
+                    </li>
+                    <li>
+                      <strong>Share basic security tips regularly:</strong> Distribute periodic reminders about security
+                      best practices.
+                    </li>
+                  </ul>
+
+                  <h3>5. Perform Initial Risk Assessment</h3>
+                  <ul>
+                    <li>
+                      <strong>Identify critical assets:</strong> Document the most important data and systems that
+                      require protection.
+                    </li>
+                    <li>
+                      <strong>Recognize basic threats:</strong> Identify common security threats relevant to legal
+                      organizations.
+                    </li>
+                    <li>
+                      <strong>Document known vulnerabilities:</strong> Create a simple inventory of security weaknesses
+                      that need to be addressed.
                     </li>
                   </ul>
                 </div>
+              </EditableContent>
+            </MaturityContentSection>
 
-                <div>
-                  <h3 className="text-lg font-semibold mb-3">Common Challenges and Solutions</h3>
-                  <div className="space-y-3">
-                    <div className="bg-slate-50 p-3 rounded-md">
-                      <h4 className="font-medium">Challenge: Limited Resources</h4>
-                      <p className="text-sm text-slate-600 mt-1">
-                        Small IT teams with limited time and budget for security initiatives.
-                      </p>
-                      <p className="text-sm text-slate-600 mt-1">
-                        <strong>Solution:</strong> Focus on high-impact, low-cost solutions first. Leverage built-in
-                        security features in existing tools. Consider cloud-based security services with predictable
-                        costs.
-                      </p>
-                    </div>
-                    <div className="bg-slate-50 p-3 rounded-md">
-                      <h4 className="font-medium">Challenge: Lack of Security Expertise</h4>
-                      <p className="text-sm text-slate-600 mt-1">
-                        IT staff may have limited security knowledge or training.
-                      </p>
-                      <p className="text-sm text-slate-600 mt-1">
-                        <strong>Solution:</strong> Invest in basic security training for IT staff. Use security services
-                        with managed components. Consider periodic consulting for specific security tasks.
-                      </p>
-                    </div>
-                    <div className="bg-slate-50 p-3 rounded-md">
-                      <h4 className="font-medium">Challenge: User Resistance</h4>
-                      <p className="text-sm text-slate-600 mt-1">
-                        Staff may resist new security measures that change their workflow.
-                      </p>
-                      <p className="text-sm text-slate-600 mt-1">
-                        <strong>Solution:</strong> Communicate the importance of security measures. Provide clear
-                        training and support. Start with leadership to set an example. Implement changes gradually.
-                      </p>
-                    </div>
-                  </div>
+            <MaturityContentSection title="Common Challenges" icon={<Shield className="h-5 w-5 text-orange-600" />}>
+              <EditableContent
+                type="maturity-guide"
+                domain="cybersecurity"
+                maturityBand="initial"
+                id="challenges"
+                title="Cybersecurity Initial Maturity Challenges"
+              >
+                <div className="prose max-w-none">
+                  <p>
+                    Organizations at the Initial maturity level often face several challenges when implementing
+                    cybersecurity measures:
+                  </p>
+
+                  <h3>Resource Constraints</h3>
+                  <ul>
+                    <li>
+                      <strong>Limited budget:</strong> Insufficient financial resources dedicated to security
+                      technologies and initiatives.
+                    </li>
+                    <li>
+                      <strong>Lack of dedicated security personnel:</strong> No staff specifically responsible for
+                      cybersecurity, often relying on IT generalists or external providers.
+                    </li>
+                    <li>
+                      <strong>Competing priorities:</strong> Security initiatives frequently take a backseat to
+                      operational and business development activities.
+                    </li>
+                  </ul>
+
+                  <h3>Knowledge and Awareness Gaps</h3>
+                  <ul>
+                    <li>
+                      <strong>Limited security expertise:</strong> Insufficient understanding of security risks and
+                      appropriate controls among IT staff and leadership.
+                    </li>
+                    <li>
+                      <strong>Low security awareness:</strong> Staff may not recognize security threats or understand
+                      their role in protecting organizational assets.
+                    </li>
+                    <li>
+                      <strong>Difficulty keeping up with threats:</strong> Rapidly evolving threat landscape outpaces
+                      the organization's ability to stay informed and prepared.
+                    </li>
+                  </ul>
+
+                  <h3>Organizational Resistance</h3>
+                  <ul>
+                    <li>
+                      <strong>Perception of security as a barrier:</strong> Security measures viewed as obstacles to
+                      productivity rather than necessary protections.
+                    </li>
+                    <li>
+                      <strong>Lack of leadership buy-in:</strong> Insufficient support from senior management for
+                      security initiatives.
+                    </li>
+                    <li>
+                      <strong>Resistance to change:</strong> Staff reluctance to adopt new security practices that alter
+                      established workflows.
+                    </li>
+                  </ul>
+
+                  <h3>Technical Challenges</h3>
+                  <ul>
+                    <li>
+                      <strong>Legacy systems:</strong> Outdated technologies that may not support modern security
+                      controls.
+                    </li>
+                    <li>
+                      <strong>Shadow IT:</strong> Unauthorized applications and services used without proper security
+                      assessment.
+                    </li>
+                    <li>
+                      <strong>Integration difficulties:</strong> Challenges implementing security controls across
+                      diverse systems and applications.
+                    </li>
+                  </ul>
+
+                  <p>
+                    Addressing these challenges requires a pragmatic approach that balances security improvements with
+                    organizational constraints. Starting with small, high-impact changes and gradually building momentum
+                    can help overcome these obstacles.
+                  </p>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </EditableContent>
+            </MaturityContentSection>
+
+            <MaturityContentSection
+              title="Templates and Resources"
+              icon={<Download className="h-5 w-5 text-green-600" />}
+            >
+              <EditableContent
+                type="template"
+                domain="cybersecurity"
+                maturityBand="initial"
+                title="Cybersecurity Initial Maturity Templates"
+              >
+                <div className="prose max-w-none">
+                  <p>
+                    The following templates and resources will help legal organizations at the Initial maturity level
+                    establish basic cybersecurity foundations:
+                  </p>
+
+                  <h3>Policy Templates</h3>
+                  <ul>
+                    <li>
+                      <a href="#" className="text-blue-600 hover:underline">
+                        Basic Acceptable Use Policy Template
+                      </a>{" "}
+                      - A simple template defining appropriate use of organization systems and data.
+                    </li>
+                    <li>
+                      <a href="#" className="text-blue-600 hover:underline">
+                        Password Policy Template
+                      </a>{" "}
+                      - Guidelines for creating and managing secure passwords.
+                    </li>
+                    <li>
+                      <a href="#" className="text-blue-600 hover:underline">
+                        Basic Incident Response Procedure
+                      </a>{" "}
+                      - Simple steps for responding to common security incidents.
+                    </li>
+                  </ul>
+
+                  <h3>Assessment Tools</h3>
+                  <ul>
+                    <li>
+                      <a href="#" className="text-blue-600 hover:underline">
+                        Security Self-Assessment Checklist
+                      </a>{" "}
+                      - A basic checklist to identify security gaps in your organization.
+                    </li>
+                    <li>
+                      <a href="#" className="text-blue-600 hover:underline">
+                        Critical Asset Inventory Template
+                      </a>{" "}
+                      - Spreadsheet for documenting important data and systems.
+                    </li>
+                    <li>
+                      <a href="#" className="text-blue-600 hover:underline">
+                        Simple Risk Assessment Matrix
+                      </a>{" "}
+                      - Tool for prioritizing security risks based on impact and likelihood.
+                    </li>
+                  </ul>
+
+                  <h3>Training Resources</h3>
+                  <ul>
+                    <li>
+                      <a href="#" className="text-blue-600 hover:underline">
+                        Security Awareness Presentation
+                      </a>{" "}
+                      - Basic slides covering essential security practices for all staff.
+                    </li>
+                    <li>
+                      <a href="#" className="text-blue-600 hover:underline">
+                        Phishing Awareness Guide
+                      </a>{" "}
+                      - Educational material to help staff identify and avoid phishing attempts.
+                    </li>
+                    <li>
+                      <a href="#" className="text-blue-600 hover:underline">
+                        Security Tips Poster Set
+                      </a>{" "}
+                      - Printable posters highlighting key security practices.
+                    </li>
+                  </ul>
+
+                  <h3>Implementation Guides</h3>
+                  <ul>
+                    <li>
+                      <a href="#" className="text-blue-600 hover:underline">
+                        Basic Security Controls Checklist
+                      </a>{" "}
+                      - Step-by-step guide for implementing fundamental security measures.
+                    </li>
+                    <li>
+                      <a href="#" className="text-blue-600 hover:underline">
+                        Data Backup Guide
+                      </a>{" "}
+                      - Instructions for setting up basic backup procedures.
+                    </li>
+                    <li>
+                      <a href="#" className="text-blue-600 hover:underline">
+                        Account Management Procedure
+                      </a>{" "}
+                      - Process for creating, modifying, and removing user accounts.
+                    </li>
+                  </ul>
+
+                  <p className="text-sm text-muted-foreground mt-4">
+                    Note: These templates are designed as starting points and should be customized to fit your
+                    organization's specific needs and requirements.
+                  </p>
+                </div>
+              </EditableContent>
+            </MaturityContentSection>
+          </div>
         </div>
 
-        <div>
-          <Card className="mb-6">
+        <div className="md:w-64 lg:w-80 space-y-6">
+          <Card>
             <CardHeader>
-              <CardTitle>Resources & Templates</CardTitle>
-              <CardDescription>Tools to accelerate implementation</CardDescription>
+              <CardTitle className="text-lg">On This Page</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {templates.map((template, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-slate-50 rounded-md">
-                    <div>
-                      <h4 className="font-medium text-sm">{template.name}</h4>
-                      <p className="text-xs text-muted-foreground">{template.description}</p>
-                    </div>
-                    <Button variant="outline" size="sm" className="gap-1 whitespace-nowrap">
-                      <Download className="h-3 w-3" />
-                      {template.fileType.toUpperCase()}
-                    </Button>
-                  </div>
-                ))}
-
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-md">
-                  <div>
-                    <h4 className="font-medium text-sm">Basic Security Policy Template</h4>
-                    <p className="text-xs text-muted-foreground">
-                      Starter security policy templates for small organizations
-                    </p>
-                  </div>
-                  <Button variant="outline" size="sm" className="gap-1 whitespace-nowrap">
-                    <Download className="h-3 w-3" />
-                    DOCX
-                  </Button>
-                </div>
-
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-md">
-                  <div>
-                    <h4 className="font-medium text-sm">Security Awareness Training Slides</h4>
-                    <p className="text-xs text-muted-foreground">
-                      Ready-to-use training materials for basic security awareness
-                    </p>
-                  </div>
-                  <Button variant="outline" size="sm" className="gap-1 whitespace-nowrap">
-                    <Download className="h-3 w-3" />
-                    PPTX
-                  </Button>
-                </div>
-
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-md">
-                  <div>
-                    <h4 className="font-medium text-sm">Simple Incident Response Template</h4>
-                    <p className="text-xs text-muted-foreground">
-                      Basic template for documenting and responding to security incidents
-                    </p>
-                  </div>
-                  <Button variant="outline" size="sm" className="gap-1 whitespace-nowrap">
-                    <Download className="h-3 w-3" />
-                    DOCX
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Related Playbook Sections</CardTitle>
-              <CardDescription>Strategic guidance and frameworks</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <Link href="/playbook/domains/cybersecurity" className="block">
-                  <div className="p-3 bg-slate-50 rounded-md hover:bg-slate-100 transition-colors">
-                    <h4 className="font-medium text-sm flex items-center">
-                      <FileText className="h-4 w-4 mr-2 text-blue-600" />
-                      Cybersecurity Domain Overview
-                    </h4>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Strategic framework and maturity model for cybersecurity
-                    </p>
-                  </div>
-                </Link>
-
-                <Link href="/playbook/roadmap?phase=1" className="block">
-                  <div className="p-3 bg-slate-50 rounded-md hover:bg-slate-100 transition-colors">
-                    <h4 className="font-medium text-sm flex items-center">
-                      <FileText className="h-4 w-4 mr-2 text-blue-600" />
-                      Phase 1: Discovery & Assessment
-                    </h4>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Establishing a baseline understanding of your security posture
-                    </p>
-                  </div>
-                </Link>
-
-                <Link href="/playbook/roadmap?phase=2" className="block">
-                  <div className="p-3 bg-slate-50 rounded-md hover:bg-slate-100 transition-colors">
-                    <h4 className="font-medium text-sm flex items-center">
-                      <FileText className="h-4 w-4 mr-2 text-blue-600" />
-                      Phase 2: Planning & Governance
-                    </h4>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Establishing basic security governance and ownership
-                    </p>
-                  </div>
-                </Link>
-              </div>
+              <nav className="space-y-1">
+                <a href="#overview" className="block text-sm hover:text-blue-600 py-1">
+                  Maturity Level Overview
+                </a>
+                <a href="#implementation" className="block text-sm hover:text-blue-600 py-1">
+                  Key Implementation Steps
+                </a>
+                <a href="#challenges" className="block text-sm hover:text-blue-600 py-1">
+                  Common Challenges
+                </a>
+                <a href="#templates" className="block text-sm hover:text-blue-600 py-1">
+                  Templates and Resources
+                </a>
+              </nav>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>Need More Help?</CardTitle>
-              <CardDescription>Additional support options</CardDescription>
+              <CardTitle className="text-lg">Maturity Levels</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="p-3 bg-slate-50 rounded-md">
-                  <h4 className="font-medium text-sm">Schedule a Consultation</h4>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Book a 30-minute call with a cybersecurity expert to discuss your specific challenges
-                  </p>
-                  <Button size="sm" className="w-full mt-2">
-                    Request Consultation
-                  </Button>
-                </div>
-
-                <div className="p-3 bg-slate-50 rounded-md">
-                  <h4 className="font-medium text-sm">Join the Community</h4>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Connect with peers in legal IT to share experiences and best practices
-                  </p>
-                  <Button variant="outline" size="sm" className="w-full mt-2">
-                    Join Forum
-                  </Button>
-                </div>
+            <CardContent className="space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-blue-600"></div>
+                <span className="text-sm font-medium">Initial (Current)</span>
               </div>
+              <Separator />
+              <Link href="/playbook/domains/cybersecurity/developing" className="flex items-center gap-2 py-1">
+                <div className="w-2 h-2 rounded-full bg-gray-300"></div>
+                <span className="text-sm text-muted-foreground hover:text-blue-600">Developing</span>
+              </Link>
+              <Link href="/playbook/domains/cybersecurity/established" className="flex items-center gap-2 py-1">
+                <div className="w-2 h-2 rounded-full bg-gray-300"></div>
+                <span className="text-sm text-muted-foreground hover:text-blue-600">Established</span>
+              </Link>
+              <Link href="/playbook/domains/cybersecurity/managed" className="flex items-center gap-2 py-1">
+                <div className="w-2 h-2 rounded-full bg-gray-300"></div>
+                <span className="text-sm text-muted-foreground hover:text-blue-600">Managed</span>
+              </Link>
+              <Link href="/playbook/domains/cybersecurity/optimized" className="flex items-center gap-2 py-1">
+                <div className="w-2 h-2 rounded-full bg-gray-300"></div>
+                <span className="text-sm text-muted-foreground hover:text-blue-600">Optimized</span>
+              </Link>
             </CardContent>
           </Card>
         </div>
       </div>
-
-      <Separator className="my-8" />
 
       <div className="flex justify-between">
         <Link href="/playbook/domains/cybersecurity">
           <Button variant="outline" className="gap-2">
             <ArrowLeft className="h-4 w-4" />
-            Back to Cybersecurity Domain
+            Back to Domain
           </Button>
         </Link>
-
-        <Link href="/playbook/roadmap?phase=1">
+        <Link href="/playbook/domains/cybersecurity/developing">
           <Button className="gap-2">
-            View Implementation Roadmap
+            Next: Developing Maturity
             <ArrowRight className="h-4 w-4" />
           </Button>
         </Link>
