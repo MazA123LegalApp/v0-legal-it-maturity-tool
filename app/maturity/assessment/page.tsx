@@ -14,7 +14,13 @@ import { type AssessmentResult, domains, getEmptyResults, dimensionDetails } fro
 
 export default function AssessmentPage() {
   const [activeTab, setActiveTab] = useState(domains[0].id)
-  const [activeDimension, setActiveDimension] = useState<string | null>("people")
+  const [activeLevels, setActiveLevels] = useState<Record<string, number | null>>({
+    people: null,
+    process: null,
+    tooling: null,
+    data: null,
+    improvement: null,
+  })
   const [results, setResults] = useState<AssessmentResult>(() => {
     // Try to load saved results from localStorage
     if (typeof window !== "undefined") {
@@ -65,6 +71,13 @@ export default function AssessmentPage() {
     setActiveTab(domains[0].id)
   }
 
+  const toggleLevelDetails = (dimension: string, level: number | null) => {
+    setActiveLevels((prev) => ({
+      ...prev,
+      [dimension]: prev[dimension] === level ? null : level,
+    }))
+  }
+
   const getNextTab = () => {
     const currentIndex = domains.findIndex((domain) => domain.id === activeTab)
     if (currentIndex < domains.length - 1) {
@@ -83,6 +96,17 @@ export default function AssessmentPage() {
 
   const isLastTab = activeTab === domains[domains.length - 1].id
   const isFirstTab = activeTab === domains[0].id
+
+  const getLevelButtonClass = (dimension: string, level: number) => {
+    const isActive = activeLevels[dimension] === level
+    const baseClasses = "px-3 py-1.5 text-sm font-medium rounded-md transition-colors"
+
+    if (isActive) {
+      return `${baseClasses} bg-primary text-primary-foreground`
+    }
+
+    return `${baseClasses} bg-muted hover:bg-muted/80`
+  }
 
   return (
     <div className="container max-w-6xl py-6 md:py-10">
@@ -139,84 +163,83 @@ export default function AssessmentPage() {
               <CardContent className="space-y-8">
                 {/* People Dimension */}
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-medium">People & Organization</h3>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setActiveDimension(activeDimension === "people" ? null : "people")}
-                      className="text-sm"
-                    >
-                      {activeDimension === "people" ? "Hide Levels" : "Show Levels"}
-                    </Button>
-                  </div>
+                  <h3 className="text-lg font-medium mb-2">People & Organization</h3>
                   <p className="text-sm text-muted-foreground mb-4">
                     Rate the maturity of roles, responsibilities, skills, and organizational structure.
                   </p>
 
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div>
-                      <RadioGroup
-                        value={results[domain.id].people.toString()}
-                        onValueChange={(value) => handleScoreChange(domain.id, "people", Number.parseInt(value))}
-                        className="space-y-3"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="1" id={`${domain.id}-people-1`} />
-                          <Label htmlFor={`${domain.id}-people-1`} className="text-sm">
-                            1 - Initial: Ad-hoc, undefined roles and responsibilities
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="2" id={`${domain.id}-people-2`} />
-                          <Label htmlFor={`${domain.id}-people-2`} className="text-sm">
-                            2 - Managed: Basic roles defined but inconsistent
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="3" id={`${domain.id}-people-3`} />
-                          <Label htmlFor={`${domain.id}-people-3`} className="text-sm">
-                            3 - Defined: Clear roles and responsibilities documented
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="4" id={`${domain.id}-people-4`} />
-                          <Label htmlFor={`${domain.id}-people-4`} className="text-sm">
-                            4 - Quantitatively Managed: Roles optimized with performance metrics
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="5" id={`${domain.id}-people-5`} />
-                          <Label htmlFor={`${domain.id}-people-5`} className="text-sm">
-                            5 - Optimizing: Continuous improvement of organizational structure
-                          </Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-
-                    {activeDimension === "people" && (
-                      <div className="bg-muted/50 p-4 rounded-md">
-                        <h4 className="font-medium mb-2">Maturity Level Descriptions</h4>
-                        <div className="space-y-3">
-                          {dimensionDetails.people.levels.map((level) => (
-                            <div key={level.level} className="text-sm">
-                              <div className="font-medium">
-                                Level {level.level}: {level.title}
-                              </div>
-                              <p className="text-muted-foreground mb-1">{level.description}</p>
-                              <div className="pl-4 mt-1">
-                                <div className="text-xs font-medium mb-1">What to look for:</div>
-                                <ul className="list-disc pl-4 space-y-1 text-xs">
-                                  {level.examples.map((example, i) => (
-                                    <li key={i}>{example}</li>
-                                  ))}
-                                </ul>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
+                  <div className="space-y-6">
+                    <RadioGroup
+                      value={results[domain.id].people.toString()}
+                      onValueChange={(value) => handleScoreChange(domain.id, "people", Number.parseInt(value))}
+                      className="space-y-3"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="1" id={`${domain.id}-people-1`} />
+                        <Label htmlFor={`${domain.id}-people-1`} className="text-sm">
+                          1 - Initial: Ad-hoc, undefined roles and responsibilities
+                        </Label>
                       </div>
-                    )}
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="2" id={`${domain.id}-people-2`} />
+                        <Label htmlFor={`${domain.id}-people-2`} className="text-sm">
+                          2 - Managed: Basic roles defined but inconsistent
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="3" id={`${domain.id}-people-3`} />
+                        <Label htmlFor={`${domain.id}-people-3`} className="text-sm">
+                          3 - Defined: Clear roles and responsibilities documented
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="4" id={`${domain.id}-people-4`} />
+                        <Label htmlFor={`${domain.id}-people-4`} className="text-sm">
+                          4 - Quantitatively Managed: Roles optimized with performance metrics
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="5" id={`${domain.id}-people-5`} />
+                        <Label htmlFor={`${domain.id}-people-5`} className="text-sm">
+                          5 - Optimizing: Continuous improvement of organizational structure
+                        </Label>
+                      </div>
+                    </RadioGroup>
+
+                    <div>
+                      <div className="text-sm font-medium mb-2">Maturity Level Details (click to view):</div>
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {[1, 2, 3, 4, 5].map((level) => (
+                          <button
+                            key={level}
+                            onClick={() => toggleLevelDetails("people", level)}
+                            className={getLevelButtonClass("people", level)}
+                            aria-pressed={activeLevels.people === level}
+                          >
+                            Level {level}
+                          </button>
+                        ))}
+                      </div>
+
+                      {activeLevels.people !== null && (
+                        <div className="bg-muted/50 p-4 rounded-md mt-2">
+                          <div className="font-medium">
+                            Level {activeLevels.people}: {dimensionDetails.people.levels[activeLevels.people - 1].title}
+                          </div>
+                          <p className="text-muted-foreground my-2">
+                            {dimensionDetails.people.levels[activeLevels.people - 1].description}
+                          </p>
+                          <div className="mt-2">
+                            <div className="text-sm font-medium mb-1">What to look for:</div>
+                            <ul className="list-disc pl-5 space-y-1 text-sm">
+                              {dimensionDetails.people.levels[activeLevels.people - 1].examples.map((example, i) => (
+                                <li key={i}>{example}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -224,84 +247,84 @@ export default function AssessmentPage() {
 
                 {/* Process Dimension */}
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-medium">Process</h3>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setActiveDimension(activeDimension === "process" ? null : "process")}
-                      className="text-sm"
-                    >
-                      {activeDimension === "process" ? "Hide Levels" : "Show Levels"}
-                    </Button>
-                  </div>
+                  <h3 className="text-lg font-medium mb-2">Process</h3>
                   <p className="text-sm text-muted-foreground mb-4">
                     Rate the maturity of processes, procedures, and workflows.
                   </p>
 
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div>
-                      <RadioGroup
-                        value={results[domain.id].process.toString()}
-                        onValueChange={(value) => handleScoreChange(domain.id, "process", Number.parseInt(value))}
-                        className="space-y-3"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="1" id={`${domain.id}-process-1`} />
-                          <Label htmlFor={`${domain.id}-process-1`} className="text-sm">
-                            1 - Initial: Ad-hoc, undocumented processes
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="2" id={`${domain.id}-process-2`} />
-                          <Label htmlFor={`${domain.id}-process-2`} className="text-sm">
-                            2 - Managed: Basic processes defined but inconsistent
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="3" id={`${domain.id}-process-3`} />
-                          <Label htmlFor={`${domain.id}-process-3`} className="text-sm">
-                            3 - Defined: Standardized processes documented and followed
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="4" id={`${domain.id}-process-4`} />
-                          <Label htmlFor={`${domain.id}-process-4`} className="text-sm">
-                            4 - Quantitatively Managed: Processes measured and controlled
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="5" id={`${domain.id}-process-5`} />
-                          <Label htmlFor={`${domain.id}-process-5`} className="text-sm">
-                            5 - Optimizing: Continuous process improvement
-                          </Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-
-                    {activeDimension === "process" && (
-                      <div className="bg-muted/50 p-4 rounded-md">
-                        <h4 className="font-medium mb-2">Maturity Level Descriptions</h4>
-                        <div className="space-y-3">
-                          {dimensionDetails.process.levels.map((level) => (
-                            <div key={level.level} className="text-sm">
-                              <div className="font-medium">
-                                Level {level.level}: {level.title}
-                              </div>
-                              <p className="text-muted-foreground mb-1">{level.description}</p>
-                              <div className="pl-4 mt-1">
-                                <div className="text-xs font-medium mb-1">What to look for:</div>
-                                <ul className="list-disc pl-4 space-y-1 text-xs">
-                                  {level.examples.map((example, i) => (
-                                    <li key={i}>{example}</li>
-                                  ))}
-                                </ul>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
+                  <div className="space-y-6">
+                    <RadioGroup
+                      value={results[domain.id].process.toString()}
+                      onValueChange={(value) => handleScoreChange(domain.id, "process", Number.parseInt(value))}
+                      className="space-y-3"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="1" id={`${domain.id}-process-1`} />
+                        <Label htmlFor={`${domain.id}-process-1`} className="text-sm">
+                          1 - Initial: Ad-hoc, undocumented processes
+                        </Label>
                       </div>
-                    )}
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="2" id={`${domain.id}-process-2`} />
+                        <Label htmlFor={`${domain.id}-process-2`} className="text-sm">
+                          2 - Managed: Basic processes defined but inconsistent
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="3" id={`${domain.id}-process-3`} />
+                        <Label htmlFor={`${domain.id}-process-3`} className="text-sm">
+                          3 - Defined: Standardized processes documented and followed
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="4" id={`${domain.id}-process-4`} />
+                        <Label htmlFor={`${domain.id}-process-4`} className="text-sm">
+                          4 - Quantitatively Managed: Processes measured and controlled
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="5" id={`${domain.id}-process-5`} />
+                        <Label htmlFor={`${domain.id}-process-5`} className="text-sm">
+                          5 - Optimizing: Continuous process improvement
+                        </Label>
+                      </div>
+                    </RadioGroup>
+
+                    <div>
+                      <div className="text-sm font-medium mb-2">Maturity Level Details (click to view):</div>
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {[1, 2, 3, 4, 5].map((level) => (
+                          <button
+                            key={level}
+                            onClick={() => toggleLevelDetails("process", level)}
+                            className={getLevelButtonClass("process", level)}
+                            aria-pressed={activeLevels.process === level}
+                          >
+                            Level {level}
+                          </button>
+                        ))}
+                      </div>
+
+                      {activeLevels.process !== null && (
+                        <div className="bg-muted/50 p-4 rounded-md mt-2">
+                          <div className="font-medium">
+                            Level {activeLevels.process}:{" "}
+                            {dimensionDetails.process.levels[activeLevels.process - 1].title}
+                          </div>
+                          <p className="text-muted-foreground my-2">
+                            {dimensionDetails.process.levels[activeLevels.process - 1].description}
+                          </p>
+                          <div className="mt-2">
+                            <div className="text-sm font-medium mb-1">What to look for:</div>
+                            <ul className="list-disc pl-5 space-y-1 text-sm">
+                              {dimensionDetails.process.levels[activeLevels.process - 1].examples.map((example, i) => (
+                                <li key={i}>{example}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -309,84 +332,84 @@ export default function AssessmentPage() {
 
                 {/* Tooling Dimension */}
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-medium">Tooling</h3>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setActiveDimension(activeDimension === "tooling" ? null : "tooling")}
-                      className="text-sm"
-                    >
-                      {activeDimension === "tooling" ? "Hide Levels" : "Show Levels"}
-                    </Button>
-                  </div>
+                  <h3 className="text-lg font-medium mb-2">Tooling</h3>
                   <p className="text-sm text-muted-foreground mb-4">
                     Rate the maturity of tools, systems, and technology used.
                   </p>
 
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div>
-                      <RadioGroup
-                        value={results[domain.id].tooling.toString()}
-                        onValueChange={(value) => handleScoreChange(domain.id, "tooling", Number.parseInt(value))}
-                        className="space-y-3"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="1" id={`${domain.id}-tooling-1`} />
-                          <Label htmlFor={`${domain.id}-tooling-1`} className="text-sm">
-                            1 - Initial: Basic or manual tools with limited functionality
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="2" id={`${domain.id}-tooling-2`} />
-                          <Label htmlFor={`${domain.id}-tooling-2`} className="text-sm">
-                            2 - Managed: Tools in place but not integrated
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="3" id={`${domain.id}-tooling-3`} />
-                          <Label htmlFor={`${domain.id}-tooling-3`} className="text-sm">
-                            3 - Defined: Standardized tools with some integration
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="4" id={`${domain.id}-tooling-4`} />
-                          <Label htmlFor={`${domain.id}-tooling-4`} className="text-sm">
-                            4 - Quantitatively Managed: Integrated tools with analytics
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="5" id={`${domain.id}-tooling-5`} />
-                          <Label htmlFor={`${domain.id}-tooling-5`} className="text-sm">
-                            5 - Optimizing: Advanced tools with automation and continuous improvement
-                          </Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-
-                    {activeDimension === "tooling" && (
-                      <div className="bg-muted/50 p-4 rounded-md">
-                        <h4 className="font-medium mb-2">Maturity Level Descriptions</h4>
-                        <div className="space-y-3">
-                          {dimensionDetails.tooling.levels.map((level) => (
-                            <div key={level.level} className="text-sm">
-                              <div className="font-medium">
-                                Level {level.level}: {level.title}
-                              </div>
-                              <p className="text-muted-foreground mb-1">{level.description}</p>
-                              <div className="pl-4 mt-1">
-                                <div className="text-xs font-medium mb-1">What to look for:</div>
-                                <ul className="list-disc pl-4 space-y-1 text-xs">
-                                  {level.examples.map((example, i) => (
-                                    <li key={i}>{example}</li>
-                                  ))}
-                                </ul>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
+                  <div className="space-y-6">
+                    <RadioGroup
+                      value={results[domain.id].tooling.toString()}
+                      onValueChange={(value) => handleScoreChange(domain.id, "tooling", Number.parseInt(value))}
+                      className="space-y-3"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="1" id={`${domain.id}-tooling-1`} />
+                        <Label htmlFor={`${domain.id}-tooling-1`} className="text-sm">
+                          1 - Initial: Basic or manual tools with limited functionality
+                        </Label>
                       </div>
-                    )}
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="2" id={`${domain.id}-tooling-2`} />
+                        <Label htmlFor={`${domain.id}-tooling-2`} className="text-sm">
+                          2 - Managed: Tools in place but not integrated
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="3" id={`${domain.id}-tooling-3`} />
+                        <Label htmlFor={`${domain.id}-tooling-3`} className="text-sm">
+                          3 - Defined: Standardized tools with some integration
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="4" id={`${domain.id}-tooling-4`} />
+                        <Label htmlFor={`${domain.id}-tooling-4`} className="text-sm">
+                          4 - Quantitatively Managed: Integrated tools with analytics
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="5" id={`${domain.id}-tooling-5`} />
+                        <Label htmlFor={`${domain.id}-tooling-5`} className="text-sm">
+                          5 - Optimizing: Advanced tools with automation and continuous improvement
+                        </Label>
+                      </div>
+                    </RadioGroup>
+
+                    <div>
+                      <div className="text-sm font-medium mb-2">Maturity Level Details (click to view):</div>
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {[1, 2, 3, 4, 5].map((level) => (
+                          <button
+                            key={level}
+                            onClick={() => toggleLevelDetails("tooling", level)}
+                            className={getLevelButtonClass("tooling", level)}
+                            aria-pressed={activeLevels.tooling === level}
+                          >
+                            Level {level}
+                          </button>
+                        ))}
+                      </div>
+
+                      {activeLevels.tooling !== null && (
+                        <div className="bg-muted/50 p-4 rounded-md mt-2">
+                          <div className="font-medium">
+                            Level {activeLevels.tooling}:{" "}
+                            {dimensionDetails.tooling.levels[activeLevels.tooling - 1].title}
+                          </div>
+                          <p className="text-muted-foreground my-2">
+                            {dimensionDetails.tooling.levels[activeLevels.tooling - 1].description}
+                          </p>
+                          <div className="mt-2">
+                            <div className="text-sm font-medium mb-1">What to look for:</div>
+                            <ul className="list-disc pl-5 space-y-1 text-sm">
+                              {dimensionDetails.tooling.levels[activeLevels.tooling - 1].examples.map((example, i) => (
+                                <li key={i}>{example}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -394,84 +417,83 @@ export default function AssessmentPage() {
 
                 {/* Data Dimension */}
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-medium">Data</h3>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setActiveDimension(activeDimension === "data" ? null : "data")}
-                      className="text-sm"
-                    >
-                      {activeDimension === "data" ? "Hide Levels" : "Show Levels"}
-                    </Button>
-                  </div>
+                  <h3 className="text-lg font-medium mb-2">Data</h3>
                   <p className="text-sm text-muted-foreground mb-4">
                     Rate the maturity of data management, quality, and analytics.
                   </p>
 
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div>
-                      <RadioGroup
-                        value={results[domain.id].data.toString()}
-                        onValueChange={(value) => handleScoreChange(domain.id, "data", Number.parseInt(value))}
-                        className="space-y-3"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="1" id={`${domain.id}-data-1`} />
-                          <Label htmlFor={`${domain.id}-data-1`} className="text-sm">
-                            1 - Initial: Ad-hoc data collection with no formal management
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="2" id={`${domain.id}-data-2`} />
-                          <Label htmlFor={`${domain.id}-data-2`} className="text-sm">
-                            2 - Managed: Basic data management but inconsistent quality
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="3" id={`${domain.id}-data-3`} />
-                          <Label htmlFor={`${domain.id}-data-3`} className="text-sm">
-                            3 - Defined: Standardized data management practices
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="4" id={`${domain.id}-data-4`} />
-                          <Label htmlFor={`${domain.id}-data-4`} className="text-sm">
-                            4 - Quantitatively Managed: Data-driven decision making with analytics
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="5" id={`${domain.id}-data-5`} />
-                          <Label htmlFor={`${domain.id}-data-5`} className="text-sm">
-                            5 - Optimizing: Advanced analytics with continuous data quality improvement
-                          </Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-
-                    {activeDimension === "data" && (
-                      <div className="bg-muted/50 p-4 rounded-md">
-                        <h4 className="font-medium mb-2">Maturity Level Descriptions</h4>
-                        <div className="space-y-3">
-                          {dimensionDetails.data.levels.map((level) => (
-                            <div key={level.level} className="text-sm">
-                              <div className="font-medium">
-                                Level {level.level}: {level.title}
-                              </div>
-                              <p className="text-muted-foreground mb-1">{level.description}</p>
-                              <div className="pl-4 mt-1">
-                                <div className="text-xs font-medium mb-1">What to look for:</div>
-                                <ul className="list-disc pl-4 space-y-1 text-xs">
-                                  {level.examples.map((example, i) => (
-                                    <li key={i}>{example}</li>
-                                  ))}
-                                </ul>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
+                  <div className="space-y-6">
+                    <RadioGroup
+                      value={results[domain.id].data.toString()}
+                      onValueChange={(value) => handleScoreChange(domain.id, "data", Number.parseInt(value))}
+                      className="space-y-3"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="1" id={`${domain.id}-data-1`} />
+                        <Label htmlFor={`${domain.id}-data-1`} className="text-sm">
+                          1 - Initial: Ad-hoc data collection with no formal management
+                        </Label>
                       </div>
-                    )}
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="2" id={`${domain.id}-data-2`} />
+                        <Label htmlFor={`${domain.id}-data-2`} className="text-sm">
+                          2 - Managed: Basic data management but inconsistent quality
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="3" id={`${domain.id}-data-3`} />
+                        <Label htmlFor={`${domain.id}-data-3`} className="text-sm">
+                          3 - Defined: Standardized data management practices
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="4" id={`${domain.id}-data-4`} />
+                        <Label htmlFor={`${domain.id}-data-4`} className="text-sm">
+                          4 - Quantitatively Managed: Data-driven decision making with analytics
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="5" id={`${domain.id}-data-5`} />
+                        <Label htmlFor={`${domain.id}-data-5`} className="text-sm">
+                          5 - Optimizing: Advanced analytics with continuous data quality improvement
+                        </Label>
+                      </div>
+                    </RadioGroup>
+
+                    <div>
+                      <div className="text-sm font-medium mb-2">Maturity Level Details (click to view):</div>
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {[1, 2, 3, 4, 5].map((level) => (
+                          <button
+                            key={level}
+                            onClick={() => toggleLevelDetails("data", level)}
+                            className={getLevelButtonClass("data", level)}
+                            aria-pressed={activeLevels.data === level}
+                          >
+                            Level {level}
+                          </button>
+                        ))}
+                      </div>
+
+                      {activeLevels.data !== null && (
+                        <div className="bg-muted/50 p-4 rounded-md mt-2">
+                          <div className="font-medium">
+                            Level {activeLevels.data}: {dimensionDetails.data.levels[activeLevels.data - 1].title}
+                          </div>
+                          <p className="text-muted-foreground my-2">
+                            {dimensionDetails.data.levels[activeLevels.data - 1].description}
+                          </p>
+                          <div className="mt-2">
+                            <div className="text-sm font-medium mb-1">What to look for:</div>
+                            <ul className="list-disc pl-5 space-y-1 text-sm">
+                              {dimensionDetails.data.levels[activeLevels.data - 1].examples.map((example, i) => (
+                                <li key={i}>{example}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -479,84 +501,86 @@ export default function AssessmentPage() {
 
                 {/* Improvement Dimension */}
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-medium">Continual Improvement</h3>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setActiveDimension(activeDimension === "improvement" ? null : "improvement")}
-                      className="text-sm"
-                    >
-                      {activeDimension === "improvement" ? "Hide Levels" : "Show Levels"}
-                    </Button>
-                  </div>
+                  <h3 className="text-lg font-medium mb-2">Continual Improvement</h3>
                   <p className="text-sm text-muted-foreground mb-4">
                     Rate the maturity of improvement processes, feedback loops, and innovation.
                   </p>
 
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div>
-                      <RadioGroup
-                        value={results[domain.id].improvement.toString()}
-                        onValueChange={(value) => handleScoreChange(domain.id, "improvement", Number.parseInt(value))}
-                        className="space-y-3"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="1" id={`${domain.id}-improvement-1`} />
-                          <Label htmlFor={`${domain.id}-improvement-1`} className="text-sm">
-                            1 - Initial: Reactive improvements with no formal process
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="2" id={`${domain.id}-improvement-2`} />
-                          <Label htmlFor={`${domain.id}-improvement-2`} className="text-sm">
-                            2 - Managed: Basic improvement processes but inconsistent
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="3" id={`${domain.id}-improvement-3`} />
-                          <Label htmlFor={`${domain.id}-improvement-3`} className="text-sm">
-                            3 - Defined: Standardized improvement processes with feedback loops
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="4" id={`${domain.id}-improvement-4`} />
-                          <Label htmlFor={`${domain.id}-improvement-4`} className="text-sm">
-                            4 - Quantitatively Managed: Measured improvement with metrics
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="5" id={`${domain.id}-improvement-5`} />
-                          <Label htmlFor={`${domain.id}-improvement-5`} className="text-sm">
-                            5 - Optimizing: Culture of continuous improvement and innovation
-                          </Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-
-                    {activeDimension === "improvement" && (
-                      <div className="bg-muted/50 p-4 rounded-md">
-                        <h4 className="font-medium mb-2">Maturity Level Descriptions</h4>
-                        <div className="space-y-3">
-                          {dimensionDetails.improvement.levels.map((level) => (
-                            <div key={level.level} className="text-sm">
-                              <div className="font-medium">
-                                Level {level.level}: {level.title}
-                              </div>
-                              <p className="text-muted-foreground mb-1">{level.description}</p>
-                              <div className="pl-4 mt-1">
-                                <div className="text-xs font-medium mb-1">What to look for:</div>
-                                <ul className="list-disc pl-4 space-y-1 text-xs">
-                                  {level.examples.map((example, i) => (
-                                    <li key={i}>{example}</li>
-                                  ))}
-                                </ul>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
+                  <div className="space-y-6">
+                    <RadioGroup
+                      value={results[domain.id].improvement.toString()}
+                      onValueChange={(value) => handleScoreChange(domain.id, "improvement", Number.parseInt(value))}
+                      className="space-y-3"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="1" id={`${domain.id}-improvement-1`} />
+                        <Label htmlFor={`${domain.id}-improvement-1`} className="text-sm">
+                          1 - Initial: Reactive improvements with no formal process
+                        </Label>
                       </div>
-                    )}
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="2" id={`${domain.id}-improvement-2`} />
+                        <Label htmlFor={`${domain.id}-improvement-2`} className="text-sm">
+                          2 - Managed: Basic improvement processes but inconsistent
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="3" id={`${domain.id}-improvement-3`} />
+                        <Label htmlFor={`${domain.id}-improvement-3`} className="text-sm">
+                          3 - Defined: Standardized improvement processes with feedback loops
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="4" id={`${domain.id}-improvement-4`} />
+                        <Label htmlFor={`${domain.id}-improvement-4`} className="text-sm">
+                          4 - Quantitatively Managed: Measured improvement with metrics
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="5" id={`${domain.id}-improvement-5`} />
+                        <Label htmlFor={`${domain.id}-improvement-5`} className="text-sm">
+                          5 - Optimizing: Culture of continuous improvement and innovation
+                        </Label>
+                      </div>
+                    </RadioGroup>
+
+                    <div>
+                      <div className="text-sm font-medium mb-2">Maturity Level Details (click to view):</div>
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {[1, 2, 3, 4, 5].map((level) => (
+                          <button
+                            key={level}
+                            onClick={() => toggleLevelDetails("improvement", level)}
+                            className={getLevelButtonClass("improvement", level)}
+                            aria-pressed={activeLevels.improvement === level}
+                          >
+                            Level {level}
+                          </button>
+                        ))}
+                      </div>
+
+                      {activeLevels.improvement !== null && (
+                        <div className="bg-muted/50 p-4 rounded-md mt-2">
+                          <div className="font-medium">
+                            Level {activeLevels.improvement}:{" "}
+                            {dimensionDetails.improvement.levels[activeLevels.improvement - 1].title}
+                          </div>
+                          <p className="text-muted-foreground my-2">
+                            {dimensionDetails.improvement.levels[activeLevels.improvement - 1].description}
+                          </p>
+                          <div className="mt-2">
+                            <div className="text-sm font-medium mb-1">What to look for:</div>
+                            <ul className="list-disc pl-5 space-y-1 text-sm">
+                              {dimensionDetails.improvement.levels[activeLevels.improvement - 1].examples.map(
+                                (example, i) => (
+                                  <li key={i}>{example}</li>
+                                ),
+                              )}
+                            </ul>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </CardContent>
