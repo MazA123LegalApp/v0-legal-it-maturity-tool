@@ -16,7 +16,7 @@ interface CustomWindow extends Window {
 // Cast window to CustomWindow
 declare const window: CustomWindow
 
-const ExportButton: React.FC<ExportButtonProps> = ({ onExport }) => {
+export const WorkingExportButton: React.FC<ExportButtonProps> = ({ onExport }) => {
   useEffect(() => {
     // Make sure the tracking function is available
     if (typeof window !== "undefined" && !window.trackDownload) {
@@ -44,4 +44,5 @@ const ExportButton: React.FC<ExportButtonProps> = ({ onExport }) => {
   return <button onClick={handleExport}>Export</button>
 }
 
-export default ExportButton
+// Keep the default export for backward compatibility
+export default WorkingExportButton
