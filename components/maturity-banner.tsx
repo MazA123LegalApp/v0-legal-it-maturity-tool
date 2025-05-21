@@ -1,65 +1,68 @@
-import Link from "next/link"
-import { ArrowRight, Compass } from "lucide-react"
+"use client"
 
-import { Button } from "@/components/ui/button"
-import { getMaturityColor, getMaturityBgColor } from "@/lib/assessment-data"
-import type { DomainMaturityInfo } from "@/lib/assessment-utils"
+import { Card, CardContent } from "@/components/ui/card"
+import { Progress } from "@/components/ui/progress"
 
 interface MaturityBannerProps {
-  domainId: string
-  domainName: string
-  maturityInfo: DomainMaturityInfo
+  level: number
 }
 
-export function MaturityBanner({ domainId, domainName, maturityInfo }: MaturityBannerProps) {
-  if (!maturityInfo.hasCompleted) {
-    return (
-      <div className="mb-8 p-6 border border-dashed border-slate-300 rounded-lg bg-slate-50">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          <div className="flex-1">
-            <h3 className="text-lg font-medium text-slate-800 mb-1">Complete your assessment</h3>
-            <p className="text-slate-600">
-              Take the maturity assessment to receive personalized recommendations for {domainName}.
-            </p>
-          </div>
-          <Link href="/maturity/assessment">
-            <Button className="whitespace-nowrap">Start Assessment</Button>
-          </Link>
-        </div>
-      </div>
-    )
+export function MaturityBanner({ level }: MaturityBannerProps) {
+  const getMaturityLabel = (level: number) => {
+    switch (level) {
+      case 1:
+        return "Initial"
+      case 2:
+        return "Developing"
+      case 3:
+        return "Established"
+      case 4:
+        return "Managed"
+      case 5:
+        return "Optimized"
+      default:
+        return "Unknown"
+    }
   }
 
-  // Create a URL to the band-specific implementation guide
-  const bandLowercase = maturityInfo.level.toLowerCase()
-  const implementationGuideUrl = `/playbook/domains/${domainId}/${bandLowercase}`
+  const getMaturityDescription = (level: number) => {
+    switch (level) {
+      case 1:
+        return "Basic, reactive practices with minimal documentation"
+      case 2:
+        return "Developing processes with some standardization"
+      case 3:
+        return "Established, documented processes across the organization"
+      case 4:
+        return "Measured and controlled processes with quantitative management"
+      case 5:
+        return "Continuously improving processes focused on optimization"
+      default:
+        return ""
+    }
+  }
+
+  const progress = (level / 5) * 100
 
   return (
-    <div className={`mb-8 p-6 rounded-lg ${getMaturityBgColor(maturityInfo.score)}`}>
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        <div className="flex items-center gap-3">
-          <div className="bg-white p-2 rounded-full">
-            <Compass className="h-5 w-5 text-blue-600" />
+    <Card>
+      <CardContent className="p-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-semibold mb-1">
+              {getMaturityLabel(level)} Maturity (Level {level}/5)
+            </h2>
+            <p className="text-muted-foreground">{getMaturityDescription(level)}</p>
           </div>
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <h3 className="text-lg font-medium text-slate-800">Your {domainName} Maturity:</h3>
-              <span className={`font-bold ${getMaturityColor(maturityInfo.score)}`}>
-                {maturityInfo.level} ({maturityInfo.score.toFixed(1)})
-              </span>
+          <div className="md:w-1/3">
+            <Progress value={progress} className="h-3" />
+            <div className="flex justify-between mt-1 text-xs text-muted-foreground">
+              <span>Initial</span>
+              <span>Optimized</span>
             </div>
-            <p className="text-slate-600">
-              Based on your assessment, we've prepared a tailored implementation guide for your maturity level.
-            </p>
           </div>
         </div>
-        <Link href={implementationGuideUrl}>
-          <Button className="whitespace-nowrap gap-2">
-            View Implementation Guide
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        </Link>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }

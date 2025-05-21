@@ -1,12 +1,11 @@
 "use client"
 
-import type React from "react"
-
-import { useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
+
+import type React from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { ArrowRight, Download } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { type MaturityBand, getTemplatesForDomain } from "@/lib/maturity-engine"
@@ -19,6 +18,7 @@ interface MaturityContentSectionProps {
   description?: string
   children: React.ReactNode
   showTemplates?: boolean
+  icon?: React.ReactNode
 }
 
 export function MaturityContentSection({
@@ -28,6 +28,7 @@ export function MaturityContentSection({
   description,
   children,
   showTemplates = true,
+  icon,
 }: MaturityContentSectionProps) {
   const searchParams = useSearchParams()
   const highlightParam = searchParams?.get("highlight")
@@ -59,9 +60,12 @@ export function MaturityContentSection({
     <Card className={`mb-6 ${bgColor}`}>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>{title}</CardTitle>
-            {description && <CardDescription>{description}</CardDescription>}
+          <div className="flex items-center gap-2">
+            {icon}
+            <div>
+              <CardTitle>{title}</CardTitle>
+              {description && <CardDescription>{description}</CardDescription>}
+            </div>
           </div>
           {isUserMaturityLevel && (
             <div className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
