@@ -244,6 +244,15 @@ export default function PlaybookLandingPage() {
               </CardContent>
             </Card>
           </div>
+
+          <div className="text-center">
+            <Link href="/playbook/case-study">
+              <Button variant="outline" size="lg" className="gap-2">
+                <FileText className="h-5 w-5" />
+                Read Case Study: Strengthening IT Continuity
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
 
