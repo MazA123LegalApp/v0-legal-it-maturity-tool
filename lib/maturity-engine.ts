@@ -318,20 +318,143 @@ export function getTemplatesForDomain(domainId: string, band: MaturityBand): Tem
         },
       ],
     },
-    // Add similar template structures for other domains
     "risk-compliance": {
       Initial: [
         {
-          name: "Basic Risk Register Template",
+          name: "Basic Policy Register",
+          description: "Simple template for tracking policies and their status",
+          fileType: "xlsx",
+          url: "/templates/risk-compliance/basic-policy-register.xlsx",
+        },
+        {
+          name: "Compliance Obligations Discovery Sheet",
+          description: "Template for identifying and documenting compliance requirements",
+          fileType: "xlsx",
+          url: "/templates/risk-compliance/compliance-discovery.xlsx",
+        },
+        {
+          name: "Risk Log Template (Beginner)",
           description: "Simple risk register for tracking basic risks",
           fileType: "xlsx",
           url: "/templates/risk-compliance/basic-risk-register.xlsx",
         },
+        {
+          name: "Risk & Compliance Roles Overview",
+          description: "Template for defining compliance responsibilities",
+          fileType: "docx",
+          url: "/templates/risk-compliance/compliance-roles.docx",
+        },
       ],
-      Developing: [],
-      Established: [],
-      Managed: [],
-      Optimized: [],
+      Developing: [
+        {
+          name: "Compliance Obligation Register (Starter Format)",
+          description: "Comprehensive register for tracking compliance requirements",
+          fileType: "xlsx",
+          url: "/templates/risk-compliance/compliance-register.xlsx",
+        },
+        {
+          name: "Policy Register & Review Schedule",
+          description: "Template for managing policy review cycles",
+          fileType: "xlsx",
+          url: "/templates/risk-compliance/policy-review-schedule.xlsx",
+        },
+        {
+          name: "Internal Audit Readiness Checklist",
+          description: "Checklist for preparing for internal or client audits",
+          fileType: "xlsx",
+          url: "/templates/risk-compliance/audit-readiness.xlsx",
+        },
+        {
+          name: "Simple Risk Tracker (Excel)",
+          description: "Intermediate risk register with assessment capabilities",
+          fileType: "xlsx",
+          url: "/templates/risk-compliance/risk-tracker.xlsx",
+        },
+      ],
+      Established: [
+        {
+          name: "Risk & Compliance Committee Charter",
+          description: "Template for establishing a formal governance committee",
+          fileType: "docx",
+          url: "/templates/risk-compliance/committee-charter.docx",
+        },
+        {
+          name: "Comprehensive Risk Assessment Framework",
+          description: "Structured methodology for assessing and scoring risks",
+          fileType: "xlsx",
+          url: "/templates/risk-compliance/risk-assessment-framework.xlsx",
+        },
+        {
+          name: "Policy Hierarchy Template",
+          description: "Framework for organizing policies, standards, and procedures",
+          fileType: "docx",
+          url: "/templates/risk-compliance/policy-hierarchy.docx",
+        },
+        {
+          name: "Compliance Monitoring Program Guide",
+          description: "Guide for implementing a structured compliance monitoring program",
+          fileType: "pdf",
+          url: "/templates/risk-compliance/compliance-monitoring-guide.pdf",
+        },
+        {
+          name: "Vendor Risk Assessment Toolkit",
+          description: "Templates and tools for assessing and managing vendor risks",
+          fileType: "zip",
+          url: "/templates/risk-compliance/vendor-risk-toolkit.zip",
+        },
+      ],
+      Managed: [
+        {
+          name: "GRC System Integration Map",
+          description: "Template for planning GRC tool integration with other systems",
+          fileType: "xlsx",
+          url: "/templates/risk-compliance/grc-integration-map.xlsx",
+        },
+        {
+          name: "Compliance KPI Dashboard Guide",
+          description: "Guide for creating effective compliance dashboards",
+          fileType: "pptx",
+          url: "/templates/risk-compliance/compliance-dashboard.pptx",
+        },
+        {
+          name: "Regulatory Change Tracker",
+          description: "Tool for monitoring and responding to regulatory changes",
+          fileType: "xlsx",
+          url: "/templates/risk-compliance/regulatory-tracker.xlsx",
+        },
+        {
+          name: "Audit Readiness Playbook",
+          description: "Comprehensive guide for preparing for and responding to audits",
+          fileType: "docx",
+          url: "/templates/risk-compliance/audit-playbook.docx",
+        },
+      ],
+      Optimized: [
+        {
+          name: "Predictive Risk Analytics Workbook",
+          description: "Templates and models for implementing predictive risk analytics",
+          fileType: "xlsx",
+          url: "/templates/risk-compliance/predictive-analytics.xlsx",
+        },
+        {
+          name: "Strategic Risk Governance Scorecard",
+          description: "Tool for aligning risk management with strategic objectives",
+          fileType: "xlsx",
+          url: "/templates/risk-compliance/governance-scorecard.xlsx",
+        },
+        {
+          name: "Compliance Program Benchmarking Tool",
+          description: "Framework for benchmarking against industry standards",
+          fileType: "xlsx",
+          url: "/templates/risk-compliance/benchmarking-tool.xlsx",
+        },
+        {
+          name: "Policy Culture & Engagement Toolkit",
+          description: "Resources for building a strong compliance culture",
+          fileType: "zip",
+          url: "/templates/risk-compliance/culture-toolkit.zip",
+        },
+      ],
     },
     // Default empty arrays for other domains and bands
     "incident-problem": {
