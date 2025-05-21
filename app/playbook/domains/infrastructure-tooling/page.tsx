@@ -1,50 +1,112 @@
-import { DomainOverviewTemplate } from "@/components/domain-overview-template"
+"use client"
 
-export const metadata = {
-  title: "Infrastructure & Tooling | Legal IT Maturity",
-  description: "Infrastructure & Tooling domain overview and implementation guides",
-}
+import { ArrowRight } from "lucide-react"
 
-export default function InfrastructureToolingPage() {
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+
+const InfrastructureToolingPage = () => {
   return (
-    <DomainOverviewTemplate
-      domainId="infrastructure-tooling"
-      title="Infrastructure & Tooling"
-      description="Assesses the health, scalability, and strategic value of your technology stack."
-      keyAreas={[
-        "Infrastructure Architecture: Designing resilient technology foundations",
-        "Technology Stack Management: Maintaining and optimizing IT components",
-        "Capacity & Performance: Ensuring systems meet demand",
-        "Monitoring & Alerting: Detecting and responding to issues",
-        "Technology Lifecycle: Managing from acquisition to retirement",
-      ]}
-      maturityJourney={[
-        {
-          band: "Initial (1.0–1.9)",
-          description: "Ad-hoc infrastructure with minimal documentation and reactive maintenance.",
-          link: "/playbook/domains/infrastructure-tooling/initial",
-        },
-        {
-          band: "Developing (2.0–2.9)",
-          description: "Basic infrastructure management with some documentation and inconsistent practices.",
-          link: "/playbook/domains/infrastructure-tooling/developing",
-        },
-        {
-          band: "Established (3.0–3.9)",
-          description: "Defined infrastructure architecture with consistent monitoring and regular reviews.",
-          link: "/playbook/domains/infrastructure-tooling/established",
-        },
-        {
-          band: "Managed (4.0–4.4)",
-          description: "Measured infrastructure performance with proactive capacity planning and optimization.",
-          link: "/playbook/domains/infrastructure-tooling/managed",
-        },
-        {
-          band: "Optimized (4.5–5.0)",
-          description: "Strategic infrastructure management with automated scaling and continuous innovation.",
-          link: "/playbook/domains/infrastructure-tooling/optimized",
-        },
-      ]}
-    />
+    <div className="container mx-auto py-10">
+      <h1 className="text-3xl font-bold mb-6">Infrastructure Tooling</h1>
+
+      <Accordion type="single" collapsible className="w-full">
+        <AccordionItem value="initial">
+          <AccordionTrigger>Initial</AccordionTrigger>
+          <AccordionContent>
+            <Card>
+              <CardHeader>
+                <CardTitle>Initial Infrastructure Tooling Practices</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p>Focus on basic tooling for provisioning and configuration management.</p>
+                <Button variant="outline" className="w-full gap-2">
+                  View Initial Guide
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="developing">
+          <AccordionTrigger>Developing</AccordionTrigger>
+          <AccordionContent>
+            <Card>
+              <CardHeader>
+                <CardTitle>Developing Infrastructure Tooling Practices</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p>Implement more advanced tooling for automation and monitoring.</p>
+                <Button variant="outline" className="w-full gap-2">
+                  View Developing Guide
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="established">
+          <AccordionTrigger>Established</AccordionTrigger>
+          <AccordionContent>
+            <Card>
+              <CardHeader>
+                <CardTitle>Established Infrastructure Tooling Practices</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p>Standardize tooling across the organization and integrate with CI/CD pipelines.</p>
+                <Button variant="outline" className="w-full gap-2">
+                  View Established Guide
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="managed">
+          <AccordionTrigger>Managed</AccordionTrigger>
+          <AccordionContent>
+            <Card>
+              <CardHeader>
+                <CardTitle>Managed Infrastructure Tooling Practices</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p>Implement comprehensive monitoring and alerting, and automate incident response.</p>
+                <Button variant="outline" className="w-full gap-2">
+                  View Managed Guide
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="optimized">
+          <AccordionTrigger>Optimized</AccordionTrigger>
+          <AccordionContent>
+            <Card>
+              <CardHeader>
+                <CardTitle>Optimized Infrastructure Tooling Practices</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p>
+                  Continuously improve tooling based on data and feedback, and proactively identify and address
+                  potential issues.
+                </p>
+                <Button variant="outline" className="w-full gap-2">
+                  View Optimized Guide
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
   )
 }
+
+export default InfrastructureToolingPage

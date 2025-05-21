@@ -55,6 +55,9 @@ export function ExportUtils({ results, organizationName = "Your Organization" }:
       // Track download with GTM/GA if available
       if (window.trackDownload) {
         window.trackDownload(type, `${organizationName}_IT_Maturity_Assessment`, isUS)
+        console.log("Download tracked in Google Analytics")
+      } else {
+        console.warn("Google Analytics tracking function not available")
       }
 
       // Also track locally for admin dashboard

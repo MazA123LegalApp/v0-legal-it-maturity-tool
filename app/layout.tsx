@@ -62,7 +62,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   </nav>
                 </div>
               </header>
-              <main className="flex-1">{children}</main>
+              <main className="flex-1 flex justify-center">
+                <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">{children}</div>
+              </main>
               <footer className="border-t py-6 md:py-0">
                 <div className="container flex flex-col md:h-16 md:flex-row md:items-center md:justify-between">
                   <p className="text-sm text-muted-foreground">
