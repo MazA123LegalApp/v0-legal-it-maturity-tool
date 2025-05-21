@@ -3,7 +3,7 @@ import { ArrowRight, Compass } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { getMaturityColor, getMaturityBgColor } from "@/lib/assessment-data"
-import { type DomainMaturityInfo, getRecommendedRoadmapPhase } from "@/lib/assessment-utils"
+import type { DomainMaturityInfo } from "@/lib/assessment-utils"
 
 interface MaturityBannerProps {
   domainId: string
@@ -30,8 +30,9 @@ export function MaturityBanner({ domainId, domainName, maturityInfo }: MaturityB
     )
   }
 
-  const phase = getRecommendedRoadmapPhase(maturityInfo.level)
-  const roadmapLink = `/playbook/domains/${domainId}/roadmap#phase-${phase}`
+  // Create a URL to the band-specific implementation guide
+  const bandLowercase = maturityInfo.level.toLowerCase()
+  const implementationGuideUrl = `/playbook/domains/${domainId}/${bandLowercase}`
 
   return (
     <div className={`mb-8 p-6 rounded-lg ${getMaturityBgColor(maturityInfo.score)}`}>
@@ -48,13 +49,13 @@ export function MaturityBanner({ domainId, domainName, maturityInfo }: MaturityB
               </span>
             </div>
             <p className="text-slate-600">
-              Based on your assessment, we recommend starting with Phase {phase} of the roadmap.
+              Based on your assessment, we've prepared a tailored implementation guide for your maturity level.
             </p>
           </div>
         </div>
-        <Link href={roadmapLink}>
+        <Link href={implementationGuideUrl}>
           <Button className="whitespace-nowrap gap-2">
-            Recommended Next Steps
+            View Implementation Guide
             <ArrowRight className="h-4 w-4" />
           </Button>
         </Link>

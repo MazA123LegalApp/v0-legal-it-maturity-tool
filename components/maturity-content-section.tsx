@@ -51,6 +51,10 @@ export function MaturityContentSection({
   // Determine the background color based on whether this is the user's maturity level
   const bgColor = isUserMaturityLevel ? "bg-blue-50 border-blue-200" : ""
 
+  // Create a URL to the band-specific implementation guide
+  const bandLowercase = band.toLowerCase()
+  const implementationGuideUrl = `/playbook/domains/${domainId}/${bandLowercase}`
+
   return (
     <Card className={`mb-6 ${bgColor}`}>
       <CardHeader>
@@ -91,9 +95,9 @@ export function MaturityContentSection({
       </CardContent>
       {isUserMaturityLevel && (
         <CardFooter className="bg-blue-50 border-t border-blue-200">
-          <Link href={`/playbook/roadmap#${band.toLowerCase()}`} className="w-full">
+          <Link href={implementationGuideUrl} className="w-full">
             <Button variant="default" className="w-full gap-2">
-              View Implementation Roadmap for {band} Level
+              View Detailed Implementation Guide
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>

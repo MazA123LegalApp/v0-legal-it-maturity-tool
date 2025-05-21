@@ -59,6 +59,10 @@ export function MaturityRecommendations({
         const playbookUrl = getPlaybookUrlForDomain(domainScore.domain, domainScore.band)
         const templates = getTemplatesForDomain(domainScore.domain, domainScore.band)
 
+        // Create a URL to the band-specific implementation guide
+        const bandLowercase = domainScore.band.toLowerCase()
+        const implementationGuideUrl = `/playbook/domains/${domainScore.domain}/${bandLowercase}`
+
         return (
           <Card key={domainScore.domain} className="overflow-hidden">
             <CardHeader className="bg-slate-50 border-b">
@@ -95,9 +99,9 @@ export function MaturityRecommendations({
               )}
             </CardContent>
             <CardFooter className="bg-slate-50 border-t">
-              <Link href={playbookUrl} className="w-full">
+              <Link href={implementationGuideUrl} className="w-full">
                 <Button variant="default" className="w-full gap-2">
-                  View {domainScore.band} Recommendations
+                  View Implementation Guide
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
@@ -220,7 +224,7 @@ function RecommendationsByBand({ domain, band }: RecommendationsByBandProps) {
   if (domainRecommendations.length === 0) {
     return (
       <p className="text-muted-foreground">
-        Visit the playbook for detailed recommendations for {band} maturity level.
+        Visit the implementation guide for detailed recommendations for {band} maturity level.
       </p>
     )
   }

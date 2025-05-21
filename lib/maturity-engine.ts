@@ -114,6 +114,16 @@ export function getPlaybookUrlForDomain(domainId: string, band: MaturityBand): s
 }
 
 /**
+ * Gets the URL for a band-specific implementation guide
+ */
+export function getImplementationGuideUrl(domainId: string, band: MaturityBand): string {
+  const baseUrl = domainPlaybookUrls[domainId]
+  if (!baseUrl) return "/playbook"
+
+  return `${baseUrl}/${band.toLowerCase()}`
+}
+
+/**
  * Gets downloadable templates for a domain and maturity band
  */
 export interface Template {
