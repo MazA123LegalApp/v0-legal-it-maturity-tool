@@ -76,6 +76,7 @@ export function Analytics() {
         file_type: fileType,
         file_name: fileName,
         is_us_based: isUSBased,
+        send_to: GA_MEASUREMENT_ID,
       })
     }
 
@@ -98,6 +99,7 @@ export function Analytics() {
         action: action,
         domain_id: domainId,
         is_us_based: isUSBased,
+        send_to: GA_MEASUREMENT_ID,
       })
     }
 
