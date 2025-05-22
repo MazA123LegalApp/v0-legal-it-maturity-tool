@@ -153,7 +153,9 @@ const MaturityAssessmentPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
-      <h1 className="text-3xl font-bold mb-6">Legal IT Maturity Assessment</h1>
+      <h1 className="text-3xl font-bold mb-6">Maturity Assessment</h1>
+      <p>This page will contain the maturity assessment tool.</p>
+      {/* Add your assessment components here */}
 
       <div className="mb-8">
         <p className="text-lg mb-4">Rate your organization's maturity in each dimension on a scale of 1-5:</p>
