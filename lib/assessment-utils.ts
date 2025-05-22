@@ -7,6 +7,25 @@ export interface DomainMaturityInfo {
 }
 
 /**
+ * Saves assessment results to localStorage
+ * @param results The assessment results to save
+ * @returns boolean indicating if the save was successful
+ */
+export function saveAssessmentResults(results: AssessmentResult): boolean {
+  // Check if we're on the server side
+  if (typeof window === "undefined") return false
+
+  try {
+    // Save results to localStorage
+    localStorage.setItem("assessment_results", JSON.stringify(results))
+    return true
+  } catch (error) {
+    console.error("Error saving assessment results:", error)
+    return false
+  }
+}
+
+/**
  * Retrieves assessment results from localStorage
  * @returns The assessment results or null if not found
  */

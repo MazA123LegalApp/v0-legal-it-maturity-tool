@@ -29,6 +29,7 @@ interface ExportUtilsProps {
 declare global {
   interface Window {
     trackDownload?: (fileType: string, fileName: string, isUSBased: boolean) => void
+    gtag?: (event: string, action: string, eventParams: any) => void
   }
 }
 
@@ -57,7 +58,19 @@ export function ExportUtils({ results, organizationName = "Your Organization" }:
         window.trackDownload(type, `${organizationName}_IT_Maturity_Assessment`, isUS)
         console.log("Download tracked in Google Analytics")
       } else {
-        console.warn("Google Analytics tracking function not available")
+        // Fallback to direct GA4 tracking if trackDownload is not available
+        if (typeof window !== "undefined" && window.gtag) {
+          window.gtag("event", "download", {
+            event_category: "Assessment",
+            event_label: type,
+            file_name: `${organizationName}_IT_Maturity_Assessment.${type.toLowerCase()}`,
+            file_type: type,
+            is_us_based: isUS,
+          })
+          console.log("Download tracked directly with GA4")
+        } else {
+          console.warn("Google Analytics tracking function not available")
+        }
       }
 
       // Also track locally for admin dashboard

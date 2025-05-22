@@ -1,0 +1,62 @@
+// Utility functions for tracking user interactions
+
+/**
+ * Tracks a download event in Google Analytics and locally
+ * @param fileType The type of file being downloaded (PDF, Excel, etc.)
+ * @param fileName The name of the file being downloaded
+ * @param module The module or section the download is from (Assessment, Playbook, etc.)
+ * @param isUSBased Whether the user is based in the US
+ */
+export function trackDownloadEvent(fileType: string, fileName: string, module = "Playbook", isUSBased = false) {
+  try {
+    // Track with GTM/GA if available
+    if (typeof window !== "undefined") {
+      if (window.trackDownload) {
+        window.trackDownload(fileType, fileName, isUSBased)
+        console.log(`${module} download tracked in Google Analytics`)
+      } else if (window.gtag) {
+        // Fallback to direct GA4 tracking
+        window.gtag("event", "download", {
+          event_category: module,
+          event_label: fileType,
+          file_name: fileName,
+          file_type: fileType,
+          is_us_based: isUSBased,
+        })
+        console.log(`${module} download tracked directly with GA4`)
+      } else {
+        console.warn("Google Analytics tracking function not available")
+      }
+
+      // Also track locally for admin dashboard
+      const downloadData = {
+        type: fileType,
+        module,
+        fileName,
+        date: new Date().toISOString(),
+        isUSBased,
+      }
+
+      // Store in localStorage for admin dashboard to access
+      const downloads = JSON.parse(localStorage.getItem("tracked_downloads") || "[]")
+      downloads.push(downloadData)
+      localStorage.setItem("tracked_downloads", JSON.stringify(downloads))
+
+      console.log(`${module} download tracked locally:`, downloadData)
+    }
+  } catch (error) {
+    console.error(`Error tracking ${module} download:`, error)
+  }
+}
+
+/**
+ * Tracks a playbook download event
+ * @param fileType The type of file being downloaded (PDF, Word, etc.)
+ * @param domainId The domain ID the playbook is for
+ * @param maturityLevel The maturity level the playbook is for
+ * @param isUSBased Whether the user is based in the US
+ */
+export function trackPlaybookDownload(fileType: string, domainId: string, maturityLevel: string, isUSBased = false) {
+  const fileName = `${domainId}_${maturityLevel}_playbook.${fileType.toLowerCase()}`
+  trackDownloadEvent(fileType, fileName, "Playbook", isUSBased)
+}
