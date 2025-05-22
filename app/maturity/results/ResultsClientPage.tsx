@@ -16,48 +16,61 @@ import { trackEvent } from "@/lib/tracking-utils"
 export default function ResultsClientPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [summaryData, setSummaryData] = useState(null)
-  const [domainScores, setDomainScores] = useState({})
+  const [error, setError] = useState<string | null>(null)
+  const [summaryData, setSummaryData] = useState<any>(null)
+  const [domainScores, setDomainScores] = useState<any>({})
 
   useEffect(() => {
-    // Load assessment results from localStorage
     try {
       if (typeof window !== "undefined") {
         const assessmentResults = getAssessmentResults()
 
-        if (!assessmentResults) {
+        if (
+          !assessmentResults ||
+          typeof assessmentResults !== "object" ||
+          Object.keys(assessmentResults).length === 0
+        ) {
           setError("No assessment results found. Please complete the assessment first.")
           setLoading(false)
           return
         }
 
-        // Use the proper maturity classification function
-        const classification = classifyMaturity(assessmentResults)
-        setSummaryData(classification)
+        let classification = null
+        let calculatedDomainScores = null
 
-        // Calculate domain averages for the radar chart and summary table
-        const calculatedDomainScores = calculateDomainAverages(assessmentResults)
+        try {
+          classification = classifyMaturity(assessmentResults)
+          calculatedDomainScores = calculateDomainAverages(assessmentResults)
+        } catch (processingError) {
+          console.error("Error classifying maturity or calculating scores:", processingError)
+          setError("Saved results are invalid or incomplete. Please retake the assessment.")
+          setLoading(false)
+          return
+        }
+
+        setSummaryData(classification)
         setDomainScores(calculatedDomainScores)
 
-        // Track view using our safer tracking utility
-        trackEvent("view_results", {
-          event_category: "Assessment",
-          event_label: "Results Page",
-          overall_score: classification.overallScore,
-          maturity_level: classification.overallBand,
-        })
+        try {
+          trackEvent("view_results", {
+            event_category: "Assessment",
+            event_label: "Results Page",
+            overall_score: classification.overallScore,
+            maturity_level: classification.overallBand,
+          })
+        } catch (trackingError) {
+          console.warn("Tracking failed:", trackingError)
+        }
       }
 
       setLoading(false)
     } catch (error) {
-      console.error("Error loading assessment results:", error)
-      setError("An error occurred while loading your assessment results.")
+      console.error("Unexpected error loading assessment results:", error)
+      setError("An unexpected error occurred while loading your results.")
       setLoading(false)
     }
   }, [router])
 
-  // Show loading state
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -67,7 +80,6 @@ export default function ResultsClientPage() {
     )
   }
 
-  // Show error state
   if (error || !summaryData) {
     return (
       <div className="container mx-auto px-4 py-8">
