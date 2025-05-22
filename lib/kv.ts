@@ -1,26 +1,14 @@
-const kvUrl = process.env.KV_REST_API_URL!
-const kvToken = process.env.KV_REST_API_TOKEN!
+import { Redis } from "@upstash/redis"
 
-export async function kvSet(key: string, value: any) {
-  return await fetch(`${kvUrl}/set/${key}`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${kvToken}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ value }),
-  })
+export const kv = new Redis({
+  url: process.env.KV_REST_API_URL!,
+  token: process.env.KV_REST_API_TOKEN!,
+})
+
+export async function kvSet(key: string, value: unknown) {
+  return kv.set(key, value)
 }
 
-export async function kvGet(key: string): Promise<any | null> {
-  const res = await fetch(`${kvUrl}/get/${key}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${kvToken}`,
-    },
-    next: { revalidate: 0 }, // always fetch fresh
-  })
-  if (!res.ok) return null
-  const { result } = await res.json()
-  return result ?? null
+export async function kvGet<T = unknown>(key: string): Promise<T | null> {
+  return kv.get<T>(key)
 }
