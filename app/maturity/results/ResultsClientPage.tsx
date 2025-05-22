@@ -2,16 +2,10 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { MaturitySummary } from "@/components/maturity-summary"
-import { DomainRadarChart } from "@/components/domain-radar-chart"
-import { SummaryTable } from "@/components/summary-table"
-import { ResultsActions } from "@/components/results-actions"
-import { MaturityRecommendations } from "@/components/maturity-recommendations"
-import { BenchmarkComparison } from "@/components/benchmark-comparison"
-import { getAssessmentResults } from "@/lib/assessment-utils"
-import type { AssessmentResult } from "@/lib/assessment-data"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { calculateDomainAverages, calculateOverallAverage, type AssessmentResult } from "@/lib/assessment-data"
 
 export default function ResultsClientPage() {
   const router = useRouter()
@@ -22,43 +16,34 @@ export default function ResultsClientPage() {
   useEffect(() => {
     // Load assessment results from localStorage
     try {
-      const assessmentResults = getAssessmentResults()
+      if (typeof window !== "undefined") {
+        const storedResults = localStorage.getItem("assessment_results")
 
-      if (!assessmentResults) {
-        setError("No assessment results found. Please complete the assessment first.")
-        setLoading(false)
-        return
+        if (!storedResults) {
+          setError("No assessment results found. Please complete the assessment first.")
+          setLoading(false)
+          return
+        }
+
+        const parsedResults = JSON.parse(storedResults) as AssessmentResult
+        setResults(parsedResults)
+
+        // Track view in Google Analytics
+        if (window.gtag) {
+          window.gtag("event", "view_results", {
+            event_category: "Assessment",
+            event_label: "Results Page",
+          })
+        }
       }
 
-      // Validate the structure of the results
-      if (!validateResults(assessmentResults)) {
-        setError("Assessment results are incomplete or invalid. Please retake the assessment.")
-        setLoading(false)
-        return
-      }
-
-      setResults(assessmentResults)
       setLoading(false)
     } catch (error) {
       console.error("Error loading assessment results:", error)
-      setError("An error occurred while loading your assessment results. Please try again.")
+      setError("An error occurred while loading your assessment results.")
       setLoading(false)
     }
-  }, [router])
-
-  // Validate the structure of the assessment results
-  const validateResults = (results: AssessmentResult): boolean => {
-    if (!results || typeof results !== "object") return false
-
-    // Check if there are any domains in the results
-    if (Object.keys(results).length === 0) return false
-
-    // Check if at least one domain has valid scores
-    return Object.values(results).some((domainScores) => {
-      if (!domainScores || typeof domainScores !== "object") return false
-      return Object.values(domainScores).some((score) => typeof score === "number" && score > 0)
-    })
-  }
+  }, [])
 
   // Handle retaking the assessment
   const handleRetakeAssessment = () => {
@@ -89,50 +74,43 @@ export default function ResultsClientPage() {
     )
   }
 
-  // Calculate overall score and domain scores
-  const domainScores = Object.entries(results).reduce(
-    (acc, [domain, scores]) => {
-      const dimensionValues = Object.values(scores).filter((score) => score > 0)
-      if (dimensionValues.length === 0) return acc
-
-      const average = dimensionValues.reduce((sum, score) => sum + score, 0) / dimensionValues.length
-      acc[domain] = Number.parseFloat(average.toFixed(1))
-      return acc
-    },
-    {} as Record<string, number>,
-  )
-
-  const overallScore =
-    Object.values(domainScores).length > 0
-      ? Number.parseFloat(
-          (
-            Object.values(domainScores).reduce((sum, score) => sum + score, 0) / Object.values(domainScores).length
-          ).toFixed(1),
-        )
-      : 0
+  // Calculate domain averages and overall average
+  const domainAverages = calculateDomainAverages(results)
+  const overallAverage = calculateOverallAverage(results)
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Assessment Results</h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <MaturitySummary score={overallScore} />
-        <DomainRadarChart domainScores={domainScores} />
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>Overall Maturity Score</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-4xl font-bold">{overallAverage.toFixed(1)}</div>
+        </CardContent>
+      </Card>
+
+      <h2 className="text-2xl font-bold mb-4">Domain Scores</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        {Object.entries(domainAverages).map(([domain, score]) => (
+          <Card key={domain}>
+            <CardHeader>
+              <CardTitle>{domain}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{score.toFixed(1)}</div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      <div className="mb-8">
-        <SummaryTable domainScores={domainScores} />
+      <div className="flex justify-between">
+        <Button variant="outline" onClick={handleRetakeAssessment}>
+          Retake Assessment
+        </Button>
+        <Button onClick={() => router.push("/maturity")}>Back to Maturity Dashboard</Button>
       </div>
-
-      <div className="mb-8">
-        <MaturityRecommendations domainScores={domainScores} />
-      </div>
-
-      <div className="mb-8">
-        <BenchmarkComparison domainScores={domainScores} />
-      </div>
-
-      <ResultsActions />
     </div>
   )
 }

@@ -1,9 +1,7 @@
-import { unstable_noStore as noStore } from "next/cache"
+export const dynamic = "force-dynamic"
+
 import ResultsClientPage from "./ResultsClientPage"
 
 export default function ResultsPage() {
-  // Prevent static generation of this page
-  noStore()
-
   return <ResultsClientPage />
 }

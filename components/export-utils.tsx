@@ -4,6 +4,7 @@ import { useRef, useEffect, useState } from "react"
 import { Download, FileSpreadsheet, FileIcon as FilePdf } from "lucide-react"
 import { jsPDF } from "jspdf"
 import * as XLSX from "xlsx"
+import { trackAssessmentDownload } from "@/lib/tracking-utils"
 
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -50,48 +51,6 @@ export function ExportUtils({ results, organizationName = "Your Organization" }:
 
     checkLocation()
   }, [])
-
-  const trackDownload = async (type: string, organizationName: string) => {
-    try {
-      // Track download with GTM/GA if available
-      if (window.trackDownload) {
-        window.trackDownload(type, `${organizationName}_IT_Maturity_Assessment`, isUS)
-        console.log("Download tracked in Google Analytics")
-      } else {
-        // Fallback to direct GA4 tracking if trackDownload is not available
-        if (typeof window !== "undefined" && window.gtag) {
-          window.gtag("event", "download", {
-            event_category: "Assessment",
-            event_label: type,
-            file_name: `${organizationName}_IT_Maturity_Assessment.${type.toLowerCase()}`,
-            file_type: type,
-            is_us_based: isUS,
-          })
-          console.log("Download tracked directly with GA4")
-        } else {
-          console.warn("Google Analytics tracking function not available")
-        }
-      }
-
-      // Also track locally for admin dashboard
-      const downloadData = {
-        type,
-        module: "Maturity Assessment",
-        organization: organizationName,
-        date: new Date().toISOString(),
-        isUS,
-      }
-
-      // Store in localStorage for admin dashboard to access
-      const downloads = JSON.parse(localStorage.getItem("tracked_downloads") || "[]")
-      downloads.push(downloadData)
-      localStorage.setItem("tracked_downloads", JSON.stringify(downloads))
-
-      console.log("Download tracked:", downloadData)
-    } catch (error) {
-      console.error("Error tracking download:", error)
-    }
-  }
 
   const exportToPDF = () => {
     const doc = new jsPDF({
@@ -254,7 +213,7 @@ export function ExportUtils({ results, organizationName = "Your Organization" }:
     doc.text("Developed by Maz Araghrez, Legal Technologist at Dentons", 15, 285)
 
     // Track the download
-    trackDownload("PDF", organizationName)
+    trackAssessmentDownload("PDF", organizationName, isUS)
 
     // Save the PDF
     doc.save(`${organizationName.replace(/\s+/g, "_")}_IT_Maturity_Assessment.pdf`)
@@ -421,7 +380,7 @@ export function ExportUtils({ results, organizationName = "Your Organization" }:
     })
 
     // Track the download
-    trackDownload("Excel", organizationName)
+    trackAssessmentDownload("Excel", organizationName, isUS)
 
     // Save the Excel file
     XLSX.writeFile(wb, `${organizationName.replace(/\s+/g, "_")}_IT_Maturity_Assessment.xlsx`)
@@ -664,56 +623,4 @@ export function ExportUtils({ results, organizationName = "Your Organization" }:
       </DropdownMenuContent>
     </DropdownMenu>
   )
-}
-
-// Also export the utility functions for use in other components
-export const handlePdfExport = (results: any, organizationName = "Your Organization") => {
-  // Create a temporary ExportUtils instance and call its exportToPDF method
-  const tempExportUtils = {
-    results,
-    organizationName,
-    exportToPDF: function () {
-      const doc = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4",
-      })
-
-      // Add basic content
-      doc.setFontSize(18)
-      doc.text("Legal IT Maturity Assessment Report", 15, 15)
-      doc.setFontSize(12)
-      doc.text(`Organization: ${this.organizationName}`, 15, 25)
-
-      // Save the PDF
-      doc.save(`${this.organizationName.replace(/\s+/g, "_")}_IT_Maturity_Assessment.pdf`)
-    },
-  }
-
-  tempExportUtils.exportToPDF()
-}
-
-export const handleExcelExport = (results: any, organizationName = "Your Organization") => {
-  // Create a temporary ExportUtils instance and call its exportToExcel method
-  const tempExportUtils = {
-    results,
-    organizationName,
-    exportToExcel: function () {
-      // Create a simple workbook
-      const wb = XLSX.utils.book_new()
-      const ws = XLSX.utils.json_to_sheet([
-        {
-          Organization: this.organizationName,
-          Date: new Date().toLocaleDateString(),
-        },
-      ])
-
-      XLSX.utils.book_append_sheet(wb, ws, "Summary")
-
-      // Save the Excel file
-      XLSX.writeFile(wb, `${this.organizationName.replace(/\s+/g, "_")}_IT_Maturity_Assessment.xlsx`)
-    },
-  }
-
-  tempExportUtils.exportToExcel()
 }

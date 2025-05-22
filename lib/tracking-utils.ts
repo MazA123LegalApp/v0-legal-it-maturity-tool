@@ -1,21 +1,18 @@
 // Utility functions for tracking user interactions
 
 /**
- * Tracks a download event in Google Analytics and locally
+ * Tracks a download event in Google Analytics
  * @param fileType The type of file being downloaded (PDF, Excel, etc.)
  * @param fileName The name of the file being downloaded
  * @param module The module or section the download is from (Assessment, Playbook, etc.)
  * @param isUSBased Whether the user is based in the US
  */
-export function trackDownloadEvent(fileType: string, fileName: string, module = "Playbook", isUSBased = false) {
+export function trackDownloadEvent(fileType: string, fileName: string, module = "Assessment", isUSBased = false) {
   try {
-    // Track with GTM/GA if available
+    // Track with GA4
     if (typeof window !== "undefined") {
-      if (window.trackDownload) {
-        window.trackDownload(fileType, fileName, isUSBased)
-        console.log(`${module} download tracked in Google Analytics`)
-      } else if (window.gtag) {
-        // Fallback to direct GA4 tracking
+      // Direct GA4 tracking
+      if (window.gtag) {
         window.gtag("event", "download", {
           event_category: module,
           event_label: fileType,
@@ -23,7 +20,7 @@ export function trackDownloadEvent(fileType: string, fileName: string, module = 
           file_type: fileType,
           is_us_based: isUSBased,
         })
-        console.log(`${module} download tracked directly with GA4`)
+        console.log(`${module} download tracked with GA4`)
       } else {
         console.warn("Google Analytics tracking function not available")
       }
@@ -59,4 +56,15 @@ export function trackDownloadEvent(fileType: string, fileName: string, module = 
 export function trackPlaybookDownload(fileType: string, domainId: string, maturityLevel: string, isUSBased = false) {
   const fileName = `${domainId}_${maturityLevel}_playbook.${fileType.toLowerCase()}`
   trackDownloadEvent(fileType, fileName, "Playbook", isUSBased)
+}
+
+/**
+ * Tracks an assessment download event
+ * @param fileType The type of file being downloaded (PDF, Excel, etc.)
+ * @param organizationName The organization name for the assessment
+ * @param isUSBased Whether the user is based in the US
+ */
+export function trackAssessmentDownload(fileType: string, organizationName: string, isUSBased = false) {
+  const fileName = `${organizationName.replace(/\s+/g, "_")}_IT_Maturity_Assessment.${fileType.toLowerCase()}`
+  trackDownloadEvent(fileType, fileName, "Assessment", isUSBased)
 }
