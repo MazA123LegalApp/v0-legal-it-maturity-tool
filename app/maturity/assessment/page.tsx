@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Slider } from "@/components/ui/slider"
 import { domains, dimensions, type AssessmentResult } from "@/lib/assessment-data"
-import { saveAssessmentResults } from "@/lib/assessment-utils"
 import { HelpCircle } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 
@@ -62,13 +61,11 @@ const MaturityAssessmentPage = () => {
       setError(null)
 
       try {
-        // Save assessment results directly without modification
-        // This ensures compatibility with the existing code
-        const saveSuccess = saveAssessmentResults(results)
-
-        if (!saveSuccess) {
-          throw new Error("Failed to save assessment results")
+        if (typeof window === "undefined") {
+          throw new Error("Window context is undefined. Cannot save results.")
         }
+
+        localStorage.setItem("maturityResults", JSON.stringify(results))
 
         // Track completion
         if (typeof window !== "undefined" && window.gtag) {
@@ -108,7 +105,6 @@ const MaturityAssessmentPage = () => {
   const isLastDomain = currentDomainIndex === domains.length - 1
   const isFirstDomain = currentDomainIndex === 0
 
-  // Simple level descriptions dialog
   const LevelDescriptions = () => {
     const dimension = dimensions[currentInfoDimension as keyof typeof dimensions]
 
@@ -154,7 +150,6 @@ const MaturityAssessmentPage = () => {
     <div className="container mx-auto px-4 py-8 max-w-5xl">
       <h1 className="text-3xl font-bold mb-6">Maturity Assessment</h1>
       <p>This page will contain the maturity assessment tool.</p>
-      {/* Add your assessment components here */}
 
       <div className="mb-8">
         <p className="text-lg mb-4">Rate your organization's maturity in each dimension on a scale of 1-5:</p>
@@ -236,7 +231,6 @@ const MaturityAssessmentPage = () => {
         </TabsContent>
       </Tabs>
 
-      {/* Simple inline level descriptions dialog */}
       <LevelDescriptions />
     </div>
   )
