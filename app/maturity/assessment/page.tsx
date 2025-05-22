@@ -10,6 +10,7 @@ import { domains, dimensions, type AssessmentResult } from "@/lib/assessment-dat
 import { saveAssessmentResults } from "@/lib/assessment-utils"
 import { AssessmentTracker } from "@/components/assessment-tracker"
 import { LevelDescriptionDialog } from "@/components/level-description-dialog"
+import { toast } from "@/components/ui/use-toast"
 
 const MaturityAssessmentPage = () => {
   const router = useRouter()
@@ -17,6 +18,7 @@ const MaturityAssessmentPage = () => {
   const [results, setResults] = useState<AssessmentResult>({})
   const [showLevelInfo, setShowLevelInfo] = useState(false)
   const [currentInfoDimension, setCurrentInfoDimension] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Initialize results structure if empty
   if (Object.keys(results).length === 0) {
@@ -45,13 +47,73 @@ const MaturityAssessmentPage = () => {
     }))
   }
 
+  const validateResults = () => {
+    // Check if at least one dimension in each domain has a value
+    let isValid = true
+    const missingDomains = []
+
+    for (const domain of domains) {
+      const domainData = results[domain.id]
+      if (!domainData) {
+        isValid = false
+        missingDomains.push(domain.name)
+        continue
+      }
+
+      // Check if at least one dimension has a value > 0
+      const hasValue = Object.values(domainData).some((value) => value > 0)
+      if (!hasValue) {
+        isValid = false
+        missingDomains.push(domain.name)
+      }
+    }
+
+    return { isValid, missingDomains }
+  }
+
   const handleNext = () => {
     if (currentDomainIndex < domains.length - 1) {
       setCurrentDomainIndex(currentDomainIndex + 1)
     } else {
+      // Validate results before submission
+      const { isValid, missingDomains } = validateResults()
+
+      if (!isValid) {
+        toast({
+          title: "Incomplete Assessment",
+          description: `Please provide ratings for the following domains: ${missingDomains.join(", ")}`,
+          variant: "destructive",
+        })
+        return
+      }
+
       // Save results and navigate to results page
-      saveAssessmentResults(results)
-      router.push("/maturity/results")
+      setIsSubmitting(true)
+
+      try {
+        // Save assessment results
+        const saveSuccess = saveAssessmentResults(results)
+
+        if (!saveSuccess) {
+          throw new Error("Failed to save assessment results")
+        }
+
+        // Track completion
+        if (typeof window !== "undefined" && window.trackAssessmentInteraction) {
+          window.trackAssessmentInteraction("complete_assessment", "all", false)
+        }
+
+        // Navigate to results page
+        router.push("/maturity/results")
+      } catch (error) {
+        console.error("Error submitting assessment:", error)
+        toast({
+          title: "Error",
+          description: "There was an error submitting your assessment. Please try again.",
+          variant: "destructive",
+        })
+        setIsSubmitting(false)
+      }
     }
   }
 
@@ -138,7 +200,9 @@ const MaturityAssessmentPage = () => {
                 <Button onClick={handlePrevious} disabled={isFirstDomain} variant="outline">
                   Previous Domain
                 </Button>
-                <Button onClick={handleNext}>{isLastDomain ? "Complete Assessment" : "Next Domain"}</Button>
+                <Button onClick={handleNext} disabled={isSubmitting}>
+                  {isSubmitting ? "Submitting..." : isLastDomain ? "Complete Assessment" : "Next Domain"}
+                </Button>
               </CardFooter>
             </Card>
           </TabsContent>
