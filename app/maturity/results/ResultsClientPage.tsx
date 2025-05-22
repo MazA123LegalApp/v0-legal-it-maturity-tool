@@ -6,69 +6,65 @@ import { MaturitySummary } from "@/components/maturity-summary"
 import { DomainRadarChart } from "@/components/domain-radar-chart"
 import { SummaryTable } from "@/components/summary-table"
 import { ResultsActions } from "@/components/results-actions"
-import { getAssessmentResults } from "@/lib/assessment-utils"
 import { calculateDomainAverages } from "@/lib/assessment-data"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { classifyMaturity } from "@/lib/maturity-engine"
 import { trackEvent } from "@/lib/tracking-utils"
+import type { AssessmentResult } from "@/lib/assessment-data"
 
 export default function ResultsClientPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [summaryData, setSummaryData] = useState<any>(null)
-  const [domainScores, setDomainScores] = useState<any>({})
+  const [domainScores, setDomainScores] = useState<Record<string, number>>({})
 
   useEffect(() => {
-    try {
-      if (typeof window !== "undefined") {
-        const assessmentResults = getAssessmentResults()
+    async function loadResults() {
+      try {
+        const sessionId = localStorage.getItem("session_id")
+        if (!sessionId) {
+          setError("No session found. Please complete the assessment first.")
+          setLoading(false)
+          return
+        }
 
-        if (
-          !assessmentResults ||
-          typeof assessmentResults !== "object" ||
-          Object.keys(assessmentResults).length === 0
-        ) {
+        const res = await fetch("/api/load-assessment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId }),
+        })
+
+        const { results } = await res.json()
+
+        if (!results) {
           setError("No assessment results found. Please complete the assessment first.")
           setLoading(false)
           return
         }
 
-        let classification = null
-        let calculatedDomainScores = null
-
-        try {
-          classification = classifyMaturity(assessmentResults)
-          calculatedDomainScores = calculateDomainAverages(assessmentResults)
-        } catch (processingError) {
-          console.error("Error classifying maturity or calculating scores:", processingError)
-          setError("Saved results are invalid or incomplete. Please retake the assessment.")
-          setLoading(false)
-          return
-        }
-
+        const classification = classifyMaturity(results as AssessmentResult)
         setSummaryData(classification)
+
+        const calculatedDomainScores = calculateDomainAverages(results)
         setDomainScores(calculatedDomainScores)
 
-        try {
-          trackEvent("view_results", {
-            event_category: "Assessment",
-            event_label: "Results Page",
-            overall_score: classification.overallScore,
-            maturity_level: classification.overallBand,
-          })
-        } catch (trackingError) {
-          console.warn("Tracking failed:", trackingError)
-        }
+        trackEvent("view_results", {
+          event_category: "Assessment",
+          event_label: "Results Page",
+          overall_score: classification.overallScore,
+          maturity_level: classification.overallBand,
+        })
+      } catch (err) {
+        console.error("Error loading assessment results:", err)
+        setError("An error occurred while loading your assessment results.")
+      } finally {
+        setLoading(false)
       }
-
-      setLoading(false)
-    } catch (error) {
-      console.error("Unexpected error loading assessment results:", error)
-      setError("An unexpected error occurred while loading your results.")
-      setLoading(false)
     }
+
+    loadResults()
   }, [router])
 
   if (loading) {
@@ -103,7 +99,7 @@ export default function ResultsClientPage() {
       </div>
 
       <div className="mb-8">
-        <SummaryTable domainScores={domainScores} />
+        <SummaryTable results={summaryData.domainScores} />
       </div>
 
       <ResultsActions />
