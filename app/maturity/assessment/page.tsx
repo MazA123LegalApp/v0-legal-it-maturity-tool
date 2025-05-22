@@ -62,39 +62,9 @@ const MaturityAssessmentPage = () => {
       setError(null)
 
       try {
-        // Calculate domain scores and overall score
-        const domainScores = {}
-        let totalScore = 0
-        let domainCount = 0
-
-        // Process each domain's scores
-        Object.entries(results).forEach(([domainId, dimensionScores]) => {
-          const dimensionValues = Object.values(dimensionScores)
-          const validScores = dimensionValues.filter((score) => score > 0)
-
-          if (validScores.length > 0) {
-            const domainAverage = validScores.reduce((sum, score) => sum + score, 0) / validScores.length
-            domainScores[domainId] = Number.parseFloat(domainAverage.toFixed(1))
-            totalScore += domainAverage
-            domainCount++
-          } else {
-            domainScores[domainId] = 0
-          }
-        })
-
-        // Calculate overall score
-        const overallScore = domainCount > 0 ? Number.parseFloat((totalScore / domainCount).toFixed(1)) : 0
-
-        // Prepare the final results object
-        const finalResults = {
-          rawResults: results,
-          domainScores: domainScores,
-          overallScore: overallScore,
-          completedAt: new Date().toISOString(),
-        }
-
-        // Save assessment results
-        const saveSuccess = saveAssessmentResults(finalResults)
+        // Save assessment results directly without modification
+        // This ensures compatibility with the existing code
+        const saveSuccess = saveAssessmentResults(results)
 
         if (!saveSuccess) {
           throw new Error("Failed to save assessment results")
@@ -102,10 +72,14 @@ const MaturityAssessmentPage = () => {
 
         // Track completion
         if (typeof window !== "undefined" && window.gtag) {
-          window.gtag("event", "complete_assessment", {
-            event_category: "Assessment",
-            event_label: "All Domains",
-          })
+          try {
+            window.gtag("event", "complete_assessment", {
+              event_category: "Assessment",
+              event_label: "All Domains",
+            })
+          } catch (trackingError) {
+            console.error("Error tracking assessment completion:", trackingError)
+          }
         }
 
         // Navigate to results page after a short delay

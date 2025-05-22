@@ -9,14 +9,17 @@ import { ResultsActions } from "@/components/results-actions"
 import { MaturityRecommendations } from "@/components/maturity-recommendations"
 import { BenchmarkComparison } from "@/components/benchmark-comparison"
 import { getAssessmentResults } from "@/lib/assessment-utils"
+import { calculateDomainAverages } from "@/lib/assessment-data"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 
 export default function ResultsClientPage() {
   const router = useRouter()
-  const [results, setResults] = useState<any | null>(null)
+  const [results, setResults] = useState(null)
+  const [domainScores, setDomainScores] = useState({})
+  const [overallScore, setOverallScore] = useState(0)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     // Load assessment results from localStorage
@@ -30,16 +33,20 @@ export default function ResultsClientPage() {
           return
         }
 
-        // Ensure we have the expected structure or provide defaults
-        const processedResults = {
-          rawResults: assessmentResults.rawResults || {},
-          domainScores: assessmentResults.domainScores || {},
-          overallScore: assessmentResults.overallScore || 0,
-          completedAt: assessmentResults.completedAt || new Date().toISOString(),
-          recommendations: assessmentResults.recommendations || [],
-        }
+        // Set the raw results
+        setResults(assessmentResults)
 
-        setResults(processedResults)
+        // Calculate domain averages
+        const calculatedDomainScores = calculateDomainAverages(assessmentResults)
+        setDomainScores(calculatedDomainScores)
+
+        // Calculate overall score
+        const validScores = Object.values(calculatedDomainScores).filter((score) => score > 0)
+        const calculatedOverallScore =
+          validScores.length > 0
+            ? Number((validScores.reduce((sum, score) => sum + score, 0) / validScores.length).toFixed(1))
+            : 0
+        setOverallScore(calculatedOverallScore)
 
         // Track view in Google Analytics
         if (window.gtag) {
@@ -91,22 +98,20 @@ export default function ResultsClientPage() {
       <h1 className="text-3xl font-bold mb-6">Assessment Results</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <MaturitySummary score={results.overallScore} />
-        <DomainRadarChart domainScores={results.domainScores} />
+        <MaturitySummary score={overallScore} />
+        <DomainRadarChart domainScores={domainScores} />
       </div>
 
       <div className="mb-8">
-        <SummaryTable domainScores={results.domainScores} />
+        <SummaryTable domainScores={domainScores} />
       </div>
 
-      {results.recommendations && results.recommendations.length > 0 && (
-        <div className="mb-8">
-          <MaturityRecommendations recommendations={results.recommendations} />
-        </div>
-      )}
+      <div className="mb-8">
+        <MaturityRecommendations domainScores={domainScores} />
+      </div>
 
       <div className="mb-8">
-        <BenchmarkComparison domainScores={results.domainScores} />
+        <BenchmarkComparison domainScores={domainScores} />
       </div>
 
       <ResultsActions />
