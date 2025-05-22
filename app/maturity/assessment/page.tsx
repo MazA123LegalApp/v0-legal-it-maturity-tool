@@ -19,6 +19,7 @@ const MaturityAssessmentPage = () => {
   const [currentInfoDimension, setCurrentInfoDimension] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [initialized, setInitialized] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   // Initialize results structure once
   useEffect(() => {
@@ -58,39 +59,63 @@ const MaturityAssessmentPage = () => {
     } else {
       // Save results and navigate to results page
       setIsSubmitting(true)
+      setError(null)
 
       try {
-        // Prepare the results for saving
-        const finalResults = { ...results }
+        // Calculate domain scores and overall score
+        const domainScores = {}
+        let totalScore = 0
+        let domainCount = 0
 
-        // Save assessment results
-        saveAssessmentResults(finalResults)
+        // Process each domain's scores
+        Object.entries(results).forEach(([domainId, dimensionScores]) => {
+          const dimensionValues = Object.values(dimensionScores)
+          const validScores = dimensionValues.filter((score) => score > 0)
 
-        // Track completion
-        if (typeof window !== "undefined") {
-          try {
-            if (window.gtag) {
-              window.gtag("event", "complete_assessment", {
-                event_category: "Assessment",
-                event_label: "All Domains",
-              })
-            }
-          } catch (trackingError) {
-            console.error("Error tracking assessment completion:", trackingError)
+          if (validScores.length > 0) {
+            const domainAverage = validScores.reduce((sum, score) => sum + score, 0) / validScores.length
+            domainScores[domainId] = Number.parseFloat(domainAverage.toFixed(1))
+            totalScore += domainAverage
+            domainCount++
+          } else {
+            domainScores[domainId] = 0
           }
+        })
+
+        // Calculate overall score
+        const overallScore = domainCount > 0 ? Number.parseFloat((totalScore / domainCount).toFixed(1)) : 0
+
+        // Prepare the final results object
+        const finalResults = {
+          rawResults: results,
+          domainScores: domainScores,
+          overallScore: overallScore,
+          completedAt: new Date().toISOString(),
         }
 
-        // Use setTimeout to ensure localStorage has time to update
+        // Save assessment results
+        const saveSuccess = saveAssessmentResults(finalResults)
+
+        if (!saveSuccess) {
+          throw new Error("Failed to save assessment results")
+        }
+
+        // Track completion
+        if (typeof window !== "undefined" && window.gtag) {
+          window.gtag("event", "complete_assessment", {
+            event_category: "Assessment",
+            event_label: "All Domains",
+          })
+        }
+
+        // Navigate to results page after a short delay
         setTimeout(() => {
-          // Navigate to results page
           router.push("/maturity/results")
         }, 100)
       } catch (error) {
         console.error("Error submitting assessment:", error)
+        setError("An error occurred while saving your assessment. Please try again.")
         setIsSubmitting(false)
-
-        // Continue to results page even if there's an error
-        router.push("/maturity/results")
       }
     }
   }
@@ -167,6 +192,8 @@ const MaturityAssessmentPage = () => {
           <div>5 - Optimized</div>
         </div>
       </div>
+
+      {error && <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">{error}</div>}
 
       <Tabs value={currentDomain?.id} className="w-full">
         <TabsList className="grid grid-cols-3 md:grid-cols-7 mb-8">

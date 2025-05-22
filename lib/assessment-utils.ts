@@ -1,4 +1,4 @@
-import { type AssessmentResult, calculateDomainAverages, getMaturityLevel } from "./assessment-data"
+import { getMaturityLevel } from "./assessment-data"
 
 export interface DomainMaturityInfo {
   score: number
@@ -11,7 +11,7 @@ export interface DomainMaturityInfo {
  * @param results The assessment results to save
  * @returns boolean indicating if the save was successful
  */
-export function saveAssessmentResults(results: AssessmentResult): boolean {
+export function saveAssessmentResults(results: any): boolean {
   // Check if we're on the server side
   if (typeof window === "undefined") return false
 
@@ -29,7 +29,7 @@ export function saveAssessmentResults(results: AssessmentResult): boolean {
  * Retrieves assessment results from localStorage
  * @returns The assessment results or null if not found
  */
-export function getAssessmentResults(): AssessmentResult | null {
+export function getAssessmentResults(): any | null {
   // Check if we're on the server side
   if (typeof window === "undefined") return null
 
@@ -39,7 +39,7 @@ export function getAssessmentResults(): AssessmentResult | null {
     if (!storedResults) return null
 
     // Parse and return the results
-    return JSON.parse(storedResults) as AssessmentResult
+    return JSON.parse(storedResults)
   } catch (error) {
     console.error("Error retrieving assessment results:", error)
     return null
@@ -61,17 +61,16 @@ export function getDomainMaturityInfo(domainId: string): DomainMaturityInfo {
     const storedResults = localStorage.getItem("assessment_results")
     if (!storedResults) return defaultInfo
 
-    const results = JSON.parse(storedResults) as AssessmentResult
-    const domainAverages = calculateDomainAverages(results)
+    const results = JSON.parse(storedResults)
 
     // Check if this domain has been assessed
-    if (!domainAverages[domainId] || domainAverages[domainId] === 0) {
+    if (!results.domainScores || !results.domainScores[domainId] || results.domainScores[domainId] === 0) {
       return defaultInfo
     }
 
     return {
-      score: domainAverages[domainId],
-      level: getMaturityLevel(domainAverages[domainId]),
+      score: results.domainScores[domainId],
+      level: getMaturityLevel(results.domainScores[domainId]),
       hasCompleted: true,
     }
   } catch (error) {
@@ -111,11 +110,10 @@ export function hasCompletedAssessment(): boolean {
     if (!storedResults) return false
 
     // Parse the results and check if they're valid
-    const results = JSON.parse(storedResults) as AssessmentResult
-    const domainAverages = calculateDomainAverages(results)
+    const results = JSON.parse(storedResults)
 
-    // Check if at least one domain has been assessed
-    return Object.values(domainAverages).some((score) => score > 0)
+    // Check if we have domain scores and at least one domain has been assessed
+    return results && results.domainScores && Object.values(results.domainScores).some((score: any) => score > 0)
   } catch (error) {
     console.error("Error checking assessment completion:", error)
     return false

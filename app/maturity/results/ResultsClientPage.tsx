@@ -9,13 +9,12 @@ import { ResultsActions } from "@/components/results-actions"
 import { MaturityRecommendations } from "@/components/maturity-recommendations"
 import { BenchmarkComparison } from "@/components/benchmark-comparison"
 import { getAssessmentResults } from "@/lib/assessment-utils"
-import type { AssessmentResult } from "@/lib/assessment-data"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 
 export default function ResultsClientPage() {
   const router = useRouter()
-  const [results, setResults] = useState<AssessmentResult | null>(null)
+  const [results, setResults] = useState<any | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -31,7 +30,16 @@ export default function ResultsClientPage() {
           return
         }
 
-        setResults(assessmentResults)
+        // Ensure we have the expected structure or provide defaults
+        const processedResults = {
+          rawResults: assessmentResults.rawResults || {},
+          domainScores: assessmentResults.domainScores || {},
+          overallScore: assessmentResults.overallScore || 0,
+          completedAt: assessmentResults.completedAt || new Date().toISOString(),
+          recommendations: assessmentResults.recommendations || [],
+        }
+
+        setResults(processedResults)
 
         // Track view in Google Analytics
         if (window.gtag) {
@@ -91,9 +99,11 @@ export default function ResultsClientPage() {
         <SummaryTable domainScores={results.domainScores} />
       </div>
 
-      <div className="mb-8">
-        <MaturityRecommendations recommendations={results.recommendations} />
-      </div>
+      {results.recommendations && results.recommendations.length > 0 && (
+        <div className="mb-8">
+          <MaturityRecommendations recommendations={results.recommendations} />
+        </div>
+      )}
 
       <div className="mb-8">
         <BenchmarkComparison domainScores={results.domainScores} />
