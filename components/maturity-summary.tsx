@@ -12,7 +12,12 @@ interface MaturitySummaryProps {
 }
 
 export function MaturitySummary({ classification }: MaturitySummaryProps) {
-  const { overallScore, overallBand, weakestDomains, strongestDomains } = classification
+  const {
+    overallScore = 0,
+    overallBand = "Unknown",
+    weakestDomains = [],
+    strongestDomains = [],
+  } = classification || {}
 
   return (
     <div className="space-y-6">
@@ -26,7 +31,9 @@ export function MaturitySummary({ classification }: MaturitySummaryProps) {
             <div>
               <div className="flex justify-between mb-2">
                 <h3 className="font-medium">Overall Maturity Score</h3>
-                <span className="font-medium">{overallScore.toFixed(1)}/5.0</span>
+                <span className="font-medium">
+                  {typeof overallScore === "number" ? overallScore.toFixed(1) : "N/A"}/5.0
+                </span>
               </div>
               <Progress value={overallScore * 20} className="h-2" />
               <p className="text-sm text-muted-foreground mt-2">
@@ -44,7 +51,9 @@ export function MaturitySummary({ classification }: MaturitySummaryProps) {
                       return (
                         <li key={domain.domain} className="flex justify-between items-center">
                           <span>{domainInfo?.name || domain.domain}</span>
-                          <span className="font-medium">{domain.score.toFixed(1)}</span>
+                          <span className="font-medium">
+                            {typeof domain.score === "number" ? domain.score.toFixed(1) : "N/A"}
+                          </span>
                         </li>
                       )
                     })}
@@ -65,7 +74,9 @@ export function MaturitySummary({ classification }: MaturitySummaryProps) {
                       return (
                         <li key={domain.domain} className="flex justify-between items-center">
                           <span>{domainInfo?.name || domain.domain}</span>
-                          <span className="font-medium">{domain.score.toFixed(1)}</span>
+                          <span className="font-medium">
+                            {typeof domain.score === "number" ? domain.score.toFixed(1) : "N/A"}
+                          </span>
                         </li>
                       )
                     })}
@@ -96,53 +107,31 @@ export function MaturitySummary({ classification }: MaturitySummaryProps) {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="bg-blue-100 p-2 rounded-full h-8 w-8 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-blue-700 font-bold">1</span>
+            {[1, 2, 3, 4].map((step) => (
+              <div key={step} className="flex items-start gap-3">
+                <div className="bg-blue-100 p-2 rounded-full h-8 w-8 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-blue-700 font-bold">{step}</span>
+                </div>
+                <div>
+                  <h3 className="font-medium">
+                    {[
+                      "Review Domain-Specific Recommendations",
+                      "Download Relevant Templates",
+                      "Create an Improvement Plan",
+                      "Reassess in 6-12 Months",
+                    ][step - 1]}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {[
+                      "Explore detailed recommendations for each domain based on your maturity level.",
+                      "Access templates and tools tailored to your maturity level for each domain.",
+                      "Develop a roadmap for improving your weakest domains using the playbook guidance.",
+                      "Track your progress by retaking the assessment after implementing improvements.",
+                    ][step - 1]}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-medium">Review Domain-Specific Recommendations</h3>
-                <p className="text-sm text-muted-foreground">
-                  Explore detailed recommendations for each domain based on your maturity level.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="bg-blue-100 p-2 rounded-full h-8 w-8 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-blue-700 font-bold">2</span>
-              </div>
-              <div>
-                <h3 className="font-medium">Download Relevant Templates</h3>
-                <p className="text-sm text-muted-foreground">
-                  Access templates and tools tailored to your maturity level for each domain.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="bg-blue-100 p-2 rounded-full h-8 w-8 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-blue-700 font-bold">3</span>
-              </div>
-              <div>
-                <h3 className="font-medium">Create an Improvement Plan</h3>
-                <p className="text-sm text-muted-foreground">
-                  Develop a roadmap for improving your weakest domains using the playbook guidance.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="bg-blue-100 p-2 rounded-full h-8 w-8 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-blue-700 font-bold">4</span>
-              </div>
-              <div>
-                <h3 className="font-medium">Reassess in 6-12 Months</h3>
-                <p className="text-sm text-muted-foreground">
-                  Track your progress by retaking the assessment after implementing improvements.
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
         </CardContent>
         <CardFooter>
