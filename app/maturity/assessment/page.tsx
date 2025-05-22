@@ -2,13 +2,37 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Slider } from "@/components/ui/slider"
 import { domains, dimensions, type AssessmentResult } from "@/lib/assessment-data"
 import { HelpCircle } from "lucide-react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog"
+
+// ✅ Add session ID helper
+function getSessionId() {
+  if (typeof window === "undefined") return null
+  let sessionId = localStorage.getItem("session_id")
+  if (!sessionId) {
+    sessionId = crypto.randomUUID()
+    localStorage.setItem("session_id", sessionId)
+  }
+  return sessionId
+}
 
 const MaturityAssessmentPage = () => {
   const router = useRouter()
@@ -20,7 +44,6 @@ const MaturityAssessmentPage = () => {
   const [initialized, setInitialized] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Initialize results structure once
   useEffect(() => {
     if (!initialized && Object.keys(results).length === 0) {
       const initialResults: AssessmentResult = {}
@@ -42,7 +65,6 @@ const MaturityAssessmentPage = () => {
 
   const handleSliderChange = (dimension: string, value: number[]) => {
     if (!currentDomain) return
-
     setResults((prev) => ({
       ...prev,
       [currentDomain.id]: {
@@ -52,39 +74,44 @@ const MaturityAssessmentPage = () => {
     }))
   }
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentDomainIndex < domains.length - 1) {
       setCurrentDomainIndex(currentDomainIndex + 1)
     } else {
-      // Save results and navigate to results page
       setIsSubmitting(true)
       setError(null)
 
       try {
-        if (typeof window === "undefined") {
-          throw new Error("Window context is undefined. Cannot save results.")
+        const sessionId = getSessionId()
+        if (!sessionId) throw new Error("Session ID is missing")
+
+        const response = await fetch("/api/save-assessment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId, results }),
+        })
+
+        const data = await response.json()
+        if (!response.ok || !data.success) {
+          throw new Error("Failed to save assessment")
         }
 
-        localStorage.setItem("maturityResults", JSON.stringify(results))
-
-        // Track completion
-        if (typeof window !== "undefined" && window.gtag) {
+        if (window.gtag) {
           try {
             window.gtag("event", "complete_assessment", {
               event_category: "Assessment",
               event_label: "All Domains",
             })
-          } catch (trackingError) {
-            console.error("Error tracking assessment completion:", trackingError)
+          } catch (err) {
+            console.warn("Tracking error:", err)
           }
         }
 
-        // Navigate to results page after a short delay
         setTimeout(() => {
           router.push("/maturity/results")
         }, 100)
       } catch (error) {
-        console.error("Error submitting assessment:", error)
+        console.error("Submission error:", error)
         setError("An error occurred while saving your assessment. Please try again.")
         setIsSubmitting(false)
       }
@@ -107,7 +134,6 @@ const MaturityAssessmentPage = () => {
 
   const LevelDescriptions = () => {
     const dimension = dimensions[currentInfoDimension as keyof typeof dimensions]
-
     if (!dimension) return null
 
     return (
@@ -118,28 +144,11 @@ const MaturityAssessmentPage = () => {
             <DialogDescription>{dimension.description}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 mt-4">
-            <div>
-              <h3 className="font-bold">1 - Initial</h3>
-              <p className="text-sm">Ad-hoc processes, limited documentation, reactive approach.</p>
-            </div>
-            <div>
-              <h3 className="font-bold">2 - Developing</h3>
-              <p className="text-sm">Basic processes defined, some documentation, still largely reactive.</p>
-            </div>
-            <div>
-              <h3 className="font-bold">3 - Established</h3>
-              <p className="text-sm">Standardized processes, good documentation, proactive elements.</p>
-            </div>
-            <div>
-              <h3 className="font-bold">4 - Managed</h3>
-              <p className="text-sm">
-                Measured and controlled processes, comprehensive documentation, mostly proactive.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-bold">5 - Optimized</h3>
-              <p className="text-sm">Continuous improvement, complete documentation, fully proactive approach.</p>
-            </div>
+            <div><h3 className="font-bold">1 - Initial</h3><p className="text-sm">Ad-hoc processes, limited documentation, reactive approach.</p></div>
+            <div><h3 className="font-bold">2 - Developing</h3><p className="text-sm">Basic processes defined, some documentation, still largely reactive.</p></div>
+            <div><h3 className="font-bold">3 - Established</h3><p className="text-sm">Standardized processes, good documentation, proactive elements.</p></div>
+            <div><h3 className="font-bold">4 - Managed</h3><p className="text-sm">Measured and controlled processes, comprehensive documentation, mostly proactive.</p></div>
+            <div><h3 className="font-bold">5 - Optimized</h3><p className="text-sm">Continuous improvement, complete documentation, fully proactive approach.</p></div>
           </div>
         </DialogContent>
       </Dialog>
@@ -152,7 +161,7 @@ const MaturityAssessmentPage = () => {
       <p>This page will contain the maturity assessment tool.</p>
 
       <div className="mb-8">
-        <p className="text-lg mb-4">Rate your organization's maturity in each dimension on a scale of 1-5:</p>
+        <p className="text-lg mb-4">Rate your organization's maturity in each dimension on a scale of 1–5:</p>
         <div className="grid grid-cols-5 gap-4 text-center text-sm mb-2">
           <div>1 - Initial</div>
           <div>2 - Developing</div>
@@ -162,7 +171,11 @@ const MaturityAssessmentPage = () => {
         </div>
       </div>
 
-      {error && <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">{error}</div>}
+      {error && (
+        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          {error}
+        </div>
+      )}
 
       <Tabs value={currentDomain?.id} className="w-full">
         <TabsList className="grid grid-cols-3 md:grid-cols-7 mb-8">
