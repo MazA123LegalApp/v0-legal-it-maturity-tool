@@ -7,9 +7,10 @@ import { DomainRadarChart } from "@/components/domain-radar-chart"
 import { SummaryTable } from "@/components/summary-table"
 import { ResultsActions } from "@/components/results-actions"
 import { getAssessmentResults } from "@/lib/assessment-utils"
-import { calculateDomainAverages, calculateOverallAverage, getMaturityLevel, domains } from "@/lib/assessment-data"
+import { calculateDomainAverages } from "@/lib/assessment-data"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
+import { classifyMaturity } from "@/lib/maturity-engine"
 
 export default function ResultsClientPage() {
   const router = useRouter()
@@ -30,43 +31,13 @@ export default function ResultsClientPage() {
           return
         }
 
-        // Calculate domain averages
+        // Use the proper maturity classification function
+        const classification = classifyMaturity(assessmentResults)
+        setSummaryData(classification)
+
+        // Calculate domain averages for the radar chart and summary table
         const calculatedDomainScores = calculateDomainAverages(assessmentResults)
         setDomainScores(calculatedDomainScores)
-
-        // Calculate overall score
-        const overallScore = calculateOverallAverage(assessmentResults)
-
-        // Get maturity band
-        const overallBand = getMaturityLevel(overallScore)
-
-        // Find weakest and strongest domains
-        const domainEntries = Object.entries(calculatedDomainScores)
-          .filter(([_, score]) => score > 0)
-          .sort((a, b) => a[1] - b[1])
-
-        const weakestDomains = domainEntries.slice(0, 3).map(([id]) => {
-          const domain = domains.find((d) => d.id === id)
-          return domain ? domain.name : id
-        })
-
-        const strongestDomains = domainEntries
-          .slice(-3)
-          .reverse()
-          .map(([id]) => {
-            const domain = domains.find((d) => d.id === id)
-            return domain ? domain.name : id
-          })
-
-        // Create summary data object
-        const summary = {
-          overallScore,
-          overallBand,
-          weakestDomains,
-          strongestDomains,
-        }
-
-        setSummaryData(summary)
 
         // Track view in Google Analytics
         if (window.gtag) {
@@ -118,7 +89,7 @@ export default function ResultsClientPage() {
       <h1 className="text-3xl font-bold mb-6">Assessment Results</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <MaturitySummary {...summaryData} />
+        <MaturitySummary classification={summaryData} />
         <DomainRadarChart domainScores={domainScores} />
       </div>
 
