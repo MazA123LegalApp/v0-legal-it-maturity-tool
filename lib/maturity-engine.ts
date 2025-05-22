@@ -43,15 +43,30 @@ export function calculateDomainScore(subdomainScores: Record<Dimension, number>)
 /**
  * Processes assessment results into a complete maturity classification
  */
-export function classifyMaturity(results: AssessmentResult): MaturityClassification {
+export function classifyMaturity(results: AssessmentResult | null | undefined): MaturityClassification {
+  if (!results || typeof results !== "object" || Object.keys(results).length === 0) {
+    return {
+      overallScore: 0,
+      overallBand: "Initial",
+      domainScores: {},
+      weakestDomains: [],
+      strongestDomains: [],
+    }
+  }
+
   const domainScores: Record<string, DomainScore> = {}
   let totalScore = 0
   let validDomainCount = 0
 
-  // Calculate scores for each domain
-  Object.keys(results).forEach((domainId) => {
+  for (const domainId of Object.keys(results)) {
     const subdomainScores = results[domainId]
-    if (subdomainScores) {
+    if (
+      subdomainScores &&
+      typeof subdomainScores === "object" &&
+      ["people", "process", "tooling", "data", "improvement"].every(
+        (dim) => typeof subdomainScores[dim as Dimension] === "number"
+      )
+    ) {
       const score = calculateDomainScore(subdomainScores)
 
       if (score > 0) {
@@ -66,19 +81,14 @@ export function classifyMaturity(results: AssessmentResult): MaturityClassificat
         subdomainScores,
       }
     }
-  })
+  }
 
-  // Calculate overall score
   const overallScore = validDomainCount > 0 ? totalScore / validDomainCount : 0
   const overallBand = getMaturityBand(overallScore)
 
-  // Sort domains by score for weakest/strongest
   const sortedDomains = Object.values(domainScores).sort((a, b) => a.score - b.score)
-  const weakestDomains = sortedDomains.slice(0, 3).filter((domain) => domain.score > 0)
-  const strongestDomains = sortedDomains
-    .reverse()
-    .slice(0, 3)
-    .filter((domain) => domain.score > 0)
+  const weakestDomains = sortedDomains.slice(0, 3).filter((d) => d.score > 0)
+  const strongestDomains = [...sortedDomains].reverse().slice(0, 3).filter((d) => d.score > 0)
 
   return {
     overallScore,
@@ -155,9 +165,6 @@ export interface Template {
 }
 
 export function getTemplatesForDomain(domainId: string, band: MaturityBand): Template[] {
-  // This would ideally come from a database or API
-  // For now, we'll return some sample templates based on domain and band
-
   const templates: Record<string, Record<MaturityBand, Template[]>> = {
     cybersecurity: {
       Initial: [
