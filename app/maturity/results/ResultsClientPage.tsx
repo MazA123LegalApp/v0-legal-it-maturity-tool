@@ -7,11 +7,12 @@ import { DomainRadarChart } from "@/components/domain-radar-chart"
 import { SummaryTable } from "@/components/summary-table"
 import { ResultsActions } from "@/components/results-actions"
 import { calculateDomainAverages } from "@/lib/assessment-data"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Button } from "@/components/ui/button"
 import { classifyMaturity } from "@/lib/maturity-engine"
-import { trackEvent } from "@/lib/tracking-utils"
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
 import type { AssessmentResult } from "@/lib/assessment-data"
+
+const STORAGE_KEY = "maturityResults"
 
 export default function ResultsClientPage() {
   const router = useRouter()
@@ -21,51 +22,26 @@ export default function ResultsClientPage() {
   const [domainScores, setDomainScores] = useState<Record<string, number>>({})
 
   useEffect(() => {
-    async function loadResults() {
-      try {
-        const sessionId = localStorage.getItem("session_id")
-        if (!sessionId) {
-          setError("No session found. Please complete the assessment first.")
-          setLoading(false)
-          return
-        }
-
-        const res = await fetch("/api/load-assessment", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId }),
-        })
-
-        const { results } = await res.json()
-
-        if (!results) {
-          setError("No assessment results found. Please complete the assessment first.")
-          setLoading(false)
-          return
-        }
-
-        const classification = classifyMaturity(results as AssessmentResult)
-        setSummaryData(classification)
-
-        const calculatedDomainScores = calculateDomainAverages(results)
-        setDomainScores(calculatedDomainScores)
-
-        trackEvent("view_results", {
-          event_category: "Assessment",
-          event_label: "Results Page",
-          overall_score: classification.overallScore,
-          maturity_level: classification.overallBand,
-        })
-      } catch (err) {
-        console.error("Error loading assessment results:", err)
-        setError("An error occurred while loading your assessment results.")
-      } finally {
-        setLoading(false)
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY)
+      if (!raw) {
+        setError("No assessment results found. Please complete the assessment first.")
+        return
       }
-    }
 
-    loadResults()
-  }, [router])
+      const results: AssessmentResult = JSON.parse(raw)
+      const classification = classifyMaturity(results)
+      const domainAverages = calculateDomainAverages(results)
+
+      setSummaryData(classification)
+      setDomainScores(domainAverages)
+    } catch (err) {
+      console.error("Error loading results:", err)
+      setError("An error occurred while loading your results.")
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
   if (loading) {
     return (
@@ -82,7 +58,7 @@ export default function ResultsClientPage() {
         <h1 className="text-3xl font-bold mb-6">Assessment Results</h1>
         <Alert variant="destructive" className="mb-6">
           <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error || "No assessment results found."}</AlertDescription>
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
         <Button onClick={() => router.push("/maturity/assessment")}>Take Assessment</Button>
       </div>
@@ -92,16 +68,13 @@ export default function ResultsClientPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Assessment Results</h1>
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         <MaturitySummary classification={summaryData} />
         <DomainRadarChart domainScores={domainScores} />
       </div>
-
       <div className="mb-8">
         <SummaryTable results={summaryData.domainScores} />
       </div>
-
       <ResultsActions />
     </div>
   )
