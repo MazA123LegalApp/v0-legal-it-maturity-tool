@@ -6,6 +6,27 @@ export interface DomainMaturityInfo {
   hasCompleted: boolean
 }
 
+/**
+ * Retrieves assessment results from localStorage
+ * @returns The assessment results or null if not found
+ */
+export function getAssessmentResults(): AssessmentResult | null {
+  // Check if we're on the server side
+  if (typeof window === "undefined") return null
+
+  try {
+    // Try to get assessment results from localStorage
+    const storedResults = localStorage.getItem("assessment_results")
+    if (!storedResults) return null
+
+    // Parse and return the results
+    return JSON.parse(storedResults) as AssessmentResult
+  } catch (error) {
+    console.error("Error retrieving assessment results:", error)
+    return null
+  }
+}
+
 export function getDomainMaturityInfo(domainId: string): DomainMaturityInfo {
   // Default values if no assessment data is found
   const defaultInfo: DomainMaturityInfo = {

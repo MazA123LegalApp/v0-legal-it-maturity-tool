@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { unstable_noStore as noStore } from "next/cache"
 import ResultsClientPage from "./ResultsClientPage"
 
 export const metadata: Metadata = {
@@ -7,5 +8,8 @@ export const metadata: Metadata = {
 }
 
 export default function MaturityResultsPage() {
+  // Prevent this page from being statically generated
+  noStore()
+
   return <ResultsClientPage />
 }
