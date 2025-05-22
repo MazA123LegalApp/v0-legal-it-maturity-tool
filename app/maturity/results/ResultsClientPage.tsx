@@ -6,20 +6,17 @@ import { MaturitySummary } from "@/components/maturity-summary"
 import { DomainRadarChart } from "@/components/domain-radar-chart"
 import { SummaryTable } from "@/components/summary-table"
 import { ResultsActions } from "@/components/results-actions"
-import { MaturityRecommendations } from "@/components/maturity-recommendations"
-import { BenchmarkComparison } from "@/components/benchmark-comparison"
 import { getAssessmentResults } from "@/lib/assessment-utils"
-import { calculateDomainAverages } from "@/lib/assessment-data"
+import { calculateDomainAverages, calculateOverallAverage, getMaturityLevel, domains } from "@/lib/assessment-data"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 
 export default function ResultsClientPage() {
   const router = useRouter()
-  const [results, setResults] = useState(null)
-  const [domainScores, setDomainScores] = useState({})
-  const [overallScore, setOverallScore] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [summaryData, setSummaryData] = useState(null)
+  const [domainScores, setDomainScores] = useState({})
 
   useEffect(() => {
     // Load assessment results from localStorage
@@ -33,20 +30,43 @@ export default function ResultsClientPage() {
           return
         }
 
-        // Set the raw results
-        setResults(assessmentResults)
-
         // Calculate domain averages
         const calculatedDomainScores = calculateDomainAverages(assessmentResults)
         setDomainScores(calculatedDomainScores)
 
         // Calculate overall score
-        const validScores = Object.values(calculatedDomainScores).filter((score) => score > 0)
-        const calculatedOverallScore =
-          validScores.length > 0
-            ? Number((validScores.reduce((sum, score) => sum + score, 0) / validScores.length).toFixed(1))
-            : 0
-        setOverallScore(calculatedOverallScore)
+        const overallScore = calculateOverallAverage(assessmentResults)
+
+        // Get maturity band
+        const overallBand = getMaturityLevel(overallScore)
+
+        // Find weakest and strongest domains
+        const domainEntries = Object.entries(calculatedDomainScores)
+          .filter(([_, score]) => score > 0)
+          .sort((a, b) => a[1] - b[1])
+
+        const weakestDomains = domainEntries.slice(0, 3).map(([id]) => {
+          const domain = domains.find((d) => d.id === id)
+          return domain ? domain.name : id
+        })
+
+        const strongestDomains = domainEntries
+          .slice(-3)
+          .reverse()
+          .map(([id]) => {
+            const domain = domains.find((d) => d.id === id)
+            return domain ? domain.name : id
+          })
+
+        // Create summary data object
+        const summary = {
+          overallScore,
+          overallBand,
+          weakestDomains,
+          strongestDomains,
+        }
+
+        setSummaryData(summary)
 
         // Track view in Google Analytics
         if (window.gtag) {
@@ -80,7 +100,7 @@ export default function ResultsClientPage() {
   }
 
   // Show error state
-  if (error || !results) {
+  if (error || !summaryData) {
     return (
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">Assessment Results</h1>
@@ -98,20 +118,12 @@ export default function ResultsClientPage() {
       <h1 className="text-3xl font-bold mb-6">Assessment Results</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <MaturitySummary score={overallScore} />
+        <MaturitySummary {...summaryData} />
         <DomainRadarChart domainScores={domainScores} />
       </div>
 
       <div className="mb-8">
         <SummaryTable domainScores={domainScores} />
-      </div>
-
-      <div className="mb-8">
-        <MaturityRecommendations domainScores={domainScores} />
-      </div>
-
-      <div className="mb-8">
-        <BenchmarkComparison domainScores={domainScores} />
       </div>
 
       <ResultsActions />
