@@ -11,6 +11,7 @@ import { calculateDomainAverages } from "@/lib/assessment-data"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { classifyMaturity } from "@/lib/maturity-engine"
+import { trackEvent } from "@/lib/tracking-utils"
 
 export default function ResultsClientPage() {
   const router = useRouter()
@@ -39,17 +40,13 @@ export default function ResultsClientPage() {
         const calculatedDomainScores = calculateDomainAverages(assessmentResults)
         setDomainScores(calculatedDomainScores)
 
-        // Track view in Google Analytics
-        if (window.gtag) {
-          try {
-            window.gtag("event", "view_results", {
-              event_category: "Assessment",
-              event_label: "Results Page",
-            })
-          } catch (trackingError) {
-            console.error("Error tracking results view:", trackingError)
-          }
-        }
+        // Track view using our safer tracking utility
+        trackEvent("view_results", {
+          event_category: "Assessment",
+          event_label: "Results Page",
+          overall_score: classification.overallScore,
+          maturity_level: classification.overallBand,
+        })
       }
 
       setLoading(false)

@@ -1,6 +1,64 @@
 // Utility functions for tracking user interactions
 
 /**
+ * Safely tracks an event to Google Analytics
+ * @param eventName The name of the event to track
+ * @param eventParams Additional parameters for the event
+ */
+export function trackEvent(eventName: string, eventParams?: Record<string, any>): void {
+  try {
+    // Skip if we're on the server or window is not defined
+    if (typeof window === "undefined") return
+
+    // Skip if gtag is not defined
+    if (typeof window.gtag !== "function") {
+      console.warn("Google Analytics not initialized, skipping event tracking")
+      return
+    }
+
+    // Track the event
+    window.gtag("event", eventName, {
+      ...eventParams,
+      event_category: eventParams?.event_category || "User Interaction",
+      send_to: "G-3YXE5YRXVW",
+    })
+
+    console.log(`Event tracked: ${eventName}`, eventParams)
+  } catch (error) {
+    console.error(`Error tracking event ${eventName}:`, error)
+  }
+}
+
+/**
+ * Safely tracks a page view to Google Analytics
+ * @param pagePath The path of the page to track
+ * @param pageTitle The title of the page to track
+ */
+export function trackPageView(pagePath: string, pageTitle?: string): void {
+  try {
+    // Skip if we're on the server or window is not defined
+    if (typeof window === "undefined") return
+
+    // Skip if gtag is not defined
+    if (typeof window.gtag !== "function") {
+      console.warn("Google Analytics not initialized, skipping page view tracking")
+      return
+    }
+
+    // Track the page view
+    window.gtag("event", "page_view", {
+      page_path: pagePath,
+      page_title: pageTitle || document.title,
+      send_to: "G-3YXE5YRXVW",
+    })
+
+    console.log(`Page view tracked: ${pagePath}`)
+  } catch (error) {
+    console.error(`Error tracking page view for ${pagePath}:`, error)
+  }
+}
+
+/**
  * Tracks a download event in Google Analytics
  * @param fileType The type of file being downloaded (PDF, Excel, etc.)
  * @param fileName The name of the file being downloaded
@@ -12,18 +70,13 @@ export function trackDownloadEvent(fileType: string, fileName: string, module = 
     // Track with GA4
     if (typeof window !== "undefined") {
       // Direct GA4 tracking
-      if (window.gtag) {
-        window.gtag("event", "download", {
-          event_category: module,
-          event_label: fileType,
-          file_name: fileName,
-          file_type: fileType,
-          is_us_based: isUSBased,
-        })
-        console.log(`${module} download tracked with GA4`)
-      } else {
-        console.warn("Google Analytics tracking function not available")
-      }
+      trackEvent("download", {
+        event_category: module,
+        event_label: fileType,
+        file_name: fileName,
+        file_type: fileType,
+        is_us_based: isUSBased,
+      })
 
       // Also track locally for admin dashboard
       const downloadData = {
@@ -35,11 +88,14 @@ export function trackDownloadEvent(fileType: string, fileName: string, module = 
       }
 
       // Store in localStorage for admin dashboard to access
-      const downloads = JSON.parse(localStorage.getItem("tracked_downloads") || "[]")
-      downloads.push(downloadData)
-      localStorage.setItem("tracked_downloads", JSON.stringify(downloads))
-
-      console.log(`${module} download tracked locally:`, downloadData)
+      try {
+        const downloads = JSON.parse(localStorage.getItem("tracked_downloads") || "[]")
+        downloads.push(downloadData)
+        localStorage.setItem("tracked_downloads", JSON.stringify(downloads))
+        console.log(`${module} download tracked locally:`, downloadData)
+      } catch (storageError) {
+        console.error(`Error storing download in localStorage:`, storageError)
+      }
     }
   } catch (error) {
     console.error(`Error tracking ${module} download:`, error)

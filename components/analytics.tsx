@@ -20,40 +20,54 @@ export function Analytics() {
   const searchParams = useSearchParams()
 
   useEffect(() => {
+    // Skip if we're on the server or window is not defined
+    if (typeof window === "undefined") return
+
     // Initialize dataLayer if it doesn't exist
     window.dataLayer = window.dataLayer || []
 
+    // Define gtag function if it doesn't exist
+    if (typeof window.gtag !== "function") {
+      window.gtag = () => {
+        window.dataLayer.push(arguments)
+      }
+    }
+
     // Track page view
     if (pathname) {
-      // Push page view event to dataLayer for GTM
-      window.dataLayer.push({
-        event: "page_view",
-        page_path: pathname,
-        page_title: document.title,
-      })
-
-      // Also track directly with gtag if available
-      if (window.gtag) {
-        window.gtag("event", "page_view", {
+      try {
+        // Push page view event to dataLayer for GTM
+        window.dataLayer.push({
+          event: "page_view",
           page_path: pathname,
           page_title: document.title,
-          send_to: GA_MEASUREMENT_ID,
         })
-      }
 
-      // Also track page view locally for admin dashboard to access
-      try {
-        const pageData = {
-          path: pathname,
-          timestamp: new Date().toISOString(),
+        // Also track directly with gtag if available
+        if (window.gtag) {
+          window.gtag("event", "page_view", {
+            page_path: pathname,
+            page_title: document.title,
+            send_to: GA_MEASUREMENT_ID,
+          })
         }
 
-        // Store in localStorage for admin dashboard to access
-        const pageViews = JSON.parse(localStorage.getItem("tracked_pageviews") || "[]")
-        pageViews.push(pageData)
-        localStorage.setItem("tracked_pageviews", JSON.stringify(pageViews))
+        // Also track page view locally for admin dashboard to access
+        try {
+          const pageData = {
+            path: pathname,
+            timestamp: new Date().toISOString(),
+          }
 
-        console.log("Page view tracked:", pageData)
+          // Store in localStorage for admin dashboard to access
+          const pageViews = JSON.parse(localStorage.getItem("tracked_pageviews") || "[]")
+          pageViews.push(pageData)
+          localStorage.setItem("tracked_pageviews", JSON.stringify(pageViews))
+
+          console.log("Page view tracked:", pageData)
+        } catch (error) {
+          console.error("Error tracking page view in localStorage:", error)
+        }
       } catch (error) {
         console.error("Error tracking page view:", error)
       }
