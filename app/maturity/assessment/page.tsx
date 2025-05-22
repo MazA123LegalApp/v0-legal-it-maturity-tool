@@ -6,18 +6,19 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Slider } from "@/components/ui/slider"
-import { domains, dimensions, type AssessmentResult } from "@/lib/assessment-data"
+import { domains, dimensions, type AssessmentResult, type Dimension } from "@/lib/assessment-data"
 import { saveAssessmentResults } from "@/lib/assessment-utils"
 import { AssessmentTracker } from "@/components/assessment-tracker"
 import { LevelDescriptionDialog } from "@/components/level-description-dialog"
 import { toast } from "@/components/ui/use-toast"
+import { HelpCircle } from "lucide-react"
 
 const MaturityAssessmentPage = () => {
   const router = useRouter()
   const [currentDomainIndex, setCurrentDomainIndex] = useState(0)
   const [results, setResults] = useState<AssessmentResult>({})
   const [showLevelInfo, setShowLevelInfo] = useState(false)
-  const [currentInfoDimension, setCurrentInfoDimension] = useState("")
+  const [currentInfoDimension, setCurrentInfoDimension] = useState<Dimension | "">("")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Initialize results structure if empty
@@ -123,7 +124,7 @@ const MaturityAssessmentPage = () => {
     }
   }
 
-  const handleShowLevelInfo = (dimension: string) => {
+  const handleShowLevelInfo = (dimension: Dimension) => {
     setCurrentInfoDimension(dimension)
     setShowLevelInfo(true)
   }
@@ -172,7 +173,13 @@ const MaturityAssessmentPage = () => {
                   <div key={key} className="space-y-2">
                     <div className="flex justify-between items-center">
                       <h3 className="font-medium">{dimension.name}</h3>
-                      <Button variant="ghost" size="sm" onClick={() => handleShowLevelInfo(key)} className="text-xs">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleShowLevelInfo(key as Dimension)}
+                        className="text-xs flex items-center gap-1"
+                      >
+                        <HelpCircle className="h-3 w-3" />
                         View Level Descriptions
                       </Button>
                     </div>
@@ -208,13 +215,12 @@ const MaturityAssessmentPage = () => {
           </TabsContent>
         </Tabs>
 
-        {showLevelInfo && (
-          <LevelDescriptionDialog
-            dimension={currentInfoDimension}
-            isOpen={showLevelInfo}
-            onClose={() => setShowLevelInfo(false)}
-          />
-        )}
+        {/* Use the controlled mode of LevelDescriptionDialog */}
+        <LevelDescriptionDialog
+          dimension={currentInfoDimension}
+          isOpen={showLevelInfo}
+          onClose={() => setShowLevelInfo(false)}
+        />
       </div>
     </AssessmentTracker>
   )
