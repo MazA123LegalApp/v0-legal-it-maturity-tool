@@ -6,9 +6,9 @@ import Link from "next/link"
 import { BookOpen, BarChart3, Home, Shield } from "lucide-react"
 
 import { ThemeProvider } from "@/components/theme-provider"
-// import { GoogleTagManager } from "@/components/gtm"
 import { AdminProvider } from "@/contexts/admin-context"
 import { Toaster } from "@/components/ui/toaster"
+import { ClientErrorLogger } from "@/components/ClientErrorLogger"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -18,19 +18,10 @@ export const metadata = {
   generator: "v0.dev",
 }
 
-// Global error logging hook — catches client-side runtime errors
-if (typeof window !== "undefined") {
-  window.onerror = function (message, source, lineno, colno, error) {
-    console.log("🛑 Global Error Caught:", { message, source, lineno, colno, error })
-  }
-}
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        {/* <GoogleTagManager /> */}
-      </head>
+      <head>{/* GTM removed */}</head>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <AdminProvider>
@@ -92,6 +83,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </footer>
             </div>
             <Toaster />
+            <ClientErrorLogger />
           </AdminProvider>
         </ThemeProvider>
       </body>
