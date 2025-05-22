@@ -8,11 +8,11 @@ import { SummaryTable } from "@/components/summary-table"
 import { ResultsActions } from "@/components/results-actions"
 import { calculateDomainAverages } from "@/lib/assessment-data"
 import { classifyMaturity } from "@/lib/maturity-engine"
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import type { AssessmentResult } from "@/lib/assessment-data"
 
-const STORAGE_KEY = "maturityResults"
+const STORAGE_KEY = "assessment_results"
 
 export default function ResultsClientPage() {
   const router = useRouter()
