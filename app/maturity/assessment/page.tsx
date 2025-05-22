@@ -8,30 +8,42 @@ import {
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Slider } from "@/components/ui/slider"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
-import { HelpCircle } from "lucide-react"
 import { domains, dimensions, type AssessmentResult } from "@/lib/assessment-data"
+import { HelpCircle } from "lucide-react"
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription
+} from "@/components/ui/dialog"
 
-const STORAGE_KEY = "maturityResults"
+const STORAGE_KEY = "assessment_results"
 
-export default function MaturityAssessmentPage() {
+const MaturityAssessmentPage = () => {
   const router = useRouter()
   const [currentDomainIndex, setCurrentDomainIndex] = useState(0)
   const [results, setResults] = useState<AssessmentResult>({})
   const [showLevelInfo, setShowLevelInfo] = useState(false)
   const [currentInfoDimension, setCurrentInfoDimension] = useState("")
-  const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const currentDomain = domains[currentDomainIndex]
+  const [initialized, setInitialized] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const init: AssessmentResult = {}
-    domains.forEach((d) => {
-      init[d.id] = { people: 0, process: 0, tooling: 0, data: 0, improvement: 0 }
-    })
-    setResults(init)
-  }, [])
+    if (!initialized && Object.keys(results).length === 0) {
+      const initialResults: AssessmentResult = {}
+      domains.forEach((domain) => {
+        initialResults[domain.id] = {
+          people: 0,
+          process: 0,
+          tooling: 0,
+          data: 0,
+          improvement: 0,
+        }
+      })
+      setResults(initialResults)
+      setInitialized(true)
+    }
+  }, [initialized, results])
+
+  const currentDomain = domains[currentDomainIndex]
 
   const handleSliderChange = (dimension: string, value: number[]) => {
     setResults((prev) => ({
@@ -47,13 +59,13 @@ export default function MaturityAssessmentPage() {
     if (currentDomainIndex < domains.length - 1) {
       setCurrentDomainIndex((i) => i + 1)
     } else {
+      setIsSubmitting(true)
       try {
-        setIsSubmitting(true)
         localStorage.setItem(STORAGE_KEY, JSON.stringify(results))
         router.push("/maturity/results")
       } catch (err) {
-        console.error(err)
-        setError("Unable to save assessment.")
+        console.error("Error saving assessment:", err)
+        setError("An error occurred while saving your assessment. Please try again.")
         setIsSubmitting(false)
       }
     }
@@ -64,6 +76,14 @@ export default function MaturityAssessmentPage() {
       setCurrentDomainIndex((i) => i - 1)
     }
   }
+
+  const handleShowLevelInfo = (dimension: string) => {
+    setCurrentInfoDimension(dimension)
+    setShowLevelInfo(true)
+  }
+
+  const isLastDomain = currentDomainIndex === domains.length - 1
+  const isFirstDomain = currentDomainIndex === 0
 
   const LevelDescriptions = () => {
     const dimension = dimensions[currentInfoDimension as keyof typeof dimensions]
@@ -76,12 +96,12 @@ export default function MaturityAssessmentPage() {
             <DialogTitle>{dimension.name} - Maturity Levels</DialogTitle>
             <DialogDescription>{dimension.description}</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 mt-4 text-sm">
-            <div><strong>1 - Initial:</strong> Ad hoc, undocumented</div>
-            <div><strong>2 - Developing:</strong> Some structure exists</div>
-            <div><strong>3 - Established:</strong> Consistent and defined</div>
-            <div><strong>4 - Managed:</strong> Measured and optimized</div>
-            <div><strong>5 - Optimized:</strong> Proactive and refined</div>
+          <div className="space-y-4 mt-4">
+            <div><strong>1 - Initial</strong>: Ad-hoc, undocumented</div>
+            <div><strong>2 - Developing</strong>: Basic, inconsistent</div>
+            <div><strong>3 - Established</strong>: Standardised, consistent</div>
+            <div><strong>4 - Managed</strong>: Measured and controlled</div>
+            <div><strong>5 - Optimised</strong>: Continuously improved</div>
           </div>
         </DialogContent>
       </Dialog>
@@ -91,11 +111,14 @@ export default function MaturityAssessmentPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
       <h1 className="text-3xl font-bold mb-6">Maturity Assessment</h1>
+      <p className="mb-6 text-muted-foreground">
+        Rate your organisation’s maturity in each dimension using the sliders.
+      </p>
 
       {error && <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">{error}</div>}
 
-      <Tabs value={currentDomain.id} className="w-full">
-        <TabsList className="grid grid-cols-3 md:grid-cols-7 mb-6">
+      <Tabs value={currentDomain.id}>
+        <TabsList className="grid grid-cols-3 md:grid-cols-7 mb-8">
           {domains.map((domain, index) => (
             <TabsTrigger
               key={domain.id}
@@ -122,10 +145,7 @@ export default function MaturityAssessmentPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => {
-                        setCurrentInfoDimension(key)
-                        setShowLevelInfo(true)
-                      }}
+                      onClick={() => handleShowLevelInfo(key)}
                       className="text-xs flex items-center gap-1"
                     >
                       <HelpCircle className="h-3 w-3" />
@@ -138,10 +158,10 @@ export default function MaturityAssessmentPage() {
                     min={0}
                     max={5}
                     step={1}
-                    onValueChange={(val) => handleSliderChange(key, val)}
+                    onValueChange={(value) => handleSliderChange(key, value)}
                     className="py-4"
                   />
-                  <div className="grid grid-cols-6 text-xs text-center text-muted-foreground">
+                  <div className="grid grid-cols-6 gap-4 text-center text-xs">
                     <div>N/A</div>
                     <div>Initial</div>
                     <div>Developing</div>
@@ -153,15 +173,11 @@ export default function MaturityAssessmentPage() {
               ))}
             </CardContent>
             <CardFooter className="flex justify-between">
-              <Button onClick={handlePrevious} disabled={currentDomainIndex === 0} variant="outline">
-                Previous
+              <Button onClick={handlePrevious} disabled={isFirstDomain} variant="outline">
+                Previous Domain
               </Button>
               <Button onClick={handleNext} disabled={isSubmitting}>
-                {isSubmitting
-                  ? "Submitting..."
-                  : currentDomainIndex === domains.length - 1
-                  ? "Complete Assessment"
-                  : "Next Domain"}
+                {isSubmitting ? "Submitting..." : isLastDomain ? "Complete Assessment" : "Next Domain"}
               </Button>
             </CardFooter>
           </Card>
@@ -172,3 +188,5 @@ export default function MaturityAssessmentPage() {
     </div>
   )
 }
+
+export default MaturityAssessmentPage
