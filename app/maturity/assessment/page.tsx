@@ -2,251 +2,140 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Slider } from "@/components/ui/slider"
 import { domains, dimensions, type AssessmentResult } from "@/lib/assessment-data"
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { Slider } from "@/components/ui/slider"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { HelpCircle } from "lucide-react"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog"
 
-// ✅ Add session ID helper
-function getSessionId() {
-  if (typeof window === "undefined") return null
-  let sessionId = localStorage.getItem("session_id")
-  if (!sessionId) {
-    sessionId = crypto.randomUUID()
-    localStorage.setItem("session_id", sessionId)
-  }
-  return sessionId
-}
+const STORAGE_KEY = "maturityResults"
 
-const MaturityAssessmentPage = () => {
+export default function MaturityAssessmentPage() {
   const router = useRouter()
   const [currentDomainIndex, setCurrentDomainIndex] = useState(0)
   const [results, setResults] = useState<AssessmentResult>({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [showLevelInfo, setShowLevelInfo] = useState(false)
   const [currentInfoDimension, setCurrentInfoDimension] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [initialized, setInitialized] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Initialize empty results structure
   useEffect(() => {
-    if (!initialized && Object.keys(results).length === 0) {
-      const initialResults: AssessmentResult = {}
-      domains.forEach((domain) => {
-        initialResults[domain.id] = {
-          people: 0,
-          process: 0,
-          tooling: 0,
-          data: 0,
-          improvement: 0,
-        }
-      })
-      setResults(initialResults)
-      setInitialized(true)
-    }
-  }, [initialized, results])
-
-  const currentDomain = domains[currentDomainIndex] || domains[0]
+    const initial: AssessmentResult = {}
+    domains.forEach((domain) => {
+      initial[domain.id] = { people: 0, process: 0, tooling: 0, data: 0, improvement: 0 }
+    })
+    setResults(initial)
+  }, [])
 
   const handleSliderChange = (dimension: string, value: number[]) => {
-    if (!currentDomain) return
+    const domainId = domains[currentDomainIndex].id
     setResults((prev) => ({
       ...prev,
-      [currentDomain.id]: {
-        ...prev[currentDomain.id],
+      [domainId]: {
+        ...prev[domainId],
         [dimension]: value[0],
       },
     }))
   }
 
-  const handleNext = async () => {
-    if (currentDomainIndex < domains.length - 1) {
-      setCurrentDomainIndex(currentDomainIndex + 1)
-    } else {
-      setIsSubmitting(true)
-      setError(null)
-
-      try {
-        const sessionId = getSessionId()
-        if (!sessionId) throw new Error("Session ID is missing")
-
-        const response = await fetch("/api/save-assessment", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId, results }),
-        })
-
-        const data = await response.json()
-        if (!response.ok || !data.success) {
-          throw new Error("Failed to save assessment")
-        }
-
-        if (window.gtag) {
-          try {
-            window.gtag("event", "complete_assessment", {
-              event_category: "Assessment",
-              event_label: "All Domains",
-            })
-          } catch (err) {
-            console.warn("Tracking error:", err)
-          }
-        }
-
-        setTimeout(() => {
-          router.push("/maturity/results")
-        }, 100)
-      } catch (error) {
-        console.error("Submission error:", error)
-        setError("An error occurred while saving your assessment. Please try again.")
-        setIsSubmitting(false)
-      }
+  const handleSubmit = () => {
+    setIsSubmitting(true)
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(results))
+      router.push("/maturity/results")
+    } catch (err) {
+      console.error("Error saving to localStorage", err)
+      setError("Failed to save your assessment.")
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
-  const handlePrevious = () => {
-    if (currentDomainIndex > 0) {
-      setCurrentDomainIndex(currentDomainIndex - 1)
-    }
-  }
-
-  const handleShowLevelInfo = (dimension: string) => {
-    setCurrentInfoDimension(dimension)
-    setShowLevelInfo(true)
-  }
-
-  const isLastDomain = currentDomainIndex === domains.length - 1
   const isFirstDomain = currentDomainIndex === 0
-
-  const LevelDescriptions = () => {
-    const dimension = dimensions[currentInfoDimension as keyof typeof dimensions]
-    if (!dimension) return null
-
-    return (
-      <Dialog open={showLevelInfo} onOpenChange={setShowLevelInfo}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{dimension.name} - Maturity Levels</DialogTitle>
-            <DialogDescription>{dimension.description}</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 mt-4">
-            <div><h3 className="font-bold">1 - Initial</h3><p className="text-sm">Ad-hoc processes, limited documentation, reactive approach.</p></div>
-            <div><h3 className="font-bold">2 - Developing</h3><p className="text-sm">Basic processes defined, some documentation, still largely reactive.</p></div>
-            <div><h3 className="font-bold">3 - Established</h3><p className="text-sm">Standardized processes, good documentation, proactive elements.</p></div>
-            <div><h3 className="font-bold">4 - Managed</h3><p className="text-sm">Measured and controlled processes, comprehensive documentation, mostly proactive.</p></div>
-            <div><h3 className="font-bold">5 - Optimized</h3><p className="text-sm">Continuous improvement, complete documentation, fully proactive approach.</p></div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    )
-  }
+  const isLastDomain = currentDomainIndex === domains.length - 1
+  const currentDomain = domains[currentDomainIndex]
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
       <h1 className="text-3xl font-bold mb-6">Maturity Assessment</h1>
-      <p>This page will contain the maturity assessment tool.</p>
 
-      <div className="mb-8">
-        <p className="text-lg mb-4">Rate your organization's maturity in each dimension on a scale of 1–5:</p>
-        <div className="grid grid-cols-5 gap-4 text-center text-sm mb-2">
-          <div>1 - Initial</div>
-          <div>2 - Developing</div>
-          <div>3 - Established</div>
-          <div>4 - Managed</div>
-          <div>5 - Optimized</div>
-        </div>
-      </div>
+      {error && <p className="text-red-600 mb-4">{error}</p>}
 
-      {error && (
-        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-          {error}
-        </div>
-      )}
-
-      <Tabs value={currentDomain?.id} className="w-full">
-        <TabsList className="grid grid-cols-3 md:grid-cols-7 mb-8">
-          {domains.map((domain, index) => (
-            <TabsTrigger
-              key={domain.id}
-              value={domain.id}
-              onClick={() => setCurrentDomainIndex(index)}
-              className={index === currentDomainIndex ? "bg-primary text-primary-foreground" : ""}
-            >
+      <Tabs value={currentDomain?.id}>
+        <TabsList className="grid grid-cols-3 md:grid-cols-7 mb-6">
+          {domains.map((domain, i) => (
+            <TabsTrigger key={domain.id} value={domain.id} onClick={() => setCurrentDomainIndex(i)}>
               {domain.shortName || domain.name}
             </TabsTrigger>
           ))}
         </TabsList>
 
-        <TabsContent value={currentDomain?.id} className="mt-0">
+        <TabsContent value={currentDomain?.id}>
           <Card>
             <CardHeader>
               <CardTitle>{currentDomain?.name}</CardTitle>
               <CardDescription>{currentDomain?.description}</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-8">
-              {Object.entries(dimensions).map(([key, dimension]) => (
-                <div key={key} className="space-y-2">
+            <CardContent>
+              {Object.entries(dimensions).map(([key, dim]) => (
+                <div key={key} className="mb-6">
                   <div className="flex justify-between items-center">
-                    <h3 className="font-medium">{dimension.name}</h3>
+                    <h4>{dim.name}</h4>
                     <Button
-                      variant="ghost"
                       size="sm"
-                      onClick={() => handleShowLevelInfo(key)}
-                      className="text-xs flex items-center gap-1"
+                      variant="ghost"
+                      onClick={() => {
+                        setCurrentInfoDimension(key)
+                        setShowLevelInfo(true)
+                      }}
                     >
-                      <HelpCircle className="h-3 w-3" />
-                      View Level Descriptions
+                      <HelpCircle className="w-4 h-4 mr-1" />
+                      Levels
                     </Button>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-4">{dimension.description}</p>
                   <Slider
                     value={[results[currentDomain?.id]?.[key as keyof (typeof results)[string]] || 0]}
                     min={0}
                     max={5}
                     step={1}
-                    onValueChange={(value) => handleSliderChange(key, value)}
-                    className="py-4"
+                    onValueChange={(val) => handleSliderChange(key, val)}
                   />
-                  <div className="grid grid-cols-6 gap-4 text-center text-xs">
-                    <div>N/A</div>
-                    <div>Initial</div>
-                    <div>Developing</div>
-                    <div>Established</div>
-                    <div>Managed</div>
-                    <div>Optimized</div>
-                  </div>
                 </div>
               ))}
             </CardContent>
             <CardFooter className="flex justify-between">
-              <Button onClick={handlePrevious} disabled={isFirstDomain} variant="outline">
-                Previous Domain
+              <Button onClick={() => setCurrentDomainIndex(currentDomainIndex - 1)} disabled={isFirstDomain}>
+                Previous
               </Button>
-              <Button onClick={handleNext} disabled={isSubmitting}>
-                {isSubmitting ? "Submitting..." : isLastDomain ? "Complete Assessment" : "Next Domain"}
+              <Button
+                onClick={isLastDomain ? handleSubmit : () => setCurrentDomainIndex(currentDomainIndex + 1)}
+                disabled={isSubmitting}
+              >
+                {isLastDomain ? "Complete Assessment" : "Next"}
               </Button>
             </CardFooter>
           </Card>
         </TabsContent>
       </Tabs>
 
-      <LevelDescriptions />
+      <Dialog open={showLevelInfo} onOpenChange={setShowLevelInfo}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Maturity Levels</DialogTitle>
+            <DialogDescription>{dimensions[currentInfoDimension as keyof typeof dimensions]?.description}</DialogDescription>
+          </DialogHeader>
+          <ul className="mt-4 space-y-2 text-sm">
+            <li><strong>1 - Initial:</strong> Ad hoc, undocumented.</li>
+            <li><strong>2 - Developing:</strong> Basic structure.</li>
+            <li><strong>3 - Established:</strong> Defined and consistent.</li>
+            <li><strong>4 - Managed:</strong> Measured and controlled.</li>
+            <li><strong>5 - Optimized:</strong> Proactive and improving.</li>
+          </ul>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
-
-export default MaturityAssessmentPage
