@@ -188,7 +188,7 @@ export default function ResultsPage() {
             Back to Home
           </Button>
         </Link>
-        <Link href={`/domain-results?size=${organizationSize}`}>
+        <Link href={`/maturity/domain-results?size=${organizationSize}`}>
           <Button variant="default" className="gap-2">
             <BarChart4 className="h-4 w-4" />
             View Domain Analysis
