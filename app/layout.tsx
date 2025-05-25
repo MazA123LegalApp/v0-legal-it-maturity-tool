@@ -1,3 +1,5 @@
+"use client"
+
 import type React from "react"
 import "@/app/globals.css"
 
@@ -9,6 +11,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { AdminProvider } from "@/contexts/admin-context"
 import { Toaster } from "@/components/ui/toaster"
 import { ClientErrorLogger } from "@/components/ClientErrorLogger"
+import { GoogleTagManager } from "@/components/GoogleTagManager" // ✅ Import GTM
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -21,8 +24,9 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>{/* GTM removed */}</head>
+      <head />
       <body className={inter.className}>
+        <GoogleTagManager /> {/* ✅ Include GTM */}
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <AdminProvider>
             <div className="min-h-screen flex flex-col">
