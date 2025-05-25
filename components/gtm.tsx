@@ -3,8 +3,7 @@ import Script from "next/script"
 
 const GA_MEASUREMENT_ID = "G-3YXE5YRXVW"
 
-export function GoogleTagManager() {
-  // Render nothing if GA ID is not defined
+export function GTM() {
   if (!GA_MEASUREMENT_ID) return null
 
   return (
@@ -20,18 +19,11 @@ export function GoogleTagManager() {
             gtag('config', '${GA_MEASUREMENT_ID}');
           `,
         }}
-        onError={(e) => {
-          console.warn("GTM inline script failed", e)
-        }}
       />
-
       <Script
-        id="gtm-src"
+        id="ga-src"
         strategy="afterInteractive"
         src={`https://www.googletagmanager.com/gtm.js?id=${GA_MEASUREMENT_ID}`}
-        onError={(e) => {
-          console.warn("GTM script failed to load", e)
-        }}
       />
     </>
   )
