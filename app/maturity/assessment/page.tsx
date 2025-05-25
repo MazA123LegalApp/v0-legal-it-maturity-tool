@@ -67,7 +67,7 @@ const MaturityAssessmentPage = () => {
       if (typeof window !== "undefined") {
         window.dataLayer = window.dataLayer || []
         window.dataLayer.push({
-          event: "assessment_completed",
+          event: "complete_assessment",
           module: "Legal IT Maturity Assessment"
         })
       }
