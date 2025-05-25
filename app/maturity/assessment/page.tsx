@@ -14,7 +14,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription
 } from "@/components/ui/dialog"
 
-const STORAGE_KEY = "assessment_results"
+const STORAGE_KEY = "maturityResults"
 
 const MaturityAssessmentPage = () => {
   const router = useRouter()
