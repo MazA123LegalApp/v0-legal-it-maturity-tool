@@ -56,20 +56,31 @@ const MaturityAssessmentPage = () => {
   }
 
   const handleNext = () => {
-    if (currentDomainIndex < domains.length - 1) {
-      setCurrentDomainIndex((i) => i + 1)
-    } else {
-      setIsSubmitting(true)
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(results))
-        router.push("/maturity/results")
-      } catch (err) {
-        console.error("Error saving assessment:", err)
-        setError("An error occurred while saving your assessment. Please try again.")
-        setIsSubmitting(false)
+  if (currentDomainIndex < domains.length - 1) {
+    setCurrentDomainIndex((i) => i + 1)
+  } else {
+    setIsSubmitting(true)
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(results))
+
+      // ✅ Track event using GTM/Google Analytics
+      if (typeof window !== "undefined") {
+        window.dataLayer = window.dataLayer || []
+        window.dataLayer.push({
+          event: "assessment_completed",
+          module: "Legal IT Maturity Assessment"
+        })
       }
+
+      router.push("/maturity/results")
+    } catch (err) {
+      console.error("Error saving assessment:", err)
+      setError("An error occurred while saving your assessment. Please try again.")
+      setIsSubmitting(false)
     }
   }
+}
+
 
   const handlePrevious = () => {
     if (currentDomainIndex > 0) {
