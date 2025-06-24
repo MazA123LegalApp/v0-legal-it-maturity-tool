@@ -1,89 +1,44 @@
 "use client"
 
-import { useMemo } from "react"
-import {
-  Legend,
-  PolarAngleAxis,
-  PolarGrid,
-  PolarRadiusAxis,
-  Radar,
-  RadarChart,
-  ResponsiveContainer,
-  Tooltip,
-} from "recharts"
-
-import {
-  type AssessmentResult,
-  type Dimension,
-  dimensions,
-  getMaturityColor,
-  getMaturityLevel,
-} from "@/lib/assessment-data"
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from "recharts"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { domains } from "@/lib/assessment-data"
 
 interface DomainRadarChartProps {
-  results: AssessmentResult
-  domainId: string
-  domainName: string
+  domainScores: Record<string, number>
 }
 
-export function DomainRadarChart({ results, domainId, domainName }: DomainRadarChartProps) {
-  const chartData = useMemo(() => {
-    // Create data for the 5 dimensions within this domain
-    return Object.keys(dimensions).map((dimension) => {
-      const score = results[domainId]?.[dimension as Dimension] || 0
-      return {
-        dimension: dimensions[dimension as Dimension].name.split(" ")[0], // Short name for display
-        fullName: dimensions[dimension as Dimension].name,
-        value: score,
-        level: getMaturityLevel(score),
-      }
-    })
-  }, [results, domainId])
-
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload
-      return (
-        <div className="bg-background border rounded-md shadow-md p-3">
-          <p className="font-medium">{data.fullName}</p>
-          <p className="text-sm">
-            Score: <span className="font-medium">{data.value.toFixed(1)}</span>
-          </p>
-          <p className="text-sm">
-            Level: <span className={`font-medium ${getMaturityColor(data.value)}`}>{data.level}</span>
-          </p>
-        </div>
-      )
-    }
-    return null
-  }
-
-  if (chartData.every((item) => item.value === 0)) {
-    return (
-      <div className="flex items-center justify-center h-[250px] border rounded-md bg-muted/20">
-        <p className="text-muted-foreground">Complete the assessment to see domain radar chart</p>
-      </div>
-    )
-  }
+export function DomainRadarChart({ domainScores = {} }: DomainRadarChartProps) {
+  // Transform domain scores into chart data
+  const chartData = domains.map((domain) => ({
+    domain: domain.name,
+    score: domainScores[domain.id] || 0,
+    fullMark: 5,
+  }))
 
   return (
-    <div className="h-[250px] w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <RadarChart cx="50%" cy="50%" outerRadius="80%" data={chartData}>
-          <PolarGrid />
-          <PolarAngleAxis dataKey="dimension" tick={{ fill: "var(--foreground)", fontSize: 12 }} />
-          <PolarRadiusAxis domain={[0, 5]} tickCount={6} />
-          <Radar
-            name={domainName}
-            dataKey="value"
-            stroke="hsl(var(--primary))"
-            fill="hsl(var(--primary))"
-            fillOpacity={0.3}
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend />
-        </RadarChart>
-      </ResponsiveContainer>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Domain Maturity Overview</CardTitle>
+        <CardDescription>Visual representation of your maturity across all domains</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ResponsiveContainer width="100%" height={400}>
+          <RadarChart data={chartData}>
+            <PolarGrid />
+            <PolarAngleAxis dataKey="domain" tick={{ fontSize: 12 }} />
+            <PolarRadiusAxis angle={90} domain={[0, 5]} tick={{ fontSize: 10 }} />
+            <Radar
+              name="Maturity Score"
+              dataKey="score"
+              stroke="#2563eb"
+              fill="#2563eb"
+              fillOpacity={0.1}
+              strokeWidth={2}
+            />
+          </RadarChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
   )
 }
