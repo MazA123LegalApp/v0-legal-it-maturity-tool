@@ -13,6 +13,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts"
+import { redirect } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -36,6 +37,8 @@ import {
 import { BenchmarkComparison } from "@/components/benchmark-comparison"
 
 export default function DomainResultsPage() {
+  redirect("/maturity/domain-results")
+
   const [results, setResults] = useState<AssessmentResult>(getEmptyResults())
   const [organizationName, setOrganizationName] = useState<string>("Your Organization")
   const [overallScore, setOverallScore] = useState<number>(0)
@@ -136,12 +139,12 @@ export default function DomainResultsPage() {
         </div>
         <div className="flex gap-2">
           <Link href="/">
-            <Button variant="ghost" size="sm" className="gap-2">
+            <Button variant="outline" size="sm" className="gap-2 border-orange-200 hover:bg-orange-100">
               <Home className="h-4 w-4" />
-              Hub
+              Home
             </Button>
           </Link>
-          <Link href="/maturity/results">
+          <Link href="/results">
             <Button variant="outline" size="sm" className="gap-2 border-orange-200 hover:bg-orange-100">
               <ArrowLeft className="h-4 w-4" />
               Back to Results
@@ -388,7 +391,7 @@ export default function DomainResultsPage() {
       <Separator className="my-8" />
 
       <div className="flex justify-between">
-        <Link href="/maturity/results">
+        <Link href="/results">
           <Button variant="outline" className="gap-2 border-orange-200 hover:bg-orange-100">
             <ArrowLeft className="h-4 w-4" />
             Back to Results

@@ -6,25 +6,25 @@ import Link from "next/link"
 import { BookOpen, BarChart3, Home, Shield } from "lucide-react"
 
 import { ThemeProvider } from "@/components/theme-provider"
+import { GoogleTagManager } from "@/components/gtm"
 import { AdminProvider } from "@/contexts/admin-context"
 import { Toaster } from "@/components/ui/toaster"
-import { ClientErrorLogger } from "@/components/ClientErrorLogger"
-import { GTM } from "@/components/gtm" // ✅ This is your actual GTM import
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
   title: "Legal Technology Hub",
   description: "Resources and tools for legal technology modernization and maturity assessment",
-  generator: "v0.dev",
+    generator: 'v0.dev'
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head />
+      <head>
+        <GoogleTagManager />
+      </head>
       <body className={inter.className}>
-        <GTM /> {/* ✅ GTM is correctly placed here */}
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <AdminProvider>
             <div className="min-h-screen flex flex-col">
@@ -85,7 +85,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </footer>
             </div>
             <Toaster />
-            <ClientErrorLogger />
           </AdminProvider>
         </ThemeProvider>
       </body>

@@ -1,156 +1,102 @@
-import Link from "next/link"
-import { ArrowRight, BarChart4 } from "lucide-react"
+"use client"
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import type { MaturityClassification } from "@/lib/maturity-engine"
-import { domains } from "@/lib/assessment-data"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import type { MaturityBand } from "@/lib/assessment-data"
 
-interface MaturitySummaryProps {
-  classification: MaturityClassification
+// Define the expected props interface
+export interface MaturityClassification {
+  overallScore: number
+  overallBand: MaturityBand
+  weakestDomains?: string[] | { name: string; score: number }[]
+  strongestDomains?: string[] | { name: string; score: number }[]
+  domainScores?: Record<string, number>
 }
 
-export function MaturitySummary({ classification }: MaturitySummaryProps) {
-  const {
-    overallScore = 0,
-    overallBand = "Unknown",
-    weakestDomains = [],
-    strongestDomains = [],
-  } = classification || {}
+interface MaturitySummaryProps {
+  classification?: MaturityClassification
+  // For backward compatibility
+  overallScore?: number
+  overallBand?: MaturityBand
+  weakestDomains?: string[] | { name: string; score: number }[]
+  strongestDomains?: string[] | { name: string; score: number }[]
+}
+
+export function MaturitySummary(props: MaturitySummaryProps) {
+  // Handle both new and old prop structures
+  const classification = props.classification || props
+
+  // Extract data safely with fallbacks
+  const overallScore = classification.overallScore || 0
+  const overallBand = classification.overallBand || "Initial"
+
+  // Handle different formats of domain arrays
+  const weakestDomains = classification.weakestDomains || []
+  const strongestDomains = classification.strongestDomains || []
+
+  // Helper function to safely get domain names
+  const getDomainName = (domain: any): string => {
+    if (typeof domain === "string") return domain
+    if (domain && typeof domain === "object" && domain.name) return domain.name
+    return "Unknown Domain"
+  }
+
+  // Get color based on maturity level
+  const getBandColor = (band: MaturityBand): string => {
+    switch (band) {
+      case "Initial":
+        return "bg-red-100 text-red-800"
+      case "Developing":
+        return "bg-orange-100 text-orange-800"
+      case "Established":
+        return "bg-yellow-100 text-yellow-800"
+      case "Managed":
+        return "bg-blue-100 text-blue-800"
+      case "Optimized":
+        return "bg-green-100 text-green-800"
+      default:
+        return "bg-gray-100 text-gray-800"
+    }
+  }
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Overall Maturity Summary</CardTitle>
-          <CardDescription>Your organization's IT maturity assessment results</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            <div>
-              <div className="flex justify-between mb-2">
-                <h3 className="font-medium">Overall Maturity Score</h3>
-                <span className="font-medium">
-                  {typeof overallScore === "number" ? overallScore.toFixed(1) : "N/A"}/5.0
-                </span>
-              </div>
-              <Progress value={overallScore * 20} className="h-2" />
-              <p className="text-sm text-muted-foreground mt-2">
-                Your organization is at the <span className="font-medium">{overallBand}</span> maturity level overall.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="font-medium mb-3">Areas for Improvement</h3>
-                {weakestDomains.length > 0 ? (
-                  <ul className="space-y-2">
-                    {weakestDomains.map((domain) => {
-                      const domainInfo = domains.find((d) => d.id === domain.domain)
-                      return (
-                        <li key={domain.domain} className="flex justify-between items-center">
-                          <span>{domainInfo?.name || domain.domain}</span>
-                          <span className="font-medium">
-                            {typeof domain.score === "number" ? domain.score.toFixed(1) : "N/A"}
-                          </span>
-                        </li>
-                      )
-                    })}
-                  </ul>
-                ) : (
-                  <p className="text-sm text-muted-foreground">
-                    Complete the assessment to identify areas for improvement.
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <h3 className="font-medium mb-3">Strongest Areas</h3>
-                {strongestDomains.length > 0 ? (
-                  <ul className="space-y-2">
-                    {strongestDomains.map((domain) => {
-                      const domainInfo = domains.find((d) => d.id === domain.domain)
-                      return (
-                        <li key={domain.domain} className="flex justify-between items-center">
-                          <span>{domainInfo?.name || domain.domain}</span>
-                          <span className="font-medium">
-                            {typeof domain.score === "number" ? domain.score.toFixed(1) : "N/A"}
-                          </span>
-                        </li>
-                      )
-                    })}
-                  </ul>
-                ) : (
-                  <p className="text-sm text-muted-foreground">
-                    Complete the assessment to identify your strongest areas.
-                  </p>
-                )}
-              </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Maturity Summary</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-gray-500">Overall Maturity Score</h3>
+            <div className="flex items-center justify-between">
+              <span className="text-3xl font-bold">{overallScore.toFixed(1)}</span>
+              <Badge className={`${getBandColor(overallBand)} px-3 py-1`}>{overallBand}</Badge>
             </div>
           </div>
-        </CardContent>
-        <CardFooter>
-          <Link href="/playbook" className="w-full">
-            <Button variant="default" className="w-full gap-2">
-              View Playbook Recommendations
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
-        </CardFooter>
-      </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Next Steps</CardTitle>
-          <CardDescription>Recommended actions based on your assessment results</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {[1, 2, 3, 4].map((step) => (
-              <div key={step} className="flex items-start gap-3">
-                <div className="bg-blue-100 p-2 rounded-full h-8 w-8 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-blue-700 font-bold">{step}</span>
-                </div>
-                <div>
-                  <h3 className="font-medium">
-                    {[
-                      "Review Domain-Specific Recommendations",
-                      "Download Relevant Templates",
-                      "Create an Improvement Plan",
-                      "Reassess in 6-12 Months",
-                    ][step - 1]}
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    {[
-                      "Explore detailed recommendations for each domain based on your maturity level.",
-                      "Access templates and tools tailored to your maturity level for each domain.",
-                      "Develop a roadmap for improving your weakest domains using the playbook guidance.",
-                      "Track your progress by retaking the assessment after implementing improvements.",
-                    ][step - 1]}
-                  </p>
-                </div>
-              </div>
-            ))}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-gray-500">Areas for Improvement</h3>
+            <ul className="list-disc pl-5 space-y-1">
+              {Array.isArray(weakestDomains) && weakestDomains.length > 0 ? (
+                weakestDomains.map((domain, index) => <li key={`weak-${index}`}>{getDomainName(domain)}</li>)
+              ) : (
+                <li>No specific areas identified</li>
+              )}
+            </ul>
           </div>
-        </CardContent>
-        <CardFooter>
-          <div className="flex gap-3 w-full">
-            <Link href="/maturity/assessment" className="flex-1">
-              <Button variant="outline" className="w-full gap-2">
-                <BarChart4 className="h-4 w-4" />
-                Retake Assessment
-              </Button>
-            </Link>
-            <Link href="/playbook/roadmap" className="flex-1">
-              <Button variant="default" className="w-full gap-2">
-                View Implementation Roadmap
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
+
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-gray-500">Strongest Areas</h3>
+            <ul className="list-disc pl-5 space-y-1">
+              {Array.isArray(strongestDomains) && strongestDomains.length > 0 ? (
+                strongestDomains.map((domain, index) => <li key={`strong-${index}`}>{getDomainName(domain)}</li>)
+              ) : (
+                <li>No specific areas identified</li>
+              )}
+            </ul>
           </div>
-        </CardFooter>
-      </Card>
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   )
 }

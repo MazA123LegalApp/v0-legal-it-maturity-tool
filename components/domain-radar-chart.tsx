@@ -28,10 +28,11 @@ interface DomainRadarChartProps {
 
 export function DomainRadarChart({ results, domainId, domainName }: DomainRadarChartProps) {
   const chartData = useMemo(() => {
+    // Create data for the 5 dimensions within this domain
     return Object.keys(dimensions).map((dimension) => {
       const score = results[domainId]?.[dimension as Dimension] || 0
       return {
-        dimension: dimensions[dimension as Dimension].name.split(" ")[0],
+        dimension: dimensions[dimension as Dimension].name.split(" ")[0], // Short name for display
         fullName: dimensions[dimension as Dimension].name,
         value: score,
         level: getMaturityLevel(score),
@@ -46,16 +47,10 @@ export function DomainRadarChart({ results, domainId, domainName }: DomainRadarC
         <div className="bg-background border rounded-md shadow-md p-3">
           <p className="font-medium">{data.fullName}</p>
           <p className="text-sm">
-            Score:{" "}
-            <span className="font-medium">
-              {typeof data.value === "number" ? data.value.toFixed(1) : "N/A"}
-            </span>
+            Score: <span className="font-medium">{data.value.toFixed(1)}</span>
           </p>
           <p className="text-sm">
-            Level:{" "}
-            <span className={`font-medium ${getMaturityColor(data.value)}`}>
-              {data.level || "Unknown"}
-            </span>
+            Level: <span className={`font-medium ${getMaturityColor(data.value)}`}>{data.level}</span>
           </p>
         </div>
       )

@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { Download, FileSpreadsheet, FileIcon as FilePdf } from "lucide-react"
 import { jsPDF } from "jspdf"
 import * as XLSX from "xlsx"
@@ -17,6 +17,8 @@ import {
   dimensions,
   domains,
   getMaturityLevel,
+  getMaturityLevelDescription,
+  maturityLevels,
 } from "@/lib/assessment-data"
 import { getCountryInfo } from "@/lib/geo-utils"
 
@@ -25,7 +27,6 @@ interface ExportUtilsProps {
   organizationName?: string
 }
 
-// Define window.trackDownload if it doesn't exist in the type system
 declare global {
   interface Window {
     trackDownload?: (fileType: string, fileName: string, isUSBased: boolean) => void
@@ -34,10 +35,8 @@ declare global {
 }
 
 export function ExportUtils({ results, organizationName = "Your Organization" }: ExportUtilsProps) {
-  const tableRef = useRef<HTMLDivElement>(null)
   const [isUS, setIsUS] = useState<boolean>(false)
 
-  // Check if user is from the US
   useEffect(() => {
     const checkLocation = async () => {
       try {
@@ -47,7 +46,6 @@ export function ExportUtils({ results, organizationName = "Your Organization" }:
         console.error("Error checking location:", error)
       }
     }
-
     checkLocation()
   }, [])
 
@@ -59,92 +57,215 @@ export function ExportUtils({ results, organizationName = "Your Organization" }:
         format: "a4",
       })
 
-      // Add title and date
-      doc.setFontSize(18)
-      doc.text("Legal IT Maturity Assessment Report", 15, 15)
-      doc.setFontSize(12)
-      doc.text(`Organization: ${organizationName}`, 15, 25)
-      doc.text(`Date: ${new Date().toLocaleDateString()}`, 15, 32)
+      let yPos = 15
+      const pageHeight = 297
+      const margin = 15
+      const lineHeight = 7
 
-      // Add overall score
-      const overallAverage = calculateOverallAverage(results)
-      doc.setFontSize(14)
-      doc.text("Overall Maturity Score", 15, 45)
+      // Helper function to add new page if needed
+      const checkPageBreak = (requiredSpace: number) => {
+        if (yPos + requiredSpace > pageHeight - margin) {
+          doc.addPage()
+          yPos = margin
+        }
+      }
+
+      // Helper function to add text with word wrapping
+      const addWrappedText = (text: string, x: number, fontSize = 12, maxWidth = 180) => {
+        doc.setFontSize(fontSize)
+        const lines = doc.splitTextToSize(text, maxWidth)
+        lines.forEach((line: string) => {
+          checkPageBreak(lineHeight)
+          doc.text(line, x, yPos)
+          yPos += lineHeight
+        })
+      }
+
+      // Title Page
       doc.setFontSize(24)
-      doc.text(`${overallAverage.toFixed(1)} - ${getMaturityLevel(overallAverage)}`, 15, 55)
+      doc.text("Legal IT Maturity Assessment", margin, yPos)
+      yPos += 15
 
-      // Add domain scores
+      doc.setFontSize(18)
+      doc.text("Comprehensive Report", margin, yPos)
+      yPos += 15
+
       doc.setFontSize(14)
-      doc.text("Domain Scores", 15, 70)
+      doc.text(`Organization: ${organizationName}`, margin, yPos)
+      yPos += 10
+      doc.text(`Assessment Date: ${new Date().toLocaleDateString()}`, margin, yPos)
+      yPos += 10
+      doc.text(`Report Generated: ${new Date().toLocaleString()}`, margin, yPos)
+      yPos += 20
+
+      // Executive Summary
+      checkPageBreak(30)
+      doc.setFontSize(16)
+      doc.text("Executive Summary", margin, yPos)
+      yPos += 10
+
+      const overallAverage = calculateOverallAverage(results)
+      const overallLevel = getMaturityLevel(overallAverage)
+
+      addWrappedText(`Overall Maturity Score: ${overallAverage.toFixed(1)}/5.0 (${overallLevel})`, margin, 12)
+      yPos += 5
+      addWrappedText(getMaturityLevelDescription(overallAverage), margin, 10)
+      yPos += 15
+
+      // Domain Analysis
+      checkPageBreak(40)
+      doc.setFontSize(16)
+      doc.text("Domain Analysis", margin, yPos)
+      yPos += 10
 
       const domainAverages = calculateDomainAverages(results)
-      let yPos = 80
 
       domains.forEach((domain: Domain) => {
         const score = domainAverages[domain.id] || 0
         if (score > 0) {
+          checkPageBreak(25)
+
+          doc.setFontSize(14)
+          doc.text(domain.name, margin, yPos)
+          yPos += 7
+
           doc.setFontSize(12)
-          doc.text(`${domain.name}: ${score.toFixed(1)} - ${getMaturityLevel(score)}`, 20, yPos)
-          yPos += 8
+          doc.text(`Score: ${score.toFixed(1)}/5.0 (${getMaturityLevel(score)})`, margin + 5, yPos)
+          yPos += 7
+
+          addWrappedText(domain.description, margin + 5, 10)
+          yPos += 5
         }
       })
 
-      // Add dimension scores
+      // Dimension Analysis
+      checkPageBreak(40)
+      doc.setFontSize(16)
+      doc.text("Dimension Analysis", margin, yPos)
       yPos += 10
-      doc.setFontSize(14)
-      doc.text("Dimension Scores", 15, yPos)
 
       const dimensionAverages = calculateDimensionAverages(results)
-      yPos += 10
 
       Object.entries(dimensions).forEach(([key, value]) => {
         const score = dimensionAverages[key] || 0
         if (score > 0) {
+          checkPageBreak(20)
+
+          doc.setFontSize(14)
+          doc.text(value.name, margin, yPos)
+          yPos += 7
+
           doc.setFontSize(12)
-          doc.text(`${value.name}: ${score.toFixed(1)} - ${getMaturityLevel(score)}`, 20, yPos)
-          yPos += 8
+          doc.text(`Score: ${score.toFixed(1)}/5.0 (${getMaturityLevel(score)})`, margin + 5, yPos)
+          yPos += 10
         }
       })
 
-      // Add footer
+      // Detailed Scores Table
+      checkPageBreak(60)
+      doc.setFontSize(16)
+      doc.text("Detailed Assessment Scores", margin, yPos)
+      yPos += 15
+
+      // Table headers
       doc.setFontSize(10)
-      doc.text("Generated by Legal IT Maturity Assessment Tool", 15, 280)
-      doc.text("Developed by Maz Araghrez, Legal Technologist at Dentons", 15, 285)
+      const colWidths = [50, 25, 25, 25, 25, 25]
+      const colPositions = [margin, margin + 50, margin + 75, margin + 100, margin + 125, margin + 150]
 
-      // Track the download
+      doc.text("Domain", colPositions[0], yPos)
+      doc.text("People", colPositions[1], yPos)
+      doc.text("Process", colPositions[2], yPos)
+      doc.text("Tooling", colPositions[3], yPos)
+      doc.text("Data", colPositions[4], yPos)
+      doc.text("Improvement", colPositions[5], yPos)
+      yPos += 7
+
+      // Draw line under headers
+      doc.line(margin, yPos - 2, margin + 175, yPos - 2)
+      yPos += 3
+
+      domains.forEach((domain: Domain) => {
+        const domainResult = results[domain.id]
+        if (domainResult) {
+          checkPageBreak(7)
+
+          doc.text(domain.name.substring(0, 20), colPositions[0], yPos)
+          doc.text(domainResult.people.toString(), colPositions[1], yPos)
+          doc.text(domainResult.process.toString(), colPositions[2], yPos)
+          doc.text(domainResult.tooling.toString(), colPositions[3], yPos)
+          doc.text(domainResult.data.toString(), colPositions[4], yPos)
+          doc.text(domainResult.improvement.toString(), colPositions[5], yPos)
+          yPos += 7
+        }
+      })
+
+      // Recommendations Section
+      checkPageBreak(40)
+      doc.setFontSize(16)
+      doc.text("Recommendations", margin, yPos)
+      yPos += 15
+
+      // Get weakest domains for recommendations
+      const sortedDomains = domains
+        .map((domain) => ({
+          domain,
+          score: domainAverages[domain.id] || 0,
+        }))
+        .filter((item) => item.score > 0)
+        .sort((a, b) => a.score - b.score)
+
+      const weakestDomains = sortedDomains.slice(0, 3)
+
+      weakestDomains.forEach((item, index) => {
+        checkPageBreak(25)
+
+        doc.setFontSize(14)
+        doc.text(`${index + 1}. ${item.domain.name}`, margin, yPos)
+        yPos += 7
+
+        doc.setFontSize(12)
+        doc.text(`Current Score: ${item.score.toFixed(1)}/5.0`, margin + 5, yPos)
+        yPos += 7
+
+        addWrappedText(
+          `Focus on improving this domain to enhance overall maturity. Consider implementing structured processes and governance frameworks.`,
+          margin + 5,
+          10,
+        )
+        yPos += 5
+      })
+
+      // Maturity Level Definitions
+      checkPageBreak(60)
+      doc.setFontSize(16)
+      doc.text("Maturity Level Definitions", margin, yPos)
+      yPos += 15
+
+      maturityLevels.forEach((level) => {
+        checkPageBreak(20)
+
+        doc.setFontSize(12)
+        doc.text(`${level.name} (${level.range})`, margin, yPos)
+        yPos += 7
+
+        addWrappedText(level.description, margin + 5, 10)
+        yPos += 5
+      })
+
+      // Footer on each page
+      const pageCount = doc.getNumberOfPages()
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i)
+        doc.setFontSize(8)
+        doc.text(`Generated by Legal IT Maturity Assessment Tool - Page ${i} of ${pageCount}`, margin, pageHeight - 10)
+        doc.text("Developed by Maz Araghrez, Legal Technologist at Dentons", margin, pageHeight - 5)
+      }
+
       trackAssessmentDownload("PDF", organizationName, isUS)
-
-      // Save the PDF
-      doc.save(`${organizationName.replace(/\s+/g, "_")}_IT_Maturity_Assessment.pdf`)
+      doc.save(`${organizationName.replace(/\s+/g, "_")}_IT_Maturity_Assessment_Detailed.pdf`)
     } catch (error) {
       console.error("Error exporting to PDF:", error)
-      // Continue even if there's an error
     }
-  }
-
-  // Helper function to split text to fit within a width
-  function splitTextToFit(text: string, maxWidth: number, doc: jsPDF): string[] {
-    const words = text.split(" ")
-    const lines: string[] = []
-    let currentLine = ""
-
-    words.forEach((word) => {
-      const testLine = currentLine ? `${currentLine} ${word}` : word
-      const testWidth = doc.getTextWidth(testLine)
-
-      if (testWidth > maxWidth) {
-        lines.push(currentLine)
-        currentLine = word
-      } else {
-        currentLine = testLine
-      }
-    })
-
-    if (currentLine) {
-      lines.push(currentLine)
-    }
-
-    return lines
   }
 
   const exportToExcel = () => {
@@ -153,26 +274,31 @@ export function ExportUtils({ results, organizationName = "Your Organization" }:
       const dimensionAverages = calculateDimensionAverages(results)
       const overallAverage = calculateOverallAverage(results)
 
-      // Create worksheet for summary
+      // Executive Summary Sheet
       const summaryData = [
-        ["Legal IT Maturity Assessment Report"],
+        ["Legal IT Maturity Assessment - Comprehensive Report"],
         [`Organization: ${organizationName}`],
-        [`Date: ${new Date().toLocaleDateString()}`],
+        [`Assessment Date: ${new Date().toLocaleDateString()}`],
+        [`Report Generated: ${new Date().toLocaleString()}`],
         [],
+        ["EXECUTIVE SUMMARY"],
         ["Overall Maturity Score", overallAverage.toFixed(1), getMaturityLevel(overallAverage)],
+        ["Overall Description", getMaturityLevelDescription(overallAverage)],
         [],
-        ["Domain Scores"],
+        ["DOMAIN SCORES"],
+        ["Domain", "Score", "Level", "Description"],
       ]
 
       domains.forEach((domain: Domain) => {
         const score = domainAverages[domain.id] || 0
         if (score > 0) {
-          summaryData.push([domain.name, score.toFixed(1), getMaturityLevel(score)])
+          summaryData.push([domain.name, score.toFixed(1), getMaturityLevel(score), domain.description])
         }
       })
 
       summaryData.push([])
-      summaryData.push(["Dimension Scores"])
+      summaryData.push(["DIMENSION SCORES"])
+      summaryData.push(["Dimension", "Score", "Level"])
 
       Object.entries(dimensions).forEach(([key, value]) => {
         const score = dimensionAverages[key] || 0
@@ -181,21 +307,26 @@ export function ExportUtils({ results, organizationName = "Your Organization" }:
         }
       })
 
-      // Create worksheet for detailed scores
+      // Detailed Scores Sheet
       const detailedData = [
-        ["Domain", "People & Organization", "Process", "Tooling", "Data", "Continual Improvement", "Average"],
+        ["DETAILED ASSESSMENT SCORES"],
+        [],
+        ["Domain", "People & Organization", "Process", "Tooling", "Data", "Continual Improvement", "Domain Average"],
       ]
 
       domains.forEach((domain: Domain) => {
-        detailedData.push([
-          domain.name,
-          results[domain.id]?.people || "-",
-          results[domain.id]?.process || "-",
-          results[domain.id]?.tooling || "-",
-          results[domain.id]?.data || "-",
-          results[domain.id]?.improvement || "-",
-          domainAverages[domain.id] ? domainAverages[domain.id].toFixed(1) : "-",
-        ])
+        const domainResult = results[domain.id]
+        if (domainResult) {
+          detailedData.push([
+            domain.name,
+            domainResult.people,
+            domainResult.process,
+            domainResult.tooling,
+            domainResult.data,
+            domainResult.improvement,
+            domainAverages[domain.id] ? domainAverages[domain.id].toFixed(1) : "-",
+          ])
+        }
       })
 
       detailedData.push([
@@ -208,46 +339,60 @@ export function ExportUtils({ results, organizationName = "Your Organization" }:
         overallAverage.toFixed(1),
       ])
 
-      // Create workbook with all worksheets
+      // Recommendations Sheet
+      const recommendationsData = [
+        ["RECOMMENDATIONS"],
+        [],
+        ["Priority", "Domain", "Current Score", "Target Level", "Key Actions"],
+      ]
+
+      const sortedDomains = domains
+        .map((domain) => ({
+          domain,
+          score: domainAverages[domain.id] || 0,
+        }))
+        .filter((item) => item.score > 0)
+        .sort((a, b) => a.score - b.score)
+
+      sortedDomains.slice(0, 5).forEach((item, index) => {
+        const currentLevel = getMaturityLevel(item.score)
+        const targetScore = Math.min(item.score + 1, 5)
+        const targetLevel = getMaturityLevel(targetScore)
+
+        recommendationsData.push([
+          `Priority ${index + 1}`,
+          item.domain.name,
+          `${item.score.toFixed(1)} (${currentLevel})`,
+          `${targetScore.toFixed(1)} (${targetLevel})`,
+          "Implement structured processes, improve documentation, enhance governance",
+        ])
+      })
+
+      // Maturity Levels Reference Sheet
+      const maturityLevelsData = [["MATURITY LEVEL DEFINITIONS"], [], ["Level", "Range", "Description"]]
+
+      maturityLevels.forEach((level) => {
+        maturityLevelsData.push([level.name, level.range, level.description])
+      })
+
+      // Create workbook
       const wb = XLSX.utils.book_new()
+
       const summaryWs = XLSX.utils.aoa_to_sheet(summaryData)
       const detailedWs = XLSX.utils.aoa_to_sheet(detailedData)
+      const recommendationsWs = XLSX.utils.aoa_to_sheet(recommendationsData)
+      const maturityWs = XLSX.utils.aoa_to_sheet(maturityLevelsData)
 
-      XLSX.utils.book_append_sheet(wb, summaryWs, "Summary")
+      XLSX.utils.book_append_sheet(wb, summaryWs, "Executive Summary")
       XLSX.utils.book_append_sheet(wb, detailedWs, "Detailed Scores")
+      XLSX.utils.book_append_sheet(wb, recommendationsWs, "Recommendations")
+      XLSX.utils.book_append_sheet(wb, maturityWs, "Maturity Levels")
 
-      // Track the download
       trackAssessmentDownload("Excel", organizationName, isUS)
-
-      // Save the Excel file
-      XLSX.writeFile(wb, `${organizationName.replace(/\s+/g, "_")}_IT_Maturity_Assessment.xlsx`)
+      XLSX.writeFile(wb, `${organizationName.replace(/\s+/g, "_")}_IT_Maturity_Assessment_Comprehensive.xlsx`)
     } catch (error) {
       console.error("Error exporting to Excel:", error)
-      // Continue even if there's an error
     }
-  }
-
-  // Helper function to get recommendations based on domain and score
-  const getRecommendations = (domainId: string, score: number): string[] => {
-    // Default recommendations if no specific ones are available
-    const defaultRecs = [
-      "Establish formal processes and documentation",
-      "Implement regular reviews and improvement cycles",
-      "Invest in training and skill development",
-      "Standardize tools and technologies",
-      "Develop metrics to measure effectiveness",
-    ]
-
-    // Get the maturity level
-    const maturityLevel = getMaturityLevel(score)
-
-    // Fall back to default recommendations
-    return defaultRecs
-  }
-
-  const getTemplatesForDomain = (domainId: string, maturityBand: string): any[] => {
-    // Placeholder for template data retrieval logic
-    return []
   }
 
   return (
@@ -261,11 +406,11 @@ export function ExportUtils({ results, organizationName = "Your Organization" }:
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={exportToPDF} className="gap-2 cursor-pointer">
           <FilePdf className="h-4 w-4" />
-          Export as PDF
+          Export Comprehensive PDF
         </DropdownMenuItem>
         <DropdownMenuItem onClick={exportToExcel} className="gap-2 cursor-pointer">
           <FileSpreadsheet className="h-4 w-4" />
-          Export as Excel
+          Export Detailed Excel
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

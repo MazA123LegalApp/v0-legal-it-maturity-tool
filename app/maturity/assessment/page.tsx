@@ -2,19 +2,13 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import {
-  Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle
-} from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Slider } from "@/components/ui/slider"
 import { domains, dimensions, type AssessmentResult } from "@/lib/assessment-data"
 import { HelpCircle } from "lucide-react"
-import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription
-} from "@/components/ui/dialog"
-
-const STORAGE_KEY = "maturityResults"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 
 const MaturityAssessmentPage = () => {
   const router = useRouter()
@@ -26,6 +20,7 @@ const MaturityAssessmentPage = () => {
   const [initialized, setInitialized] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Initialize results structure once
   useEffect(() => {
     if (!initialized && Object.keys(results).length === 0) {
       const initialResults: AssessmentResult = {}
@@ -43,9 +38,11 @@ const MaturityAssessmentPage = () => {
     }
   }, [initialized, results])
 
-  const currentDomain = domains[currentDomainIndex]
+  const currentDomain = domains[currentDomainIndex] || domains[0]
 
   const handleSliderChange = (dimension: string, value: number[]) => {
+    if (!currentDomain) return
+
     setResults((prev) => ({
       ...prev,
       [currentDomain.id]: {
@@ -56,35 +53,62 @@ const MaturityAssessmentPage = () => {
   }
 
   const handleNext = () => {
-  if (currentDomainIndex < domains.length - 1) {
-    setCurrentDomainIndex((i) => i + 1)
-  } else {
-    setIsSubmitting(true)
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(results))
+    if (currentDomainIndex < domains.length - 1) {
+      setCurrentDomainIndex(currentDomainIndex + 1)
+    } else {
+      // Save results and navigate to results page
+      setIsSubmitting(true)
+      setError(null)
 
-      // ✅ Track event using GTM/Google Analytics
-      if (typeof window !== "undefined") {
-        window.dataLayer = window.dataLayer || []
-        window.dataLayer.push({
-          event: "complete_assessment",
-          module: "Legal IT Maturity Assessment"
-        })
+      try {
+        // Validate that we have actual scores before saving
+        const hasValidScores = Object.values(results).some(
+          (domainResult) => domainResult && Object.values(domainResult).some((score) => score > 0),
+        )
+
+        if (!hasValidScores) {
+          throw new Error("Please complete at least one domain assessment before submitting")
+        }
+
+        // Save assessment results with timestamp
+        const assessmentData = {
+          results,
+          timestamp: new Date().toISOString(),
+          completedDomains: domains.length,
+        }
+
+        localStorage.setItem("assessment_results", JSON.stringify(results))
+        localStorage.setItem("assessment_metadata", JSON.stringify(assessmentData))
+
+        // Track completion
+        if (typeof window !== "undefined" && window.gtag) {
+          try {
+            window.gtag("event", "complete_assessment", {
+              event_category: "Assessment",
+              event_label: "All Domains",
+            })
+          } catch (trackingError) {
+            console.error("Error tracking assessment completion:", trackingError)
+          }
+        }
+
+        // Navigate to results page after a short delay
+        setTimeout(() => {
+          router.push("/maturity/results")
+        }, 100)
+      } catch (error) {
+        console.error("Error submitting assessment:", error)
+        setError(
+          error instanceof Error ? error.message : "An error occurred while saving your assessment. Please try again.",
+        )
+        setIsSubmitting(false)
       }
-
-      router.push("/maturity/results")
-    } catch (err) {
-      console.error("Error saving assessment:", err)
-      setError("An error occurred while saving your assessment. Please try again.")
-      setIsSubmitting(false)
     }
   }
-}
-
 
   const handlePrevious = () => {
     if (currentDomainIndex > 0) {
-      setCurrentDomainIndex((i) => i - 1)
+      setCurrentDomainIndex(currentDomainIndex - 1)
     }
   }
 
@@ -96,8 +120,10 @@ const MaturityAssessmentPage = () => {
   const isLastDomain = currentDomainIndex === domains.length - 1
   const isFirstDomain = currentDomainIndex === 0
 
+  // Simple level descriptions dialog
   const LevelDescriptions = () => {
     const dimension = dimensions[currentInfoDimension as keyof typeof dimensions]
+
     if (!dimension) return null
 
     return (
@@ -108,11 +134,28 @@ const MaturityAssessmentPage = () => {
             <DialogDescription>{dimension.description}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 mt-4">
-            <div><strong>1 - Initial</strong>: Ad-hoc, undocumented</div>
-            <div><strong>2 - Developing</strong>: Basic, inconsistent</div>
-            <div><strong>3 - Established</strong>: Standardised, consistent</div>
-            <div><strong>4 - Managed</strong>: Measured and controlled</div>
-            <div><strong>5 - Optimised</strong>: Continuously improved</div>
+            <div>
+              <h3 className="font-bold">1 - Initial</h3>
+              <p className="text-sm">Ad-hoc processes, limited documentation, reactive approach.</p>
+            </div>
+            <div>
+              <h3 className="font-bold">2 - Developing</h3>
+              <p className="text-sm">Basic processes defined, some documentation, still largely reactive.</p>
+            </div>
+            <div>
+              <h3 className="font-bold">3 - Established</h3>
+              <p className="text-sm">Standardized processes, good documentation, proactive elements.</p>
+            </div>
+            <div>
+              <h3 className="font-bold">4 - Managed</h3>
+              <p className="text-sm">
+                Measured and controlled processes, comprehensive documentation, mostly proactive.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-bold">5 - Optimized</h3>
+              <p className="text-sm">Continuous improvement, complete documentation, fully proactive approach.</p>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
@@ -122,13 +165,23 @@ const MaturityAssessmentPage = () => {
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
       <h1 className="text-3xl font-bold mb-6">Maturity Assessment</h1>
-      <p className="mb-6 text-muted-foreground">
-        Rate your organisation’s maturity in each dimension using the sliders.
-      </p>
+      <p>This page will contain the maturity assessment tool.</p>
+      {/* Add your assessment components here */}
+
+      <div className="mb-8">
+        <p className="text-lg mb-4">Rate your organization's maturity in each dimension on a scale of 1-5:</p>
+        <div className="grid grid-cols-5 gap-4 text-center text-sm mb-2">
+          <div>1 - Initial</div>
+          <div>2 - Developing</div>
+          <div>3 - Established</div>
+          <div>4 - Managed</div>
+          <div>5 - Optimized</div>
+        </div>
+      </div>
 
       {error && <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">{error}</div>}
 
-      <Tabs value={currentDomain.id}>
+      <Tabs value={currentDomain?.id} className="w-full">
         <TabsList className="grid grid-cols-3 md:grid-cols-7 mb-8">
           {domains.map((domain, index) => (
             <TabsTrigger
@@ -142,11 +195,11 @@ const MaturityAssessmentPage = () => {
           ))}
         </TabsList>
 
-        <TabsContent value={currentDomain.id}>
+        <TabsContent value={currentDomain?.id} className="mt-0">
           <Card>
             <CardHeader>
-              <CardTitle>{currentDomain.name}</CardTitle>
-              <CardDescription>{currentDomain.description}</CardDescription>
+              <CardTitle>{currentDomain?.name}</CardTitle>
+              <CardDescription>{currentDomain?.description}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-8">
               {Object.entries(dimensions).map(([key, dimension]) => (
@@ -165,7 +218,7 @@ const MaturityAssessmentPage = () => {
                   </div>
                   <p className="text-sm text-muted-foreground mb-4">{dimension.description}</p>
                   <Slider
-                    value={[results[currentDomain.id]?.[key as keyof (typeof results)[string]] || 0]}
+                    value={[results[currentDomain?.id]?.[key as keyof (typeof results)[string]] || 0]}
                     min={0}
                     max={5}
                     step={1}
@@ -195,6 +248,7 @@ const MaturityAssessmentPage = () => {
         </TabsContent>
       </Tabs>
 
+      {/* Simple inline level descriptions dialog */}
       <LevelDescriptions />
     </div>
   )

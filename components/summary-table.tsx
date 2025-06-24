@@ -20,6 +20,7 @@ export function SummaryTable({ results }: SummaryTableProps) {
   const domainAverages = calculateDomainAverages(results)
   const dimensionAverages = calculateDimensionAverages(results)
 
+  // Check if there are any results
   const hasResults = Object.values(domainAverages).some((score) => score > 0)
 
   if (!hasResults) {
@@ -45,45 +46,37 @@ export function SummaryTable({ results }: SummaryTableProps) {
         </TableHeader>
         <TableBody>
           {domains.map((domain) => {
-            const domainScore = domainAverages[domain.id]
-            if (typeof domainScore !== "number" || domainScore === 0) return null
+            const domainScore = domainAverages[domain.id] || 0
+            if (domainScore === 0) return null // Skip domains with no score
 
             return (
               <TableRow key={domain.id}>
                 <TableCell className="font-medium">{domain.name}</TableCell>
-                {Object.keys(dimensions).map((dimension) => {
-                  const val = results[domain.id][dimension as Dimension]
-                  return (
-                    <TableCell
-                      key={dimension}
-                      className={getMaturityColor(typeof val === "number" ? val : 0)}
-                    >
-                      {typeof val === "number" ? val : "-"}
-                    </TableCell>
-                  )
-                })}
+                {Object.keys(dimensions).map((dimension) => (
+                  <TableCell
+                    key={dimension}
+                    className={getMaturityColor(results[domain.id][dimension as Dimension] || 0)}
+                  >
+                    {results[domain.id][dimension as Dimension] || "-"}
+                  </TableCell>
+                ))}
                 <TableCell className={`font-medium ${getMaturityColor(domainScore)}`}>
-                  {typeof domainScore === "number" ? domainScore.toFixed(1) : "-"}
+                  {domainScore.toFixed(1)}
                 </TableCell>
-                <TableCell className={getMaturityColor(domainScore)}>
-                  {getMaturityLevel(domainScore)}
-                </TableCell>
+                <TableCell className={getMaturityColor(domainScore)}>{getMaturityLevel(domainScore)}</TableCell>
               </TableRow>
             )
           })}
           <TableRow className="bg-muted/50">
             <TableCell className="font-medium">Dimension Average</TableCell>
-            {Object.keys(dimensions).map((dimension) => {
-              const avg = dimensionAverages[dimension]
-              return (
-                <TableCell
-                  key={dimension}
-                  className={`font-medium ${getMaturityColor(typeof avg === "number" ? avg : 0)}`}
-                >
-                  {typeof avg === "number" ? avg.toFixed(1) : "-"}
-                </TableCell>
-              )
-            })}
+            {Object.keys(dimensions).map((dimension) => (
+              <TableCell
+                key={dimension}
+                className={`font-medium ${getMaturityColor(dimensionAverages[dimension] || 0)}`}
+              >
+                {dimensionAverages[dimension] ? dimensionAverages[dimension].toFixed(1) : "-"}
+              </TableCell>
+            ))}
             <TableCell className="font-medium" colSpan={2}></TableCell>
           </TableRow>
         </TableBody>
