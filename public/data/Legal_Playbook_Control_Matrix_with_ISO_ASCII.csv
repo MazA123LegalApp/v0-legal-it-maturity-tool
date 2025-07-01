@@ -1,0 +1,49 @@
+Domain,Playbook_Action_ID,Playbook Action,EO_14028_Reference,OMB_M22_09_Pillar,NIST_CSF,Evidence_Template,KPI,ISO_27001_AnnexA
+Service Management & Strategy,SMS-01,Publish firm-wide IT service catalog,Sec. 3(c),Governance,ID.BE-1,Catalog page link & approval minutes,Catalog covers >=90 % services,A.12.1.1 Documented operating procedures
+Service Management & Strategy,SMS-02,Set SLA targets for top 10 services,Sec. 3(c),Governance,ID.GV-3,Board-approved SLA sheet,>95 % requests meet SLA,A.18.1.1 Information security policy
+Service Management & Strategy,SMS-03,Launch weekly service-review huddle,Sec. 7(b),Governance,PR.IP-3,Agenda & attendance log,100 % huddles held per quarter,A.16.1.1 Responsibilities and procedures
+Service Management & Strategy,SMS-04,Automate new-user provisioning workflow,Sec. 4(e),Applications & Workloads,PR.AC-1,Workflow screenshot,Provisioning time <=2 hrs,A.9.2.1 User registration and de-registration
+Service Management & Strategy,SMS-05,Implement experience-level (XLA) survey,Sec. 2(b),Visibility & Analytics,DE.CM-7,Survey results export,XLA >=4.0 / 5 avg,A.12.4.1 Event logging
+Service Management & Strategy,SMS-06,Map services to business value streams,Sec. 3(c),Governance,ID.AM-5,Service-value map doc,100 % critical services mapped,A.6.1.1 Information security roles and responsibilities
+Risk & Compliance,RSK-01,Maintain consolidated risk register,Sec. 3(d),Governance,ID.GV-4,Risk log & review minutes,Quarterly review completed,A.6.1.1 Information security roles and responsibilities
+Risk & Compliance,RSK-02,Run annual cyber-risk assessment,Sec. 3(d),Visibility & Analytics,ID.RA-1,Assessment report,All high risks mitigated,A.6.1.2 Segregation of duties
+Risk & Compliance,RSK-03,Automate policy-attestation tracking,Sec. 4(e),Applications & Workloads,PR.PT-1,Attestation dashboard,>95 % staff attested,A.5.1.1 Policies for information security
+Risk & Compliance,RSK-04,Benchmark controls against NIST CSF,Sec. 3(c),Governance,ID.RA-2,Gap-analysis sheet,Roadmap for all gaps,A.18.2.3 Technical compliance review
+Risk & Compliance,RSK-05,Establish compliance champion network,Sec. 2(b),Governance,PR.AT-3,Champion roster,1 champion per practice,A.7.2.2 Information security awareness
+Risk & Compliance,RSK-06,Enable predictive risk analytics dashboard,Sec. 4(e),Visibility & Analytics,DE.AE-5,Dashboard screenshot,Risk-trend alerts auto-sent,A.12.4.1 Event logging
+Cybersecurity,CYB-01,Enable MFA for all privileged accounts,Sec. 3(c),Identity,PR.AC-7,MFA policy & logs,100 % privileged MFA,A.9.2.3 Privileged access rights
+Cybersecurity,CYB-02,Deploy endpoint detection & response (EDR),Sec. 4(f),Devices,DE.CM-4,EDR console snapshot,EDR on >=95 % endpoints,A.12.4.1 Event logging
+Cybersecurity,CYB-03,Implement quarterly phishing simulations,Sec. 4(e),Visibility & Analytics,PR.AT-1,Simulation report,Click rate <5 %,A.7.2.2 Information security awareness
+Cybersecurity,CYB-04,Encrypt data at rest for DMS,Sec. 3(c),Data,PR.DS-1,Encryption config export,100 % DMS volumes encrypted,A.10.1.1 Cryptographic policy
+Cybersecurity,CYB-05,Adopt zero-trust network segmentation,Sec. 3(c),Networks,PR.AC-5,Firewall segment diagram,Sensitive apps in separate zones,A.13.1.1 Network controls
+Cybersecurity,CYB-06,Centralise log aggregation in SIEM,Sec. 4(e),Visibility & Analytics,DE.CM-1,SIEM ingest dashboard,Log coverage >=90 % systems,A.12.4.3 Administrator and operator logs
+Incident & Problem Management,IPM-01,Define incident-severity matrix,Sec. 7(b),Governance,DE.DP-4,Matrix doc approved,Used in 100 % P1 tickets,A.16.1.1 Responsibilities and procedures
+Incident & Problem Management,IPM-02,Adopt root-cause analysis template,Sec. 7(b),Visibility & Analytics,RC.CO-3,RCA forms sample,RCA for >=90 % P1 incidents,A.16.1.6 Learning from information security incidents
+Incident & Problem Management,IPM-03,Automate incident-response playbook,Sec. 7(b),Applications & Workloads,RS.CO-2,Playbook in SOAR tool,Mean response <15 min,A.16.1.5 Response to information security incidents
+Incident & Problem Management,IPM-04,Link change tickets to incident records,Sec. 7(b),Governance,RS.AN-1,Ticketing cross-ref report,>=95 % failed changes linked,A.12.1.2 Change management
+Incident & Problem Management,IPM-05,Conduct quarterly incident drills,Sec. 4(e),Recovery,RS.IM-1,Drill report,4 drills per year,A.17.1.1 Planning information security continuity
+Incident & Problem Management,IPM-06,Publish post-incident review dashboard,Sec. 4(e),Visibility & Analytics,RS.MI-3,Dashboard URL,P1 learnings closed 30 days,A.16.1.4 Assessment of and decision on information security events
+Service Continuity & Resilience,SCR-01,Define RTO/RPO per critical system,Sec. 4(e),Recovery,RC.BP-1,RTO/RPO sheet,100 % critical systems covered,A.17.1.3 Testing of information security continuity
+Service Continuity & Resilience,SCR-02,Perform quarterly DMS failover test,Sec. 4(e),Recovery,RC.IM-1,Failover report,RTO <=1 h achieved,A.17.1.3 Testing of information security continuity
+Service Continuity & Resilience,SCR-03,Maintain continuity contact tree,Sec. 7(b),Governance,ID.AM-3,Contact tree PDF,Updated quarterly,A.6.1.4 Contact with special interest groups
+Service Continuity & Resilience,SCR-04,Implement automated backup verification,Sec. 4(e),Data,PR.DS-4,Backup-verify logs,Backup success >=99 %,A.12.3.1 Information backup
+Service Continuity & Resilience,SCR-05,Run tabletop ransomware exercise,Sec. 3(d),Recovery,RS.IM-2,Exercise debrief,Action items closed 30 days,A.17.2.1 Availability of information processing facilities
+Service Continuity & Resilience,SCR-06,Publish resilience KPI dashboard,Sec. 4(e),Visibility & Analytics,RC.MI-1,Dashboard screenshot,KPIs reviewed monthly,A.12.4.1 Event logging
+Knowledge & Data Governance,KDG-01,Standardise document metadata fields,Sec. 3(c),Data,PR.DS-3,Metadata policy,>=90 % docs tagged,A.8.2.1 Classification of information
+Knowledge & Data Governance,KDG-02,Implement template lifecycle workflow,Sec. 3(c),Applications & Workloads,PR.IP-1,Workflow screenshot,Templates reviewed yearly,A.14.2.1 Secure development policy
+Knowledge & Data Governance,KDG-03,Launch data-quality audit program,Sec. 4(e),Visibility & Analytics,DE.CM-7,Audit report,Duplication <5 %,A.12.4.1 Event logging
+Knowledge & Data Governance,KDG-04,Establish knowledge-governance committee,Sec. 2(b),Governance,ID.GV-1,Committee minutes,Quarterly meetings held,A.6.1.1 Information security roles and responsibilities
+Knowledge & Data Governance,KDG-05,Automate matter-archive policy,Sec. 3(c),Data,PR.DS-5,Archive job logs,100 % closed matters archived,A.18.1.3 Protection of records
+Knowledge & Data Governance,KDG-06,Publish taxonomy cross-system map,Sec. 3(c),Governance,ID.AM-2,Taxonomy diagram,Map refreshed annually,A.8.1.1 Inventory of assets
+Change & Deployment,CHD-01,Create change classification matrix,Sec. 7(b),Governance,PR.IP-3,Matrix doc,100 % changes classified,A.12.1.2 Change management
+Change & Deployment,CHD-02,Implement CI/CD pipeline for DMS,Sec. 4(e),Applications & Workloads,DE.CM-8,Pipeline config,Automated tests >=90 % pass,A.14.2.9 System acceptance
+Change & Deployment,CHD-03,Schedule weekly CAB meeting,Sec. 7(b),Governance,RS.CO-1,CAB minutes,52 CABs per year,A.12.1.2 Change management
+Change & Deployment,CHD-04,Automate low-risk change approvals,Sec. 4(e),Applications & Workloads,PR.PT-4,Workflow audit,Fast-track changes >=80 %,A.12.6.2 Restrictions on software installation
+Change & Deployment,CHD-05,Track change success & rollback rate,Sec. 4(e),Visibility & Analytics,RS.AN-1,Change analytics,Rollback rate <3 %,A.12.4.1 Event logging
+Change & Deployment,CHD-06,Publish change freeze calendar,Sec. 7(b),Governance,PR.IP-4,Calendar link,Freeze observed in 100 % major deadlines,A.12.1.2 Change management
+Infrastructure & Tooling,INF-01,Create asset inventory with dependencies,Sec. 3(c),Devices,ID.AM-1,CMDB export,Coverage >=95 % assets,A.8.1.1 Inventory of assets
+Infrastructure & Tooling,INF-02,Enable infrastructure monitoring alerts,Sec. 4(e),Networks,DE.CM-8,Monitoring screenshot,Alerts on >=90 % systems,A.12.4.1 Event logging
+Infrastructure & Tooling,INF-03,Implement infrastructure-as-code scripts,Sec. 3(c),Applications & Workloads,PR.IP-1,Git repo link,IaC for >=70 % builds,A.14.2.1 Secure development policy
+Infrastructure & Tooling,INF-04,Audit cloud cost & unused resources,Sec. 4(e),Visibility & Analytics,ID.RA-2,Cost report,Unused spend <5 %,A.12.3.1 Information backup
+Infrastructure & Tooling,INF-05,Automate patch management,Sec. 4(e),Devices,PR.IP-12,Patch dashboard,Critical patch SLA <=7d,A.12.6.1 Management of technical vulnerabilities
+Infrastructure & Tooling,INF-06,Publish infrastructure KPI dashboard,Sec. 4(e),Visibility & Analytics,DE.CM-7,Dashboard screenshot,Uptime >=99.9 %,A.12.4.1 Event logging
