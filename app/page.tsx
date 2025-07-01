@@ -1,12 +1,17 @@
 import Link from "next/link"
-import { ArrowRight, BookOpen, BarChart3, CheckCircle2, Users, FileText, Settings } from "lucide-react"
+import { ArrowRight, BookOpen, BarChart3, CheckCircle2, Users, FileText, Settings, Mail } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function MainLandingPage() {
   return (
-    <div className="container max-w-6xl py-6 md:py-10">
+    <div className="container max-w-6xl py-6 md:py-10 relative">
+      {/* BETA Label */}
+      <div className="absolute top-4 right-4 bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+        BETA
+      </div>
+
       <div className="flex flex-col items-center text-center mb-12">
         <div className="bg-gradient-to-r from-orange-500 to-blue-600 text-white px-4 py-1 rounded-full text-sm font-medium mb-6">
           Legal Technology Resources
@@ -165,7 +170,7 @@ export default function MainLandingPage() {
           </div>
           <div className="flex gap-4">
             <Link href="/playbook">
-              <Button variant="outline" className="gap-2 border-blue-200 hover:bg-blue-50">
+              <Button variant="outline" className="gap-2 border-blue-200 hover:bg-blue-50 bg-transparent">
                 <BookOpen className="h-4 w-4" />
                 Playbook
               </Button>
@@ -174,6 +179,12 @@ export default function MainLandingPage() {
               <Button className="gap-2">
                 <BarChart3 className="h-4 w-4" />
                 Assessment
+              </Button>
+            </Link>
+            <Link href="/contact">
+              <Button variant="outline" className="gap-2 border-gray-200 hover:bg-gray-50 bg-transparent">
+                <Mail className="h-4 w-4" />
+                Contact Us
               </Button>
             </Link>
           </div>
