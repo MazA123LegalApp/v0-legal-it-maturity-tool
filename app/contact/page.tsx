@@ -34,7 +34,7 @@ export default function ContactPage() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">Get in touch via email</p>
-              <p className="font-medium">maz.araghrez@gmail.com</p>
+              <p className="font-medium">We'll respond within 24 hours</p>
             </CardContent>
           </Card>
 
