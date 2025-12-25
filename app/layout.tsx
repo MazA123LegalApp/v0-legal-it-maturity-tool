@@ -1,7 +1,7 @@
 import type React from "react"
 import "@/app/globals.css"
 
-import { Inter } from "next/font/google"
+import { Fraunces, IBM_Plex_Sans } from "next/font/google"
 import Link from "next/link"
 import { BookOpen, BarChart3, Home, Shield } from "lucide-react"
 
@@ -10,21 +10,33 @@ import { GoogleTagManager } from "@/components/gtm"
 import { AdminProvider } from "@/contexts/admin-context"
 import { Toaster } from "@/components/ui/toaster"
 
-const inter = Inter({ subsets: ["latin"] })
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-fraunces",
+  display: "swap",
+})
+
+const ibmPlexSans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-ibm-plex-sans",
+  display: "swap",
+})
 
 export const metadata = {
-  title: "Legal Technology Hub",
-  description: "Resources and tools for legal technology modernization and maturity assessment",
-    generator: 'v0.dev'
+  title: "Legal Modernization Platform - Operationalizing Federal Cybersecurity Mandates",
+  description:
+    "A vendor-neutral framework built by legal sector practitioners to help law firms implement CISA directives, OMB mandates, and Executive Order 14028 requirements.",
+  generator: "v0.dev",
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={`${fraunces.variable} ${ibmPlexSans.variable}`}>
       <head>
         <GoogleTagManager />
       </head>
-      <body className={inter.className}>
+      <body className={ibmPlexSans.className}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <AdminProvider>
             <div className="min-h-screen flex flex-col">
@@ -32,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <div className="container flex h-16 items-center justify-between">
                   <Link href="/" className="font-semibold flex items-center gap-2">
                     <Home className="h-5 w-5" />
-                    <span className="hidden sm:inline">Legal Technology Hub</span>
+                    <span className="hidden sm:inline">Legal Modernization Platform</span>
                   </Link>
                   <nav className="flex gap-4 sm:gap-6">
                     <Link
@@ -40,45 +52,40 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                       className="text-sm hover:text-blue-600 transition-colors flex items-center gap-1"
                     >
                       <BookOpen className="h-4 w-4" />
-                      <span className="hidden sm:inline">Modernization Playbook</span>
-                      <span className="sm:hidden">Playbook</span>
+                      <span className="hidden sm:inline">Playbook</span>
                     </Link>
                     <Link
                       href="/maturity"
                       className="text-sm hover:text-orange-600 transition-colors flex items-center gap-1"
                     >
                       <BarChart3 className="h-4 w-4" />
-                      <span className="hidden sm:inline">IT Maturity Assessment</span>
-                      <span className="sm:hidden">Assessment</span>
+                      <span className="hidden sm:inline">Assessment</span>
                     </Link>
                     <Link
                       href="/admin/login"
                       className="text-sm hover:text-purple-600 transition-colors flex items-center gap-1"
                     >
                       <Shield className="h-4 w-4" />
-                      <span className="hidden sm:inline">Admin Login</span>
-                      <span className="sm:hidden">Admin</span>
+                      <span className="hidden sm:inline">Admin</span>
                     </Link>
                   </nav>
                 </div>
               </header>
-              <main className="flex-1 flex justify-center">
-                <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">{children}</div>
-              </main>
-              <footer className="border-t py-6 md:py-0">
+              <main className="flex-1">{children}</main>
+              <footer className="border-t py-6 md:py-0 bg-slate-50">
                 <div className="container flex flex-col md:h-16 md:flex-row md:items-center md:justify-between">
                   <p className="text-sm text-muted-foreground">
-                    &copy; {new Date().getFullYear()} Legal Technology Hub
+                    &copy; {new Date().getFullYear()} Legal Modernization Platform
                   </p>
                   <div className="flex gap-4 text-sm text-muted-foreground mt-4 md:mt-0">
                     <Link href="/playbook" className="hover:text-blue-600 transition-colors">
                       Playbook
                     </Link>
                     <Link href="/maturity" className="hover:text-orange-600 transition-colors">
-                      Maturity Assessment
+                      Assessment
                     </Link>
-                    <Link href="/admin/login" className="hover:text-purple-600 transition-colors">
-                      Admin
+                    <Link href="/contact" className="hover:text-amber-600 transition-colors">
+                      Contact
                     </Link>
                   </div>
                 </div>
