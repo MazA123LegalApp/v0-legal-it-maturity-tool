@@ -1,8 +1,10 @@
 import Link from "next/link"
-import { ArrowRight, BookOpen, BarChart3, CheckCircle2, Users, FileText, Settings, Mail } from "lucide-react"
+import { ArrowRight, BookOpen, BarChart3, CheckCircle2, Users, FileText, Settings, Mail, Play } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { PlatformDemo } from "@/components/platform-demo"
 
 export default function MainLandingPage() {
   return (
@@ -22,96 +24,116 @@ export default function MainLandingPage() {
         </p>
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2 mb-12">
-        <Card className="border-blue-200 overflow-hidden group hover:shadow-md transition-all">
-          <div className="absolute top-0 right-0 bg-blue-600 text-white px-3 py-1 rounded-bl-lg text-xs font-medium">
-            Framework
-          </div>
-          <CardHeader className="bg-blue-50 rounded-t-lg">
-            <CardTitle className="flex items-center gap-2 text-blue-700">
-              <BookOpen className="h-6 w-6" />
-              Legal Modernization Playbook
-            </CardTitle>
-            <CardDescription>A comprehensive guide to modernizing legal operations</CardDescription>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <p className="mb-4">
-              The Legal Modernization Playbook provides frameworks, methodologies, and best practices for transforming
-              legal operations through technology adoption, process optimization, and organizational change.
-            </p>
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="flex items-start gap-2">
-                <CheckCircle2 className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
-                <span className="text-sm">Digital transformation frameworks</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <CheckCircle2 className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
-                <span className="text-sm">Technology selection guides</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <CheckCircle2 className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
-                <span className="text-sm">Change management strategies</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <CheckCircle2 className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
-                <span className="text-sm">Implementation playbooks</span>
-              </div>
-            </div>
-          </CardContent>
-          <CardFooter className="bg-gradient-to-r from-blue-50 to-transparent">
-            <Link href="/playbook" className="w-full">
-              <Button className="w-full gap-2 bg-blue-600 hover:bg-blue-700 group-hover:translate-x-1 transition-transform">
-                Access Playbook
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </CardFooter>
-        </Card>
+      {/* Demo Section */}
+      <div className="mb-12">
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="overview">Platform Overview</TabsTrigger>
+            <TabsTrigger value="demo" className="gap-2">
+              <Play className="h-4 w-4" />
+              Interactive Demo
+            </TabsTrigger>
+          </TabsList>
 
-        <Card className="border-orange-200 overflow-hidden group hover:shadow-md transition-all">
-          <div className="absolute top-0 right-0 bg-orange-600 text-white px-3 py-1 rounded-bl-lg text-xs font-medium">
-            Assessment
-          </div>
-          <CardHeader className="bg-orange-50 rounded-t-lg">
-            <CardTitle className="flex items-center gap-2 text-orange-700">
-              <BarChart3 className="h-6 w-6" />
-              Legal IT Maturity Assessment
-            </CardTitle>
-            <CardDescription>Evaluate your organization's IT maturity</CardDescription>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <p className="mb-4">
-              The Legal IT Maturity Assessment helps legal organizations evaluate their IT maturity across key domains
-              and dimensions. The results provide insights into strengths and areas for improvement.
-            </p>
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="flex items-start gap-2">
-                <CheckCircle2 className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
-                <span className="text-sm">Comprehensive maturity evaluation</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <CheckCircle2 className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
-                <span className="text-sm">Domain-specific analysis</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <CheckCircle2 className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
-                <span className="text-sm">Benchmark comparisons</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <CheckCircle2 className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
-                <span className="text-sm">Improvement recommendations</span>
-              </div>
+          <TabsContent value="overview" className="mt-6">
+            <div className="grid gap-8 md:grid-cols-2">
+              <Card className="border-blue-200 overflow-hidden group hover:shadow-md transition-all">
+                <div className="absolute top-0 right-0 bg-blue-600 text-white px-3 py-1 rounded-bl-lg text-xs font-medium">
+                  Framework
+                </div>
+                <CardHeader className="bg-blue-50 rounded-t-lg">
+                  <CardTitle className="flex items-center gap-2 text-blue-700">
+                    <BookOpen className="h-6 w-6" />
+                    Legal Modernization Playbook
+                  </CardTitle>
+                  <CardDescription>A comprehensive guide to modernizing legal operations</CardDescription>
+                </CardHeader>
+                <CardContent className="pt-6">
+                  <p className="mb-4">
+                    The Legal Modernization Playbook provides frameworks, methodologies, and best practices for
+                    transforming legal operations through technology adoption, process optimization, and organizational
+                    change.
+                  </p>
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div className="flex items-start gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
+                      <span className="text-sm">Digital transformation frameworks</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
+                      <span className="text-sm">Technology selection guides</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
+                      <span className="text-sm">Change management strategies</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
+                      <span className="text-sm">Implementation playbooks</span>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter className="bg-gradient-to-r from-blue-50 to-transparent">
+                  <Link href="/playbook" className="w-full">
+                    <Button className="w-full gap-2 bg-blue-600 hover:bg-blue-700 group-hover:translate-x-1 transition-transform">
+                      Access Playbook
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                </CardFooter>
+              </Card>
+
+              <Card className="border-orange-200 overflow-hidden group hover:shadow-md transition-all">
+                <div className="absolute top-0 right-0 bg-orange-600 text-white px-3 py-1 rounded-bl-lg text-xs font-medium">
+                  Assessment
+                </div>
+                <CardHeader className="bg-orange-50 rounded-t-lg">
+                  <CardTitle className="flex items-center gap-2 text-orange-700">
+                    <BarChart3 className="h-6 w-6" />
+                    Legal IT Maturity Assessment
+                  </CardTitle>
+                  <CardDescription>Evaluate your organization's IT maturity</CardDescription>
+                </CardHeader>
+                <CardContent className="pt-6">
+                  <p className="mb-4">
+                    The Legal IT Maturity Assessment helps legal organizations evaluate their IT maturity across key
+                    domains and dimensions. The results provide insights into strengths and areas for improvement.
+                  </p>
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div className="flex items-start gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
+                      <span className="text-sm">Comprehensive maturity evaluation</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
+                      <span className="text-sm">Domain-specific analysis</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
+                      <span className="text-sm">Benchmark comparisons</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
+                      <span className="text-sm">Improvement recommendations</span>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter className="bg-gradient-to-r from-orange-50 to-transparent">
+                  <Link href="/maturity" className="w-full">
+                    <Button className="w-full gap-2 bg-orange-600 hover:bg-orange-700 group-hover:translate-x-1 transition-transform">
+                      Start Assessment
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                </CardFooter>
+              </Card>
             </div>
-          </CardContent>
-          <CardFooter className="bg-gradient-to-r from-orange-50 to-transparent">
-            <Link href="/maturity" className="w-full">
-              <Button className="w-full gap-2 bg-orange-600 hover:bg-orange-700 group-hover:translate-x-1 transition-transform">
-                Start Assessment
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </CardFooter>
-        </Card>
+          </TabsContent>
+
+          <TabsContent value="demo" className="mt-6">
+            <PlatformDemo />
+          </TabsContent>
+        </Tabs>
       </div>
 
       <div className="grid gap-6 md:grid-cols-3 mb-12">

@@ -15,8 +15,6 @@ import {
 } from "@/lib/control-matrix"
 import { domains, getMaturityLevel } from "@/lib/assessment-data"
 import { toast } from "@/hooks/use-toast"
-import * as XLSX from "xlsx"
-import jsPDF from "jspdf"
 
 interface NextStepsGeneratorProps {
   domainScores: Record<string, number>
@@ -123,82 +121,119 @@ export function NextStepsGenerator({ domainScores, onViewControlMatrix }: NextSt
     })
   }
 
-  const exportQuickWinsPDF = () => {
-    const doc = new jsPDF()
+  const exportQuickWinsPDF = async () => {
+    try {
+      // Dynamic import to avoid SSR issues
+      const { jsPDF } = await import("jspdf")
+      const doc = new jsPDF()
 
-    // Title
-    doc.setFontSize(20)
-    doc.text("Quick Wins - Priority Actions", 20, 30)
+      // Title
+      doc.setFontSize(20)
+      doc.text("Quick Wins - Priority Actions", 20, 30)
 
-    doc.setFontSize(12)
-    doc.text("High-impact, low-effort controls to implement immediately", 20, 45)
+      doc.setFontSize(12)
+      doc.text("High-impact, low-effort controls to implement immediately", 20, 45)
 
-    let yPosition = 65
+      let yPosition = 65
 
-    quickWins.slice(0, 5).forEach((action, index) => {
-      // Action header
-      doc.setFontSize(14)
-      doc.setFont(undefined, "bold")
-      doc.text(`${index + 1}. ${action.Playbook_Action_ID}: ${action.Domain}`, 20, yPosition)
-
-      yPosition += 10
-
-      // Action description
-      doc.setFontSize(10)
-      doc.setFont(undefined, "normal")
-      const actionText = doc.splitTextToSize(action["Playbook Action"], 170)
-      doc.text(actionText, 20, yPosition)
-      yPosition += actionText.length * 5 + 5
-
-      // KPI and Evidence
-      if (action.KPI) {
+      quickWins.slice(0, 5).forEach((action, index) => {
+        // Action header
+        doc.setFontSize(14)
         doc.setFont(undefined, "bold")
-        doc.text("Success Criteria: ", 20, yPosition)
+        doc.text(`${index + 1}. ${action.Playbook_Action_ID}: ${action.Domain}`, 20, yPosition)
+
+        yPosition += 10
+
+        // Action description
+        doc.setFontSize(10)
         doc.setFont(undefined, "normal")
-        doc.text(action.KPI, 55, yPosition)
-        yPosition += 8
-      }
+        const actionText = doc.splitTextToSize(action["Playbook Action"], 170)
+        doc.text(actionText, 20, yPosition)
+        yPosition += actionText.length * 5 + 5
 
-      if (action.Evidence_Template) {
-        doc.setFont(undefined, "bold")
-        doc.text("Evidence Required: ", 20, yPosition)
-        doc.setFont(undefined, "normal")
-        doc.text(action.Evidence_Template, 60, yPosition)
-        yPosition += 8
-      }
+        // KPI and Evidence
+        if (action.KPI) {
+          doc.setFont(undefined, "bold")
+          doc.text("Success Criteria: ", 20, yPosition)
+          doc.setFont(undefined, "normal")
+          const kpiText = doc.splitTextToSize(action.KPI, 115)
+          doc.text(kpiText, 55, yPosition)
+          yPosition += kpiText.length * 5 + 3
+        }
 
-      // Compliance frameworks
-      const frameworks = []
-      if (action.NIST_CSF) frameworks.push(`NIST: ${action.NIST_CSF}`)
-      if (action.ISO_27001_AnnexA) frameworks.push(`ISO: ${action.ISO_27001_AnnexA}`)
-      if (action.EO_14028_Reference) frameworks.push(`EO: ${action.EO_14028_Reference}`)
+        if (action.Evidence_Template) {
+          doc.setFont(undefined, "bold")
+          doc.text("Evidence Required: ", 20, yPosition)
+          doc.setFont(undefined, "normal")
+          const evidenceText = doc.splitTextToSize(action.Evidence_Template, 110)
+          doc.text(evidenceText, 60, yPosition)
+          yPosition += evidenceText.length * 5 + 3
+        }
 
-      if (frameworks.length > 0) {
-        doc.setFont(undefined, "bold")
-        doc.text("Compliance: ", 20, yPosition)
-        doc.setFont(undefined, "normal")
-        doc.text(frameworks.join(" | "), 50, yPosition)
-        yPosition += 8
-      }
+        // Compliance frameworks
+        const frameworks = []
+        if (action.NIST_CSF) frameworks.push(`NIST: ${action.NIST_CSF}`)
+        if (action.ISO_27001_AnnexA) frameworks.push(`ISO: ${action.ISO_27001_AnnexA}`)
+        if (action.EO_14028_Reference) frameworks.push(`EO: ${action.EO_14028_Reference}`)
 
-      yPosition += 10
+        if (frameworks.length > 0) {
+          doc.setFont(undefined, "bold")
+          doc.text("Compliance: ", 20, yPosition)
+          doc.setFont(undefined, "normal")
+          const frameworkText = doc.splitTextToSize(frameworks.join(" | "), 130)
+          doc.text(frameworkText, 50, yPosition)
+          yPosition += frameworkText.length * 5 + 3
+        }
 
-      // Page break if needed
-      if (yPosition > 250) {
-        doc.addPage()
-        yPosition = 30
-      }
-    })
+        yPosition += 10
 
-    doc.save("quick-wins-action-plan.pdf")
+        // Page break if needed
+        if (yPosition > 250) {
+          doc.addPage()
+          yPosition = 30
+        }
+      })
 
-    toast({
-      title: "PDF Generated",
-      description: "Quick wins action plan downloaded—share with your implementation team.",
-    })
+      doc.save("quick-wins-action-plan.pdf")
+
+      toast({
+        title: "PDF Generated",
+        description: "Quick wins action plan downloaded—share with your implementation team.",
+      })
+    } catch (error) {
+      console.error("Error generating PDF:", error)
+
+      // Fallback to text export
+      const textContent = quickWins
+        .slice(0, 5)
+        .map(
+          (action, index) =>
+            `${index + 1}. ${action.Playbook_Action_ID}: ${action.Domain}
+Action: ${action["Playbook Action"]}
+KPI: ${action.KPI}
+Evidence: ${action.Evidence_Template}
+Frameworks: ${[action.NIST_CSF, action.ISO_27001_AnnexA, action.EO_14028_Reference].filter(Boolean).join(", ")}
+
+`,
+        )
+        .join("")
+
+      const blob = new Blob([`Quick Wins - Priority Actions\n\n${textContent}`], { type: "text/plain" })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = "quick-wins-action-plan.txt"
+      a.click()
+      URL.revokeObjectURL(url)
+
+      toast({
+        title: "Text File Generated",
+        description: "Quick wins exported as text file (PDF generation unavailable).",
+      })
+    }
   }
 
-  const exportSelectedToJira = () => {
+  const exportSelectedToJira = async () => {
     const selectedItems = recommendedActions.filter((action) => selectedActions.has(action.Playbook_Action_ID))
 
     if (selectedItems.length === 0) {
@@ -209,28 +244,38 @@ export function NextStepsGenerator({ domainScores, onViewControlMatrix }: NextSt
       return
     }
 
-    // Create Jira-compatible format
-    const jiraContent = selectedItems.map((action) => ({
-      "Issue Type": "Task",
-      Summary: `${action.Playbook_Action_ID}: ${action["Playbook Action"]}`,
-      Description: `**Domain:** ${action.Domain}\n\n**Success Criteria:** ${action.KPI}\n\n**Evidence Required:** ${action.Evidence_Template}\n\n**Compliance Frameworks:**\n- NIST CSF: ${action.NIST_CSF || "N/A"}\n- ISO 27001: ${action.ISO_27001_AnnexA || "N/A"}\n- Executive Order: ${action.EO_14028_Reference || "N/A"}`,
-      Priority: action.priority === "critical" ? "Highest" : action.priority === "high" ? "High" : "Medium",
-      Labels: `compliance,${action.Domain.toLowerCase().replace(/\s+/g, "-")},${action.priority}`,
-      Components: action.Domain,
-      Effort: action.execution_effort,
-    }))
+    try {
+      // Dynamic import to avoid SSR issues
+      const XLSX = await import("xlsx")
 
-    // Export as Excel for Jira import
-    const ws = XLSX.utils.json_to_sheet(jiraContent)
-    const wb = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(wb, ws, "Jira Import")
+      // Create Jira-compatible format
+      const jiraContent = selectedItems.map((action) => ({
+        "Issue Type": "Task",
+        Summary: `${action.Playbook_Action_ID}: ${action["Playbook Action"]}`,
+        Description: `**Domain:** ${action.Domain}\n\n**Success Criteria:** ${action.KPI}\n\n**Evidence Required:** ${action.Evidence_Template}\n\n**Compliance Frameworks:**\n- NIST CSF: ${action.NIST_CSF || "N/A"}\n- ISO 27001: ${action.ISO_27001_AnnexA || "N/A"}\n- Executive Order: ${action.EO_14028_Reference || "N/A"}`,
+        Priority: action.priority === "critical" ? "Highest" : action.priority === "high" ? "High" : "Medium",
+        Labels: `compliance,${action.Domain.toLowerCase().replace(/\s+/g, "-")},${action.priority}`,
+        Components: action.Domain,
+        Effort: action.execution_effort,
+      }))
 
-    XLSX.writeFile(wb, "jira-import-compliance-actions.xlsx")
+      // Export as Excel for Jira import
+      const ws = XLSX.utils.json_to_sheet(jiraContent)
+      const wb = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(wb, ws, "Jira Import")
 
-    toast({
-      title: "Jira Export Ready",
-      description: `${selectedItems.length} actions formatted for Jira import.`,
-    })
+      XLSX.writeFile(wb, "jira-import-compliance-actions.xlsx")
+
+      toast({
+        title: "Jira Export Ready",
+        description: `${selectedItems.length} actions formatted for Jira import.`,
+      })
+    } catch (error) {
+      console.error("Error exporting to Jira format:", error)
+
+      // Fallback to CSV export
+      exportToCSV(selectedItems, "jira-import-compliance-actions.csv")
+    }
   }
 
   if (loading) {

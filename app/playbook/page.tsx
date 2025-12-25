@@ -34,52 +34,201 @@ declare global {
   }
 }
 
-export default function PlaybookLandingPage() {
-  const [downloadClicked, setDownloadClicked] = useState(false)
+const handleDownload = async (setDownloadClicked: (value: boolean) => void) => {
+  // Track the download event using dataLayer directly
+  if (typeof window !== "undefined") {
+    // Push to dataLayer for GTM
+    window.dataLayer = window.dataLayer || []
+    window.dataLayer.push({
+      event: "file_download",
+      file_name: "legal-modernization-playbook.pdf",
+      file_type: "pdf",
+      content_type: "playbook",
+    })
 
-  const handleDownload = () => {
-    // Track the download event using dataLayer directly
-    if (typeof window !== "undefined") {
-      // Push to dataLayer for GTM
-      window.dataLayer = window.dataLayer || []
-      window.dataLayer.push({
-        event: "file_download",
-        file_name: "legal-modernization-playbook.pdf",
+    // Also track with gtag if available
+    if (window.gtag) {
+      window.gtag("event", "file_download", {
         file_type: "pdf",
+        file_name: "legal-modernization-playbook.pdf",
         content_type: "playbook",
       })
-
-      // Also track with gtag if available
-      if (window.gtag) {
-        window.gtag("event", "file_download", {
-          file_type: "pdf",
-          file_name: "legal-modernization-playbook.pdf",
-          content_type: "playbook",
-        })
-      }
-
-      // Store in localStorage for admin dashboard to access
-      try {
-        const downloads = JSON.parse(localStorage.getItem("tracked_downloads") || "[]")
-        downloads.push({
-          type: "pdf",
-          module: "Legal Modernization Playbook",
-          date: new Date().toISOString(),
-        })
-        localStorage.setItem("tracked_downloads", JSON.stringify(downloads))
-      } catch (error) {
-        console.error("Error tracking download:", error)
-      }
     }
 
-    setDownloadClicked(true)
-
-    // In a real implementation, this would trigger the actual PDF download
-    // For now, we'll just simulate it with a timeout
-    setTimeout(() => {
-      setDownloadClicked(false)
-    }, 3000)
+    // Store in localStorage for admin dashboard to access
+    try {
+      const downloads = JSON.parse(localStorage.getItem("tracked_downloads") || "[]")
+      downloads.push({
+        type: "pdf",
+        module: "Legal Modernization Playbook",
+        date: new Date().toISOString(),
+      })
+      localStorage.setItem("tracked_downloads", JSON.stringify(downloads))
+    } catch (error) {
+      console.error("Error tracking download:", error)
+    }
   }
+
+  setDownloadClicked(true)
+
+  try {
+    // Import jsPDF dynamically
+    const { jsPDF } = await import("jspdf")
+
+    const doc = new jsPDF()
+
+    // Title page
+    doc.setFontSize(24)
+    doc.text("Legal IT Modernization Playbook", 20, 40)
+
+    doc.setFontSize(16)
+    doc.text("A Federal-Aligned Guide to Legal Technology Transformation", 20, 60)
+
+    doc.setFontSize(12)
+    doc.text("Version 1.0 - " + new Date().getFullYear(), 20, 80)
+
+    // Add content sections
+    doc.addPage()
+    doc.setFontSize(18)
+    doc.text("Executive Summary", 20, 30)
+
+    doc.setFontSize(12)
+    const executiveSummary = [
+      "The U.S. legal and regulatory sectors face growing pressure to modernize legacy systems.",
+      "Security risks, client expectations, and federal policies such as Executive Order 14028",
+      "and OMB M-22-09 have made modernization an urgent strategic priority.",
+      "",
+      "This playbook helps legal CIOs, IT Directors, and operational leaders benchmark",
+      "their maturity, reduce risks, and implement sustainable improvements.",
+      "",
+      "Key Features:",
+      "• Self-Assessment Tool across eight legal IT maturity domains",
+      "• Maturity Models with detailed 1-5 scoring scales",
+      "• Federal Alignment with EO 14028, OMB M-22-09, NIST frameworks",
+      "• Ready-to-Use Templates and transformation blueprints",
+    ]
+
+    let yPosition = 50
+    executiveSummary.forEach((line) => {
+      if (line === "") {
+        yPosition += 8
+      } else {
+        const splitText = doc.splitTextToSize(line, 170)
+        doc.text(splitText, 20, yPosition)
+        yPosition += splitText.length * 6 + 2
+      }
+    })
+
+    // Add domains section
+    doc.addPage()
+    doc.setFontSize(18)
+    doc.text("Eight Domains of Legal IT Modernization", 20, 30)
+
+    const domains = [
+      "1. Cybersecurity - Strengthen defense against cyber threats",
+      "2. Risk & Compliance - Modern approaches to regulatory compliance",
+      "3. Incident & Problem Management - Formal response structures",
+      "4. Service Continuity & Resilience - Business continuity planning",
+      "5. Knowledge & Data Governance - Document management modernization",
+      "6. Change & Deployment - Controlled change management",
+      "7. Infrastructure & Tooling - Infrastructure modernization",
+      "8. Service Management & Strategy - IT service alignment",
+    ]
+
+    yPosition = 50
+    domains.forEach((domain) => {
+      const splitText = doc.splitTextToSize(domain, 170)
+      doc.text(splitText, 20, yPosition)
+      yPosition += splitText.length * 6 + 8
+    })
+
+    // Add assessment info
+    doc.addPage()
+    doc.setFontSize(18)
+    doc.text("How to Use This Playbook", 20, 30)
+
+    doc.setFontSize(12)
+    const instructions = [
+      "1. Assess Your Maturity - Begin with the diagnostic tool covering eight domains",
+      "2. Analyze Results - Understand your current state with maturity banding",
+      "3. Target Improvements - Use domain-specific guidance to prioritize efforts",
+      "4. Implement Change - Apply the roadmap and governance model",
+      "5. Track Progress - Reassess maturity periodically and report outcomes",
+      "",
+      "Maturity Bands:",
+      "• Initial (1.0-1.9) - Practices largely undocumented or reactive",
+      "• Developing (2.0-2.9) - Some structure exists but practices inconsistent",
+      "• Established (3.0-3.9) - Core practices defined and functioning",
+      "• Managed (4.0-4.4) - Governance and performance tracking in place",
+      "• Optimized (4.5-5.0) - Fully modernized and delivering measurable value",
+    ]
+
+    yPosition = 50
+    instructions.forEach((instruction) => {
+      if (instruction === "") {
+        yPosition += 8
+      } else {
+        const splitText = doc.splitTextToSize(instruction, 170)
+        doc.text(splitText, 20, yPosition)
+        yPosition += splitText.length * 6 + 2
+
+        if (yPosition > 250) {
+          doc.addPage()
+          yPosition = 30
+        }
+      }
+    })
+
+    // Add footer with URL
+    const pageCount = doc.internal.getNumberOfPages()
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i)
+      doc.setFontSize(10)
+      doc.text("For the complete interactive experience, visit: " + window.location.origin, 20, 280)
+      doc.text(`Page ${i} of ${pageCount}`, 180, 280)
+    }
+
+    // Download the PDF
+    doc.save("legal-modernization-playbook.pdf")
+  } catch (error) {
+    console.error("Error generating PDF:", error)
+    // Fallback: create a simple text file
+    const content = `Legal IT Modernization Playbook
+    
+Executive Summary:
+The U.S. legal and regulatory sectors face growing pressure to modernize legacy systems. This playbook helps legal CIOs, IT Directors, and operational leaders benchmark their maturity, reduce risks, and implement sustainable improvements.
+
+For the complete interactive experience with assessment tools, control matrix, and detailed guidance, visit: ${window.location.origin}
+
+Eight Domains of Legal IT Modernization:
+1. Cybersecurity
+2. Risk & Compliance  
+3. Incident & Problem Management
+4. Service Continuity & Resilience
+5. Knowledge & Data Governance
+6. Change & Deployment
+7. Infrastructure & Tooling
+8. Service Management & Strategy
+
+To get started, take the maturity assessment at: ${window.location.origin}/maturity/assessment
+`
+
+    const blob = new Blob([content], { type: "text/plain" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = "legal-modernization-playbook.txt"
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  setTimeout(() => {
+    setDownloadClicked(false)
+  }, 3000)
+}
+
+export default function PlaybookLandingPage() {
+  const [downloadClicked, setDownloadClicked] = useState(false)
 
   return (
     <div className="min-h-screen">
@@ -95,7 +244,7 @@ export default function PlaybookLandingPage() {
           </Link>
 
           <Button
-            onClick={handleDownload}
+            onClick={() => handleDownload(setDownloadClicked)}
             variant="outline"
             className="gap-2 border-orange-500 text-orange-500 hover:bg-orange-50"
             disabled={downloadClicked}
@@ -126,7 +275,7 @@ export default function PlaybookLandingPage() {
               <Button
                 variant="outline"
                 size="lg"
-                className="gap-2 border-white text-white hover:bg-white/10"
+                className="gap-2 border-white text-white hover:bg-white/10 bg-transparent"
                 onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })}
               >
                 <BookOpen className="h-5 w-5" />
@@ -1014,7 +1163,7 @@ export default function PlaybookLandingPage() {
                     <h4 className="font-medium">Maturity Assessment Workbook</h4>
                     <p className="text-sm text-slate-500">Excel</p>
                   </div>
-                  <Button variant="outline" size="sm" className="gap-1">
+                  <Button variant="outline" size="sm" className="gap-1 bg-transparent">
                     <Download className="h-3 w-3" />
                     XLSX
                   </Button>
@@ -1029,7 +1178,7 @@ export default function PlaybookLandingPage() {
                     <h4 className="font-medium">Cybersecurity Gap Tracker</h4>
                     <p className="text-sm text-slate-500">Excel</p>
                   </div>
-                  <Button variant="outline" size="sm" className="gap-1">
+                  <Button variant="outline" size="sm" className="gap-1 bg-transparent">
                     <Download className="h-3 w-3" />
                     XLSX
                   </Button>
@@ -1044,7 +1193,7 @@ export default function PlaybookLandingPage() {
                     <h4 className="font-medium">Risk Register & Scoring Matrix</h4>
                     <p className="text-sm text-slate-500">Excel</p>
                   </div>
-                  <Button variant="outline" size="sm" className="gap-1">
+                  <Button variant="outline" size="sm" className="gap-1 bg-transparent">
                     <Download className="h-3 w-3" />
                     XLSX
                   </Button>
@@ -1059,7 +1208,7 @@ export default function PlaybookLandingPage() {
                     <h4 className="font-medium">Change Request Template</h4>
                     <p className="text-sm text-slate-500">Word</p>
                   </div>
-                  <Button variant="outline" size="sm" className="gap-1">
+                  <Button variant="outline" size="sm" className="gap-1 bg-transparent">
                     <Download className="h-3 w-3" />
                     DOCX
                   </Button>
@@ -1074,7 +1223,7 @@ export default function PlaybookLandingPage() {
                     <h4 className="font-medium">DMS Migration Checklist</h4>
                     <p className="text-sm text-slate-500">Excel</p>
                   </div>
-                  <Button variant="outline" size="sm" className="gap-1">
+                  <Button variant="outline" size="sm" className="gap-1 bg-transparent">
                     <Download className="h-3 w-3" />
                     XLSX
                   </Button>
@@ -1089,7 +1238,7 @@ export default function PlaybookLandingPage() {
                     <h4 className="font-medium">SLA Definition Template</h4>
                     <p className="text-sm text-slate-500">Word</p>
                   </div>
-                  <Button variant="outline" size="sm" className="gap-1">
+                  <Button variant="outline" size="sm" className="gap-1 bg-transparent">
                     <Download className="h-3 w-3" />
                     DOCX
                   </Button>
@@ -1104,7 +1253,7 @@ export default function PlaybookLandingPage() {
                     <h4 className="font-medium">Continuity Planning Toolkit</h4>
                     <p className="text-sm text-slate-500">PowerPoint</p>
                   </div>
-                  <Button variant="outline" size="sm" className="gap-1">
+                  <Button variant="outline" size="sm" className="gap-1 bg-transparent">
                     <Download className="h-3 w-3" />
                     PPTX
                   </Button>
@@ -1119,7 +1268,7 @@ export default function PlaybookLandingPage() {
                     <h4 className="font-medium">Balanced Scorecard for Legal IT</h4>
                     <p className="text-sm text-slate-500">Excel</p>
                   </div>
-                  <Button variant="outline" size="sm" className="gap-1">
+                  <Button variant="outline" size="sm" className="gap-1 bg-transparent">
                     <Download className="h-3 w-3" />
                     XLSX
                   </Button>
@@ -1157,7 +1306,7 @@ export default function PlaybookLandingPage() {
                 </Button>
               </Link>
               <Button
-                onClick={handleDownload}
+                onClick={() => handleDownload(setDownloadClicked)}
                 variant="outline"
                 size="lg"
                 className="gap-2 border-white text-white hover:bg-white/10"

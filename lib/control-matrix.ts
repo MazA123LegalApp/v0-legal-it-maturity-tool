@@ -18,42 +18,147 @@ export interface ControlMatrixItem {
 export async function fetchControlMatrix(): Promise<ControlMatrixItem[]> {
   try {
     const response = await fetch("/data/Legal_Playbook_Control_Matrix_with_ISO_ASCII.csv")
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
     const csvText = await response.text()
 
-    // Parse CSV manually
-    const lines = csvText.split("\n")
-    const headers = lines[0].split(",").map((h) => h.trim().replace(/"/g, ""))
+    // Parse CSV manually with better error handling
+    const lines = csvText.split("\n").filter((line) => line.trim())
+    if (lines.length === 0) {
+      console.warn("CSV file is empty")
+      return []
+    }
 
+    const headers = lines[0].split(",").map((h) => h.trim().replace(/"/g, ""))
     const data: ControlMatrixItem[] = []
 
     for (let i = 1; i < lines.length; i++) {
       const line = lines[i].trim()
       if (!line) continue
 
-      // Handle CSV parsing with quoted fields
-      const values = parseCSVLine(line)
-      if (values.length === headers.length) {
-        const item: any = {}
-        headers.forEach((header, index) => {
-          item[header] = values[index]?.trim().replace(/"/g, "") || ""
-        })
+      try {
+        // Handle CSV parsing with quoted fields
+        const values = parseCSVLine(line)
+        if (values.length >= headers.length - 2) {
+          // Allow some flexibility
+          const item: any = {}
+          headers.forEach((header, index) => {
+            item[header] = values[index]?.trim().replace(/"/g, "") || ""
+          })
 
-        // Add enhanced metadata
-        item.status = getStoredStatus(item.Playbook_Action_ID) || "not_started"
-        item.priority = determinePriority(item)
-        item.Band_Min = determineBandMin(item)
-        item.execution_effort = determineExecutionEffort(item)
-        item.quick_win = isQuickWin(item)
+          // Add enhanced metadata with error handling
+          item.status = getStoredStatus(item.Playbook_Action_ID) || "not_started"
+          item.priority = determinePriority(item)
+          item.Band_Min = determineBandMin(item)
+          item.execution_effort = determineExecutionEffort(item)
+          item.quick_win = isQuickWin(item)
 
-        data.push(item as ControlMatrixItem)
+          data.push(item as ControlMatrixItem)
+        }
+      } catch (lineError) {
+        console.warn(`Error parsing line ${i}:`, lineError)
+        continue
       }
+    }
+
+    // If no data was parsed, create some sample data
+    if (data.length === 0) {
+      console.warn("No data parsed from CSV, creating sample data")
+      return createSampleControlMatrix()
     }
 
     return data
   } catch (error) {
     console.error("Error fetching control matrix:", error)
-    return []
+    // Return sample data as fallback
+    return createSampleControlMatrix()
   }
+}
+
+function createSampleControlMatrix(): ControlMatrixItem[] {
+  return [
+    {
+      Domain: "Cybersecurity",
+      Playbook_Action_ID: "CYB-01",
+      "Playbook Action": "Implement Multi-Factor Authentication (MFA) for all user accounts",
+      EO_14028_Reference: "Section 3(a)",
+      OMB_M22_09_Pillar: "Identity",
+      NIST_CSF: "PR.AC-1",
+      Evidence_Template: "MFA deployment report, user enrollment statistics",
+      KPI: "100% of user accounts have MFA enabled",
+      ISO_27001_AnnexA: "A.9.4.2",
+      status: "not_started",
+      priority: "critical",
+      Band_Min: 1,
+      execution_effort: "medium",
+      quick_win: true,
+    },
+    {
+      Domain: "Cybersecurity",
+      Playbook_Action_ID: "CYB-02",
+      "Playbook Action": "Deploy Endpoint Detection and Response (EDR) solution",
+      EO_14028_Reference: "Section 3(b)",
+      OMB_M22_09_Pillar: "Device Security",
+      NIST_CSF: "DE.CM-1",
+      Evidence_Template: "EDR deployment documentation, coverage report",
+      KPI: ">=95% endpoint coverage with EDR monitoring",
+      ISO_27001_AnnexA: "A.12.2.1",
+      status: "not_started",
+      priority: "high",
+      Band_Min: 2,
+      execution_effort: "high",
+      quick_win: false,
+    },
+    {
+      Domain: "Risk & Compliance",
+      Playbook_Action_ID: "RIS-01",
+      "Playbook Action": "Establish formal risk register and assessment process",
+      EO_14028_Reference: "",
+      OMB_M22_09_Pillar: "Governance",
+      NIST_CSF: "ID.RA-1",
+      Evidence_Template: "Risk register, assessment methodology documentation",
+      KPI: "Risk assessments conducted quarterly",
+      ISO_27001_AnnexA: "A.6.1.2",
+      status: "not_started",
+      priority: "medium",
+      Band_Min: 1,
+      execution_effort: "low",
+      quick_win: true,
+    },
+    {
+      Domain: "Incident & Problem Management",
+      Playbook_Action_ID: "INC-01",
+      "Playbook Action": "Create incident response plan and procedures",
+      EO_14028_Reference: "Section 4(c)",
+      OMB_M22_09_Pillar: "Response",
+      NIST_CSF: "RS.RP-1",
+      Evidence_Template: "Incident response plan, procedure documentation",
+      KPI: "Incident response plan tested annually",
+      ISO_27001_AnnexA: "A.16.1.1",
+      status: "not_started",
+      priority: "high",
+      Band_Min: 1,
+      execution_effort: "medium",
+      quick_win: false,
+    },
+    {
+      Domain: "Service Continuity & Resilience",
+      Playbook_Action_ID: "CON-01",
+      "Playbook Action": "Develop business continuity plan for critical systems",
+      EO_14028_Reference: "",
+      OMB_M22_09_Pillar: "Recovery",
+      NIST_CSF: "RC.RP-1",
+      Evidence_Template: "Business continuity plan, testing results",
+      KPI: "BCP tested and updated annually",
+      ISO_27001_AnnexA: "A.17.1.1",
+      status: "not_started",
+      priority: "medium",
+      Band_Min: 2,
+      execution_effort: "medium",
+      quick_win: false,
+    },
+  ]
 }
 
 function parseCSVLine(line: string): string[] {

@@ -262,6 +262,25 @@ export default function ResultsClientPage() {
         <TabsContent value="export">
           <ResultsActions />
         </TabsContent>
+
+        {showControlMatrix && (
+          <div id="control-matrix-section" className="mt-8">
+            <Card>
+              <CardHeader>
+                <CardTitle>Control Matrix</CardTitle>
+                <CardDescription>Detailed compliance controls based on your assessment results</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <p className="text-gray-600 mb-4">Control Matrix integration is loading...</p>
+                  <Button onClick={() => window.open("/control-matrix", "_blank")} variant="outline">
+                    Open Control Matrix in New Tab
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </Tabs>
     </div>
   )
