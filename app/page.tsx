@@ -472,7 +472,16 @@ export default function LandingPage() {
               Our team is bringing together a cross-functional group of legal industry experts, technology leaders,
               and cybersecurity practitioners while we secure the funding needed to build out the platform properly.
               This collaboration is essential to creating a trusted, vendor-neutral product that delivers a seamless
-              experience from assessment through implementation.
+              experience from assessment through implementation. If you&apos;d like to help make this work possible, visit{" "}
+              <a
+                href="https://www.thesentinelproject.co"
+                target="_blank"
+                rel="noreferrer"
+                className="font-semibold text-primary underline underline-offset-4 hover:text-primary/80"
+              >
+                thesentinelproject.co
+              </a>
+              .
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
