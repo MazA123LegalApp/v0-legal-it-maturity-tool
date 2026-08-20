@@ -14,10 +14,19 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { useState, useEffect } from "react"
 
 export default function LandingPage() {
   const [isVisible, setIsVisible] = useState(false)
+  const [isDemoDialogOpen, setIsDemoDialogOpen] = useState(false)
 
   useEffect(() => {
     setIsVisible(true)
@@ -51,15 +60,14 @@ export default function LandingPage() {
               directives, OMB mandates, and Executive Order 14028 requirements.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/maturity">
-                <Button
-                  size="lg"
-                  className="bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold px-8 py-6 text-lg"
-                >
-                  View Demo
-                  <PlayCircle className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
+              <Button
+                size="lg"
+                onClick={() => setIsDemoDialogOpen(true)}
+                className="bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold px-8 py-6 text-lg"
+              >
+                View Demo
+                <PlayCircle className="ml-2 h-5 w-5" />
+              </Button>
               <Link href="/contact">
                 <Button
                   size="lg"
@@ -266,12 +274,14 @@ export default function LandingPage() {
                       <span className="text-slate-700">Implementation prioritization</span>
                     </li>
                   </ul>
-                  <Link href="/maturity">
-                    <Button size="lg" className="bg-primary hover:bg-primary/90 text-white">
-                      Launch Demo Prototype
-                      <ExternalLink className="ml-2 h-5 w-5" />
-                    </Button>
-                  </Link>
+                  <Button
+                    size="lg"
+                    onClick={() => setIsDemoDialogOpen(true)}
+                    className="bg-primary hover:bg-primary/90 text-white"
+                  >
+                    Launch Demo Prototype
+                    <ExternalLink className="ml-2 h-5 w-5" />
+                  </Button>
                   <p className="text-sm text-slate-500 mt-4">Demo requires no signup - fully open access</p>
                 </div>
               </div>
@@ -440,20 +450,36 @@ export default function LandingPage() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
-            <Link href="/maturity">
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white text-white hover:bg-white/10 px-8 py-6 text-lg bg-transparent"
-              >
-                Try Demo Now
-                <PlayCircle className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => setIsDemoDialogOpen(true)}
+              className="border-white text-white hover:bg-white/10 px-8 py-6 text-lg bg-transparent"
+            >
+              Try Demo Now
+              <PlayCircle className="ml-2 h-5 w-5" />
+            </Button>
           </div>
           <p className="text-sm text-blue-200 mt-6">No signup required to try the demo. Fully open access.</p>
         </div>
       </section>
+
+      <Dialog open={isDemoDialogOpen} onOpenChange={setIsDemoDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>We&apos;re building the full experience</DialogTitle>
+            <DialogDescription className="pt-2 leading-relaxed">
+              Our team is bringing together a cross-functional group of legal industry experts, technology leaders,
+              and cybersecurity practitioners while we secure the funding needed to build out the platform properly.
+              This collaboration is essential to creating a trusted, vendor-neutral product that delivers a seamless
+              experience from assessment through implementation.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={() => setIsDemoDialogOpen(false)}>Understood</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
