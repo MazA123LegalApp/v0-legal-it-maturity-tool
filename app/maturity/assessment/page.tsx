@@ -14,6 +14,7 @@ const MaturityAssessmentPage = () => {
   const router = useRouter()
   const [currentDomainIndex, setCurrentDomainIndex] = useState(0)
   const [results, setResults] = useState<AssessmentResult>({})
+  const [domainContext, setDomainContext] = useState<Record<string, string>>({})
   const [showLevelInfo, setShowLevelInfo] = useState(false)
   const [currentInfoDimension, setCurrentInfoDimension] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -78,7 +79,8 @@ const MaturityAssessmentPage = () => {
         }
 
         localStorage.setItem("assessment_results", JSON.stringify(results))
-        localStorage.setItem("assessment_metadata", JSON.stringify(assessmentData))
+        localStorage.setItem("assessment_context", JSON.stringify(domainContext))
+        localStorage.setItem("assessment_metadata", JSON.stringify({ ...assessmentData, hasWrittenContext: Object.values(domainContext).some(Boolean) }))
 
         // Track completion
         if (typeof window !== "undefined" && window.gtag) {
@@ -235,6 +237,24 @@ const MaturityAssessmentPage = () => {
                   </div>
                 </div>
               ))}
+              <div className="border-t pt-6">
+                <label htmlFor={`domain-context-${currentDomain?.id}`} className="font-medium">
+                  Evidence and operating context <span className="font-normal text-muted-foreground">(optional)</span>
+                </label>
+                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                  Give the AI review panel specific context, such as current policies, ownership, tooling, recurring issues, or known evidence gaps. Do not include client names, privileged material, credentials, or confidential matter details.
+                </p>
+                <textarea
+                  id={`domain-context-${currentDomain?.id}`}
+                  value={domainContext[currentDomain?.id] || ""}
+                  onChange={(event) => setDomainContext((previous) => ({ ...previous, [currentDomain.id]: event.target.value }))}
+                  maxLength={2000}
+                  rows={4}
+                  placeholder="Example: Incident response is owned by IT and reviewed quarterly, but tabletop exercises are not yet documented."
+                  className="mt-3 flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm leading-relaxed shadow-sm outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50"
+                />
+                <p className="mt-1 text-right text-xs text-muted-foreground">{(domainContext[currentDomain?.id] || "").length}/2000</p>
+              </div>
             </CardContent>
             <CardFooter className="flex justify-between">
               <Button onClick={handlePrevious} disabled={isFirstDomain} variant="outline">

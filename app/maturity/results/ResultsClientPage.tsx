@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { trackEvent } from "@/lib/tracking-utils"
 import { AlertTriangle, TrendingUp, Target, BarChart3 } from "lucide-react"
+import { AIDomainReview } from "@/components/ai-domain-review"
 
 export default function ResultsClientPage() {
   const router = useRouter()
@@ -25,6 +26,8 @@ export default function ResultsClientPage() {
   const [error, setError] = useState<string | null>(null)
   const [summaryData, setSummaryData] = useState<any>(null)
   const [domainScores, setDomainScores] = useState<Record<string, number>>({})
+  const [assessmentResults, setAssessmentResults] = useState<any>(null)
+  const [assessmentContext, setAssessmentContext] = useState<Record<string, string>>({})
   const [showControlMatrix, setShowControlMatrix] = useState(false)
   const [controlMatrixFilter, setControlMatrixFilter] = useState<string>("")
 
@@ -32,23 +35,25 @@ export default function ResultsClientPage() {
     // Load assessment results from localStorage
     try {
       if (typeof window !== "undefined") {
-        const assessmentResults = getAssessmentResults()
+        const storedAssessmentResults = getAssessmentResults()
 
-        if (!assessmentResults) {
+        if (!storedAssessmentResults) {
           setError("No assessment results found. Please complete the assessment first.")
           setLoading(false)
           return
         }
 
-        console.log("Assessment results loaded:", assessmentResults) // Debug log
+        setAssessmentResults(storedAssessmentResults)
+        const storedContext = localStorage.getItem("assessment_context")
+        setAssessmentContext(storedContext ? JSON.parse(storedContext) : {})
 
         // Calculate domain averages
-        const calculatedDomainScores = calculateDomainAverages(assessmentResults)
+        const calculatedDomainScores = calculateDomainAverages(storedAssessmentResults)
         console.log("Calculated domain scores:", calculatedDomainScores) // Debug log
         setDomainScores(calculatedDomainScores)
 
         // Calculate overall score
-        const overallScore = calculateOverallAverage(assessmentResults)
+        const overallScore = calculateOverallAverage(storedAssessmentResults)
 
         // Get maturity band
         const overallBand = getMaturityLevel(overallScore)
@@ -194,6 +199,7 @@ export default function ResultsClientPage() {
         </TabsList>
 
         <TabsContent value="results" className="space-y-8">
+          {assessmentResults && <AIDomainReview results={assessmentResults} context={assessmentContext} />}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Results */}
             <div className="lg:col-span-2 space-y-8">
