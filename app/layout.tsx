@@ -32,7 +32,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${fraunces.variable} ${ibmPlexSans.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`bg-background ${fraunces.variable} ${ibmPlexSans.variable}`}>
       <head>
         <GoogleTagManager />
       </head>
@@ -49,21 +49,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <nav className="flex gap-4 sm:gap-6">
                     <Link
                       href="/playbook"
-                      className="text-sm hover:text-blue-600 transition-colors flex items-center gap-1"
+                      className="text-sm hover:text-accent transition-colors flex items-center gap-1"
                     >
                       <BookOpen className="h-4 w-4" />
                       <span className="hidden sm:inline">Playbook</span>
                     </Link>
                     <Link
                       href="/maturity"
-                      className="text-sm hover:text-orange-600 transition-colors flex items-center gap-1"
+                      className="text-sm hover:text-accent transition-colors flex items-center gap-1"
                     >
                       <BarChart3 className="h-4 w-4" />
                       <span className="hidden sm:inline">Assessment</span>
                     </Link>
                     <Link
                       href="/admin/login"
-                      className="text-sm hover:text-purple-600 transition-colors flex items-center gap-1"
+                      className="text-sm hover:text-accent transition-colors flex items-center gap-1"
                     >
                       <Shield className="h-4 w-4" />
                       <span className="hidden sm:inline">Admin</span>
@@ -72,19 +72,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </div>
               </header>
               <main className="flex-1">{children}</main>
-              <footer className="border-t py-6 md:py-0 bg-slate-50">
+              <footer className="border-t py-6 md:py-0 bg-muted">
                 <div className="container flex flex-col md:h-16 md:flex-row md:items-center md:justify-between">
                   <p className="text-sm text-muted-foreground">
                     &copy; {new Date().getFullYear()} Legal Modernization Platform
                   </p>
                   <div className="flex gap-4 text-sm text-muted-foreground mt-4 md:mt-0">
-                    <Link href="/playbook" className="hover:text-blue-600 transition-colors">
+                    <Link href="/playbook" className="hover:text-accent transition-colors">
                       Playbook
                     </Link>
-                    <Link href="/maturity" className="hover:text-orange-600 transition-colors">
+                    <Link href="/maturity" className="hover:text-accent transition-colors">
                       Assessment
                     </Link>
-                    <Link href="/contact" className="hover:text-amber-600 transition-colors">
+                    <Link href="/contact" className="hover:text-accent transition-colors">
                       Contact
                     </Link>
                   </div>
