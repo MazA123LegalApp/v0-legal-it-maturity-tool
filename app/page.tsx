@@ -8,7 +8,6 @@ import {
   Download,
   PlayCircle,
   Users,
-  Building2,
   TrendingUp,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -384,52 +383,6 @@ export default function LandingPage() {
               </CardContent>
             </Card>
           </div>
-        </div>
-      </section>
-
-      {/* Industry Validation Section */}
-      <section className="py-20 bg-white">
-        <div className="container px-6 max-w-6xl mx-auto">
-          <h2 className="font-serif text-4xl md:text-5xl font-bold mb-12 text-center text-slate-900">
-            Trusted by Legal Professionals
-          </h2>
-
-          <div className="grid md:grid-cols-3 gap-8 mb-12">
-            <Card className="border-slate-200 text-center">
-              <CardContent className="pt-6">
-                <Building2 className="h-12 w-12 text-primary mx-auto mb-4" />
-                <h3 className="font-semibold text-2xl mb-2 text-slate-900">200+</h3>
-                <p className="text-slate-600">Law firms evaluated</p>
-              </CardContent>
-            </Card>
-            <Card className="border-slate-200 text-center">
-              <CardContent className="pt-6">
-                <Users className="h-12 w-12 text-primary mx-auto mb-4" />
-                <h3 className="font-semibold text-2xl mb-2 text-slate-900">50+</h3>
-                <p className="text-slate-600">Industry practitioners consulted</p>
-              </CardContent>
-            </Card>
-            <Card className="border-slate-200 text-center">
-              <CardContent className="pt-6">
-                <TrendingUp className="h-12 w-12 text-primary mx-auto mb-4" />
-                <h3 className="font-semibold text-2xl mb-2 text-slate-900">3</h3>
-                <p className="text-slate-600">Peer-reviewed publications</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card className="bg-slate-50 border-slate-200">
-            <CardContent className="pt-6">
-              <p className="text-lg text-slate-700 italic text-center leading-relaxed">
-                "The legal sector has lacked a dedicated, vendor-neutral cybersecurity framework for too long. This
-                platform addresses that critical gap with research-backed methodology designed specifically for our
-                unique compliance and confidentiality requirements."
-              </p>
-              <p className="text-center text-slate-600 mt-4 font-semibold">
-                — Legal Technology Leader, Global Law Firm
-              </p>
-            </CardContent>
-          </Card>
         </div>
       </section>
 
