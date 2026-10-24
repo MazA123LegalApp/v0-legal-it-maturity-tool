@@ -8,25 +8,15 @@ import {
   Download,
   PlayCircle,
   Users,
-  Building2,
   TrendingUp,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
 import { useState, useEffect } from "react"
 
 export default function LandingPage() {
   const [isVisible, setIsVisible] = useState(false)
-  const [isDemoDialogOpen, setIsDemoDialogOpen] = useState(false)
 
   useEffect(() => {
     setIsVisible(true)
@@ -60,14 +50,15 @@ export default function LandingPage() {
               directives, OMB mandates, and Executive Order 14028 requirements.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button
-                size="lg"
-                onClick={() => setIsDemoDialogOpen(true)}
-                className="bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold px-8 py-6 text-lg"
-              >
-                View Demo
-                <PlayCircle className="ml-2 h-5 w-5" />
-              </Button>
+              <Link href="/maturity">
+                <Button
+                  size="lg"
+                  className="bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold px-8 py-6 text-lg"
+                >
+                  View Demo
+                  <PlayCircle className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
               <Link href="/contact">
                 <Button
                   size="lg"
@@ -274,14 +265,12 @@ export default function LandingPage() {
                       <span className="text-slate-700">Implementation prioritization</span>
                     </li>
                   </ul>
-                  <Button
-                    size="lg"
-                    onClick={() => setIsDemoDialogOpen(true)}
-                    className="bg-primary hover:bg-primary/90 text-white"
-                  >
-                    Launch Demo Prototype
-                    <ExternalLink className="ml-2 h-5 w-5" />
-                  </Button>
+                  <Link href="/maturity">
+                    <Button size="lg" className="bg-primary hover:bg-primary/90 text-white">
+                      Launch Demo Prototype
+                      <ExternalLink className="ml-2 h-5 w-5" />
+                    </Button>
+                  </Link>
                   <p className="text-sm text-slate-500 mt-4">Demo requires no signup - fully open access</p>
                 </div>
               </div>
@@ -387,52 +376,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Industry Validation Section */}
-      <section className="py-20 bg-white">
-        <div className="container px-6 max-w-6xl mx-auto">
-          <h2 className="font-serif text-4xl md:text-5xl font-bold mb-12 text-center text-slate-900">
-            Trusted by Legal Professionals
-          </h2>
-
-          <div className="grid md:grid-cols-3 gap-8 mb-12">
-            <Card className="border-slate-200 text-center">
-              <CardContent className="pt-6">
-                <Building2 className="h-12 w-12 text-primary mx-auto mb-4" />
-                <h3 className="font-semibold text-2xl mb-2 text-slate-900">200+</h3>
-                <p className="text-slate-600">Law firms evaluated</p>
-              </CardContent>
-            </Card>
-            <Card className="border-slate-200 text-center">
-              <CardContent className="pt-6">
-                <Users className="h-12 w-12 text-primary mx-auto mb-4" />
-                <h3 className="font-semibold text-2xl mb-2 text-slate-900">50+</h3>
-                <p className="text-slate-600">Industry practitioners consulted</p>
-              </CardContent>
-            </Card>
-            <Card className="border-slate-200 text-center">
-              <CardContent className="pt-6">
-                <TrendingUp className="h-12 w-12 text-primary mx-auto mb-4" />
-                <h3 className="font-semibold text-2xl mb-2 text-slate-900">3</h3>
-                <p className="text-slate-600">Peer-reviewed publications</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card className="bg-slate-50 border-slate-200">
-            <CardContent className="pt-6">
-              <p className="text-lg text-slate-700 italic text-center leading-relaxed">
-                "The legal sector has lacked a dedicated, vendor-neutral cybersecurity framework for too long. This
-                platform addresses that critical gap with research-backed methodology designed specifically for our
-                unique compliance and confidentiality requirements."
-              </p>
-              <p className="text-center text-slate-600 mt-4 font-semibold">
-                — Legal Technology Leader, Global Law Firm
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
       {/* Waitlist Section */}
       <section className="py-20 bg-gradient-to-br from-primary to-primary/80 text-white">
         <div className="container px-6 max-w-4xl mx-auto text-center">
@@ -450,45 +393,20 @@ export default function LandingPage() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={() => setIsDemoDialogOpen(true)}
-              className="border-white text-white hover:bg-white/10 px-8 py-6 text-lg bg-transparent"
-            >
-              Try Demo Now
-              <PlayCircle className="ml-2 h-5 w-5" />
-            </Button>
+            <Link href="/maturity">
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-white text-white hover:bg-white/10 px-8 py-6 text-lg bg-transparent"
+              >
+                Try Demo Now
+                <PlayCircle className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
           </div>
           <p className="text-sm text-blue-200 mt-6">No signup required to try the demo. Fully open access.</p>
         </div>
       </section>
-
-      <Dialog open={isDemoDialogOpen} onOpenChange={setIsDemoDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>We&apos;re building the full experience</DialogTitle>
-            <DialogDescription className="pt-2 leading-relaxed">
-              Our team is bringing together a cross-functional group of legal industry experts, technology leaders,
-              and cybersecurity practitioners while we secure the funding needed to build out the platform properly.
-              This collaboration is essential to creating a trusted, vendor-neutral product that delivers a seamless
-              experience from assessment through implementation. If you&apos;d like to help make this work possible, visit{" "}
-              <a
-                href="https://www.thesentinelproject.co"
-                target="_blank"
-                rel="noreferrer"
-                className="font-semibold text-primary underline underline-offset-4 hover:text-primary/80"
-              >
-                thesentinelproject.co
-              </a>
-              .
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button onClick={() => setIsDemoDialogOpen(false)}>Understood</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }
