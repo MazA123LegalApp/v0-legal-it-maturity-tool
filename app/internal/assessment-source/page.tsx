@@ -88,7 +88,7 @@ export default function AssessmentSourcePage() {
                       <div className="border-b border-slate-200 bg-slate-50 px-4 py-3">
                         <h3 className="font-mono text-sm font-semibold text-slate-800">{filename}</h3>
                       </div>
-                      <div className="max-h-[720px] overflow-auto whitespace-pre-wrap break-words p-5 font-mono text-[12px] leading-6 text-slate-700">
+                      <div className="whitespace-pre-wrap break-words p-5 text-sm leading-7 text-slate-700">
                         {readSourceFile(filename)}
                       </div>
                     </article>
