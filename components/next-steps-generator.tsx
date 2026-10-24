@@ -124,7 +124,7 @@ export function NextStepsGenerator({ domainScores, onViewControlMatrix }: NextSt
   const exportQuickWinsPDF = async () => {
     try {
       // Dynamic import to avoid SSR issues
-      const { jsPDF } = await import("jspdf")
+      const { jsPDF } = await import("jspdf/dist/jspdf.es.min.js")
       const doc = new jsPDF()
 
       // Title

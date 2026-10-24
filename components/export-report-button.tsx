@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { Download } from "lucide-react"
-import { jsPDF } from "jspdf"
 import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/use-toast"
 
@@ -16,6 +15,7 @@ export function ExportReportButton({ className }: ExportReportButtonProps) {
   const handleExport = async () => {
     try {
       setIsExporting(true)
+      const { jsPDF } = await import("jspdf/dist/jspdf.es.min.js")
 
       // Get assessment results from localStorage
       const assessmentData = localStorage.getItem("assessmentResults")

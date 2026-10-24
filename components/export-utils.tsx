@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { Download, FileSpreadsheet, FileIcon as FilePdf } from "lucide-react"
-import { jsPDF } from "jspdf"
 import * as XLSX from "xlsx"
 import { trackAssessmentDownload } from "@/lib/tracking-utils"
 
@@ -49,8 +48,9 @@ export function ExportUtils({ results, organizationName = "Your Organization" }:
     checkLocation()
   }, [])
 
-  const exportToPDF = () => {
+  const exportToPDF = async () => {
     try {
+      const { jsPDF } = await import("jspdf/dist/jspdf.es.min.js")
       const doc = new jsPDF({
         orientation: "portrait",
         unit: "mm",
