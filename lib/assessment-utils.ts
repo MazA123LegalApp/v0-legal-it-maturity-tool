@@ -24,21 +24,73 @@ export const GUIDED_DOMAINS = [
   { id: "client", name: "Client experience" },
 ] as const
 
-export const GUIDED_CONTROLS = [
-  "Accountability and ownership are clearly defined.",
-  "Policies and standards are documented and accessible.",
-  "Risks are identified, assessed, and reviewed regularly.",
-  "Operational processes are measured against agreed outcomes.",
-  "Evidence is retained and can be independently checked.",
-  "Staff receive role-appropriate guidance and training.",
-  "Issues and exceptions have a defined escalation path.",
-  "Improvement actions have owners, dates, and follow-up.",
-] as const
+export const GUIDED_CONTROLS: Record<string, readonly string[]> = {
+  governance: [
+    "Strategic objectives for the legal function are documented and approved by accountable leadership.",
+    "Decision rights and ownership for legal operations are assigned to named roles.",
+    "The legal operating model is reviewed against organisational priorities at a defined cadence.",
+    "Performance measures are used to evaluate whether legal services deliver agreed outcomes.",
+    "Governance decisions, approvals, and exceptions are recorded in a retrievable form.",
+    "People with governance responsibilities receive guidance appropriate to their role.",
+    "Material governance issues are escalated through a defined leadership forum.",
+    "Governance improvements have owners, target dates, and documented follow-up.",
+  ],
+  risk: [
+    "Legal and regulatory obligations affecting the organisation are identified and maintained.",
+    "Risk ownership is assigned for material legal, compliance, and operational risks.",
+    "Risk assessments use defined criteria and are refreshed at a documented cadence.",
+    "Controls are mapped to the risks and obligations they are intended to address.",
+    "Compliance evidence is retained with enough context for independent review.",
+    "Relevant personnel receive training on applicable legal and compliance responsibilities.",
+    "Breach, exception, and non-compliance escalation routes are documented and understood.",
+    "Risk treatment actions are prioritised, tracked, and reviewed through completion.",
+  ],
+  security: [
+    "Information security responsibilities for legal systems and information are assigned.",
+    "Security policies and standards governing legal information are documented and accessible.",
+    "Security risks to confidential legal information are assessed and reviewed regularly.",
+    "Access, authentication, and other security controls are measured against defined requirements.",
+    "Security logs, approvals, and control evidence are retained for independent review.",
+    "Personnel receive role-appropriate security and confidentiality training.",
+    "Security incidents and suspected compromises follow a documented escalation path.",
+    "Security remediation actions are assigned, dated, prioritised, and verified after completion.",
+  ],
+  data: [
+    "Ownership is assigned for the quality, classification, and lifecycle of legal data.",
+    "Data definitions, handling standards, and retention requirements are documented.",
+    "Data risks, including confidentiality, integrity, availability, and privacy risks, are reviewed.",
+    "Data quality and access processes are measured against agreed service expectations.",
+    "Key data sources, lineage, and evidence of review can be independently checked.",
+    "Users receive guidance on handling, sharing, retaining, and disposing of legal information.",
+    "Data incidents, quality exceptions, and unauthorised access concerns have defined escalation routes.",
+    "Data improvement actions have accountable owners, target dates, and follow-up evidence.",
+  ],
+  technology: [
+    "Ownership is assigned for the legal technology portfolio and critical operational services.",
+    "Technology standards, procedures, and service requirements are documented and accessible.",
+    "Technology and supplier risks are identified, assessed, and reviewed on a defined cadence.",
+    "Service performance, availability, and operational outcomes are measured against agreed targets.",
+    "Configuration, change, service, and supplier records are retained for independent review.",
+    "Technology users and administrators receive guidance appropriate to their responsibilities.",
+    "Operational incidents, changes, and service exceptions follow defined escalation routes.",
+    "Technology improvement actions are prioritised, assigned, dated, and reviewed for effectiveness.",
+  ],
+  client: [
+    "Client service ownership and accountability are clearly defined for the legal function.",
+    "Client service standards, communication expectations, and intake procedures are documented.",
+    "Client, matter, and service-delivery risks are identified and reviewed regularly.",
+    "Client experience and service outcomes are measured against agreed expectations.",
+    "Matter, request, feedback, and service evidence is retained and independently reviewable.",
+    "Staff receive guidance on client communication, service quality, and professional responsibilities.",
+    "Client complaints, conflicts, delays, and service exceptions have defined escalation routes.",
+    "Client-service improvements have owners, target dates, and documented follow-up.",
+  ],
+} as const
 
 export function calculateGuidedDomainScores(responses: GuidedAssessmentResponses): Record<string, number> {
   return Object.fromEntries(
     GUIDED_DOMAINS.map((domain) => {
-      const scores = GUIDED_CONTROLS.map((_, index) => responses[`${domain.id}-${index}`]?.score).filter(
+      const scores = GUIDED_CONTROLS[domain.id].map((_, index) => responses[`${domain.id}-${index}`]?.score).filter(
         (score): score is number => typeof score === "number" && score >= 1 && score <= 5,
       )
       const average = scores.length ? scores.reduce((total, score) => total + score, 0) / scores.length : 0
