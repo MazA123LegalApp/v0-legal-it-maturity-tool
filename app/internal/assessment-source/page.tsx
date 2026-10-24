@@ -3,11 +3,36 @@ import path from "node:path"
 import { CodeCopyBlock } from "@/components/code-copy-block"
 
 const sourceFiles = [
+  // Assessment flow
+  "app/maturity/page.tsx",
   "app/maturity/assessment/page.tsx",
   "lib/assessment-utils.ts",
   "lib/assessment-data.ts",
   "lib/maturity-engine.ts",
+
+  // Results flow
+  "app/maturity/results/page.tsx",
   "app/maturity/results/ResultsClientPage.tsx",
+  "components/maturity-summary.tsx",
+  "components/domain-radar-chart.tsx",
+  "components/summary-table.tsx",
+  "components/results-actions.tsx",
+  "components/compliance-snapshot.tsx",
+  "components/omb-heatmap.tsx",
+  "components/next-steps-generator.tsx",
+  "lib/tracking-utils.ts",
+
+  // Shared UI used by the assessment and results screens
+  "components/ui/button.tsx",
+  "components/ui/card.tsx",
+  "components/ui/input.tsx",
+  "components/ui/label.tsx",
+  "components/ui/progress.tsx",
+  "components/ui/textarea.tsx",
+  "components/ui/checkbox.tsx",
+  "components/ui/alert.tsx",
+  "components/ui/badge.tsx",
+  "components/ui/tabs.tsx",
 ]
 
 function readSourceFile(relativePath: string) {
