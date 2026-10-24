@@ -40,9 +40,27 @@ export function AIDomainReview({ results, context }: { results: AssessmentResult
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ results, context, domains: reviewedDomainIds }),
       })
-      const data = await response.json()
+      const contentType = response.headers.get("content-type") ?? ""
+      const responseText = await response.text()
+      let data: Partial<ReviewResponse> & { error?: string } = {}
+
+      if (contentType.includes("application/json")) {
+        try {
+          data = JSON.parse(responseText)
+        } catch {
+          throw new Error("The AI review returned an invalid response. Please try again.")
+        }
+      } else {
+        throw new Error(
+          response.ok
+            ? "The AI review returned an unexpected response. Please try again."
+            : `The AI review service is unavailable (${response.status}). Please try again later.`,
+        )
+      }
+
       if (!response.ok) throw new Error(data.error || "AI review failed")
-      setReview(data)
+      if (!data.reviews || !data.metadata) throw new Error("The AI review response was incomplete. Please try again.")
+      setReview(data as ReviewResponse)
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "AI review failed")
     } finally {
