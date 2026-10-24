@@ -9,8 +9,8 @@ import { ResultsActions } from "@/components/results-actions"
 import { ComplianceSnapshot } from "@/components/compliance-snapshot"
 import { OMBHeatmap } from "@/components/omb-heatmap"
 import { NextStepsGenerator } from "@/components/next-steps-generator"
-import { getAssessmentResults } from "@/lib/assessment-utils"
-import { calculateDomainAverages, calculateOverallAverage, getMaturityLevel, domains } from "@/lib/assessment-data"
+import { calculateGuidedDomainScores, getGuidedAssessmentResults, GUIDED_DOMAINS } from "@/lib/assessment-utils"
+import { getMaturityLevel } from "@/lib/assessment-data"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -32,23 +32,21 @@ export default function ResultsClientPage() {
     // Load assessment results from localStorage
     try {
       if (typeof window !== "undefined") {
-        const assessmentResults = getAssessmentResults()
+        const guidedAssessment = getGuidedAssessmentResults()
 
-        if (!assessmentResults) {
+        if (!guidedAssessment) {
           setError("No assessment results found. Please complete the assessment first.")
           setLoading(false)
           return
         }
 
-        console.log("Assessment results loaded:", assessmentResults) // Debug log
-
-        // Calculate domain averages
-        const calculatedDomainScores = calculateDomainAverages(assessmentResults)
-        console.log("Calculated domain scores:", calculatedDomainScores) // Debug log
+        const calculatedDomainScores = calculateGuidedDomainScores(guidedAssessment.responses)
         setDomainScores(calculatedDomainScores)
 
-        // Calculate overall score
-        const overallScore = calculateOverallAverage(assessmentResults)
+        const completedScores = Object.values(calculatedDomainScores).filter((score) => score > 0)
+        const overallScore = completedScores.length
+          ? completedScores.reduce((total, score) => total + score, 0) / completedScores.length
+          : 0
 
         // Get maturity band
         const overallBand = getMaturityLevel(overallScore)
@@ -59,7 +57,7 @@ export default function ResultsClientPage() {
           .sort((a, b) => a[1] - b[1])
 
         const weakestDomains = domainEntries.slice(0, 3).map(([id]) => {
-          const domain = domains.find((d) => d.id === id)
+          const domain = GUIDED_DOMAINS.find((d) => d.id === id)
           return domain ? domain.name : id
         })
 
@@ -67,7 +65,7 @@ export default function ResultsClientPage() {
           .slice(-3)
           .reverse()
           .map(([id]) => {
-            const domain = domains.find((d) => d.id === id)
+            const domain = GUIDED_DOMAINS.find((d) => d.id === id)
             return domain ? domain.name : id
           })
 
@@ -140,7 +138,7 @@ export default function ResultsClientPage() {
   const lowScoreDomains = Object.entries(domainScores)
     .filter(([_, score]) => score > 0 && score < 3.0)
     .map(([id]) => {
-      const domain = domains.find((d) => d.id === id)
+      const domain = GUIDED_DOMAINS.find((d) => d.id === id)
       return domain ? domain.name : id
     })
 
@@ -222,7 +220,7 @@ export default function ResultsClientPage() {
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {lowScoreDomains.slice(0, 3).map((domain, index) => {
-                      const domainId = domains.find((d) => d.name === domain)?.id
+                      const domainId = GUIDED_DOMAINS.find((d) => d.name === domain)?.id
                       const score = domainId ? domainScores[domainId] : 0
                       return (
                         <div key={domain} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">

@@ -1,5 +1,66 @@
 import { type AssessmentResult, calculateDomainAverages, getMaturityLevel } from "./assessment-data"
 
+export interface GuidedAssessmentResponse {
+  score?: number
+  evidence: string
+  reviewed: boolean
+}
+
+export interface GuidedAssessmentScope {
+  firm: string
+  sponsor: string
+  jurisdiction: string
+  cadence: string
+}
+
+export type GuidedAssessmentResponses = Record<string, GuidedAssessmentResponse>
+
+export const GUIDED_DOMAINS = [
+  { id: "governance", name: "Governance & strategy" },
+  { id: "risk", name: "Risk & compliance" },
+  { id: "security", name: "Information security" },
+  { id: "data", name: "Data & knowledge" },
+  { id: "technology", name: "Technology & operations" },
+  { id: "client", name: "Client experience" },
+] as const
+
+export const GUIDED_CONTROLS = [
+  "Accountability and ownership are clearly defined.",
+  "Policies and standards are documented and accessible.",
+  "Risks are identified, assessed, and reviewed regularly.",
+  "Operational processes are measured against agreed outcomes.",
+  "Evidence is retained and can be independently checked.",
+  "Staff receive role-appropriate guidance and training.",
+  "Issues and exceptions have a defined escalation path.",
+  "Improvement actions have owners, dates, and follow-up.",
+] as const
+
+export function calculateGuidedDomainScores(responses: GuidedAssessmentResponses): Record<string, number> {
+  return Object.fromEntries(
+    GUIDED_DOMAINS.map((domain) => {
+      const scores = GUIDED_CONTROLS.map((_, index) => responses[`${domain.id}-${index}`]?.score).filter(
+        (score): score is number => typeof score === "number" && score >= 1 && score <= 5,
+      )
+      const average = scores.length ? scores.reduce((total, score) => total + score, 0) / scores.length : 0
+      return [domain.id, average]
+    }),
+  )
+}
+
+export function getGuidedAssessmentResults(): { responses: GuidedAssessmentResponses; scope: GuidedAssessmentScope | null } | null {
+  if (typeof window === "undefined") return null
+  try {
+    const responses = JSON.parse(localStorage.getItem("guided_assessment_responses") || "null") as GuidedAssessmentResponses | null
+    if (!responses) return null
+    return {
+      responses,
+      scope: JSON.parse(localStorage.getItem("guided_assessment_scope") || "null") as GuidedAssessmentScope | null,
+    }
+  } catch {
+    return null
+  }
+}
+
 export interface DomainMaturityInfo {
   score: number
   level: string
